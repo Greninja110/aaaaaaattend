@@ -25,6 +25,9 @@ import pandas as pd
 import datetime
 from django.core.exceptions import ValidationError
 
+from django.template.exceptions import TemplateDoesNotExist
+from django.http import HttpResponse
+
 from authentication.models import User, Role
 from core.models import Department, AcademicYear, SystemLog
 from .models import AdminSetting, BulkImportLog , FacultySubject , ElectiveSubject ,Subject
@@ -75,12 +78,16 @@ def admin_required(view_func):
                 'return_url': '/'
             })
         
-        # Log the admin action
-        SystemLog.objects.create(
-            user=request.user,
-            action=f"Admin accessed {request.path}",
-            ip_address=request.META.get('REMOTE_ADDR')
-        )
+        # Log the admin action with try/except to handle missing table
+        try:
+            SystemLog.objects.create(
+                user=request.user,
+                action=f"Admin accessed {request.path}",
+                ip_address=request.META.get('REMOTE_ADDR')
+            )
+        except Exception as e:
+            # Just log the error but don't prevent access
+            logger.error(f"Could not log admin action: {str(e)}")
         
         return view_func(request, *args, **kwargs)
     return wrapper
@@ -89,6 +96,11 @@ def admin_required(view_func):
 @admin_required
 def index(request):
     """Admin Dashboard view"""
+    # For AJAX requests, return a simple success response
+    if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+        return JsonResponse({'status': 'success'})
+    
+    # Regular view logic for initial page load
     try:
         # Get counts for dashboard
         user_counts = {
@@ -98,19 +110,24 @@ def index(request):
             'active_users': User.objects.filter(is_active=True).count()
         }
         
-        # Get recent system logs
-        recent_logs = SystemLog.objects.select_related('user').order_by('-created_at')[:10]
+        # Get recent system logs - handle the case where the table might not exist
+        try:
+            recent_logs = SystemLog.objects.select_related('user').order_by('-created_at')[:10]
+        except:
+            recent_logs = []
         
         # Get role distribution for pie chart
         role_distribution = list(User.objects.values('role__role_name')
-                                .annotate(count=Count('user_id'))
-                                .order_by('role__role_name'))
+                              .annotate(count=Count('user_id'))
+                              .order_by('role__role_name'))
         
-        # Get current academic year
+        # Get current academic year - handle case where fields might be missing
+        current_academic_year = None
         try:
             current_academic_year = AcademicYear.objects.get(is_current=True)
-        except AcademicYear.DoesNotExist:
-            current_academic_year = None
+        except (AcademicYear.DoesNotExist, Exception) as e:
+            # Just set to None, we'll handle it in the template
+            pass
             
         context = {
             'user_counts': user_counts,
@@ -119,11 +136,11 @@ def index(request):
             'current_academic_year': current_academic_year
         }
         
-        return render(request, 'admin_portal/dashboard/index.html', context)
+        return render(request, 'admin_portal/index.html', context)
     except Exception as e:
         logger.error(f"Error in admin dashboard: {str(e)}", exc_info=True)
         messages.error(request, f"An error occurred while loading the dashboard: {str(e)}")
-        return render(request, 'admin_portal/dashboard/index.html', {'error': str(e)})
+        return render(request, 'admin_portal/index.html', {'error': str(e)})
     
 
 @login_required

@@ -132,3 +132,6 @@ SESSION_SAVE_EVERY_REQUEST = True
 
 # Add this near the bottom of settings.py
 AUTH_USER_MODEL = 'authentication.User'
+
+STATIC_URL = '/static/'
+STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]

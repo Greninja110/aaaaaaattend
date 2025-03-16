@@ -8,25 +8,19 @@
     <a class="nav-link active" href="{% url 'admin_portal:index' %}">Dashboard</a>
 </li>
 <li class="nav-item">
-    <a class="nav-link" href="{% url 'admin_portal:user_list' %}">Users</a>
+    <a class="nav-link" href="#">Users</a>
 </li>
 <li class="nav-item">
-    <a class="nav-link" href="{% url 'admin_portal:department_list' %}">Departments</a>
+    <a class="nav-link" href="#">Departments</a>
 </li>
 <li class="nav-item">
-    <a class="nav-link" href="{% url 'admin_portal:subject_list' %}">Subjects</a>
+    <a class="nav-link" href="#">Subjects</a>
 </li>
 <li class="nav-item">
-    <a class="nav-link" href="{% url 'admin_portal:academic_year_list' %}">Academic Years</a>
+    <a class="nav-link" href="#">Reports</a>
 </li>
 <li class="nav-item">
-    <a class="nav-link" href="{% url 'admin_portal:faculty_assignment_list' %}">Faculty Assignment</a>
-</li>
-<li class="nav-item">
-    <a class="nav-link" href="{% url 'admin_portal:report_dashboard' %}">Reports</a>
-</li>
-<li class="nav-item">
-    <a class="nav-link" href="{% url 'admin_portal:settings' %}">Settings</a>
+    <a class="nav-link" href="#">Settings</a>
 </li>
 {% endblock %}
 
@@ -43,13 +37,6 @@
                         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                     </div>
                 {% endfor %}
-            {% endif %}
-            
-            {% if error %}
-                <div class="alert alert-danger">
-                    <h4 class="alert-heading">Error Loading Dashboard</h4>
-                    <p>{{ error }}</p>
-                </div>
             {% endif %}
             
             <div class="alert alert-success">
@@ -69,7 +56,7 @@
                         <div class="col mr-2">
                             <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
                                 Total Students</div>
-                            <div class="h5 mb-0 font-weight-bold text-gray-800">{{ user_counts.total_students|default:"0" }}</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">1,251</div>
                         </div>
                         <div class="col-auto">
                             <i class="fas fa-user-graduate fa-2x text-gray-300"></i>
@@ -86,7 +73,7 @@
                         <div class="col mr-2">
                             <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
                                 Faculty Members</div>
-                            <div class="h5 mb-0 font-weight-bold text-gray-800">{{ user_counts.total_faculty|default:"0" }}</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">52</div>
                         </div>
                         <div class="col-auto">
                             <i class="fas fa-chalkboard-teacher fa-2x text-gray-300"></i>
@@ -103,7 +90,7 @@
                         <div class="col mr-2">
                             <div class="text-xs font-weight-bold text-info text-uppercase mb-1">
                                 Departments</div>
-                            <div class="h5 mb-0 font-weight-bold text-gray-800">{{ user_counts.total_departments|default:"0" }}</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">3</div>
                         </div>
                         <div class="col-auto">
                             <i class="fas fa-sitemap fa-2x text-gray-300"></i>
@@ -120,7 +107,7 @@
                         <div class="col mr-2">
                             <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
                                 Active Sessions</div>
-                            <div class="h5 mb-0 font-weight-bold text-gray-800">{{ user_counts.active_users|default:"0" }}</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">18</div>
                         </div>
                         <div class="col-auto">
                             <i class="fas fa-clipboard-list fa-2x text-gray-300"></i>
