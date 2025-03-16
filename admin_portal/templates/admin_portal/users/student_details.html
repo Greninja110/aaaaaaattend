@@ -1,0 +1,214 @@
+{% extends 'admin_portal/base_admin.html' %}
+{% load static %}
+
+{% block admin_title %}{% if is_update %}Edit{% else %}Add{% endif %} Student Details{% endblock %}
+
+{% block admin_content %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2"><i class="fas fa-user-graduate"></i> {% if is_update %}Edit{% else %}Add{% endif %} Student Details</h1>
+    <div class="btn-toolbar mb-2 mb-md-0">
+        <a href="{% url 'admin_portal:user_edit' user_obj.user_id %}" class="btn btn-sm btn-secondary">
+            <i class="fas fa-arrow-left"></i> Back to User
+        </a>
+    </div>
+</div>
+
+{% if messages %}
+    {% for message in messages %}
+        <div class="alert {{ message.tags }} alert-dismissible fade show" role="alert">
+            {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    {% endfor %}
+{% endif %}
+
+<div class="row">
+    <div class="col-md-7">
+        <div class="card shadow mb-4">
+            <div class="card-header py-3">
+                <h6 class="m-0 font-weight-bold text-primary">Student Information for {{ user_obj.full_name }}</h6>
+            </div>
+            <div class="card-body">
+                <form method="post" class="needs-validation" novalidate>
+                    {% csrf_token %}
+                    
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label for="{{ form.roll_number.id_for_label }}" class="form-label">Roll Number</label>
+                            {{ form.roll_number }}
+                            {% if form.roll_number.errors %}
+                            <div class="invalid-feedback d-block">
+                                {{ form.roll_number.errors }}
+                            </div>
+                            {% endif %}
+                        </div>
+                        <div class="col-md-6">
+                            <label for="{{ form.admission_year.id_for_label }}" class="form-label">Admission Year</label>
+                            {{ form.admission_year }}
+                            {% if form.admission_year.errors %}
+                            <div class="invalid-feedback d-block">
+                                {{ form.admission_year.errors }}
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label for="{{ form.department.id_for_label }}" class="form-label">Department</label>
+                            {{ form.department }}
+                            {% if form.department.errors %}
+                            <div class="invalid-feedback d-block">
+                                {{ form.department.errors }}
+                            </div>
+                            {% endif %}
+                        </div>
+                        <div class="col-md-6">
+                            <label for="{{ form.current_semester.id_for_label }}" class="form-label">Current Semester</label>
+                            {{ form.current_semester }}
+                            {% if form.current_semester.errors %}
+                            <div class="invalid-feedback d-block">
+                                {{ form.current_semester.errors }}
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label for="{{ form.class_section.id_for_label }}" class="form-label">Class Section</label>
+                            {{ form.class_section }}
+                            {% if form.class_section.errors %}
+                            <div class="invalid-feedback d-block">
+                                {{ form.class_section.errors }}
+                            </div>
+                            {% endif %}
+                        </div>
+                        <div class="col-md-6">
+                            <label for="{{ form.dob.id_for_label }}" class="form-label">Date of Birth</label>
+                            {{ form.dob }}
+                            {% if form.dob.errors %}
+                            <div class="invalid-feedback d-block">
+                                {{ form.dob.errors }}
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    <div class="mt-4">
+                        <button type="submit" class="btn btn-primary">
+                            {% if is_update %}Update{% else %}Save{% endif %} Student Details
+                        </button>
+                        <a href="{% url 'admin_portal:user_edit' user_obj.user_id %}" class="btn btn-secondary">Cancel</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-5">
+        <div class="card shadow mb-4">
+            <div class="card-header py-3">
+                <h6 class="m-0 font-weight-bold text-primary">User Information</h6>
+            </div>
+            <div class="card-body">
+                <table class="table">
+                    <tr>
+                        <th>Name:</th>
+                        <td>{{ user_obj.full_name }}</td>
+                    </tr>
+                    <tr>
+                        <th>Email:</th>
+                        <td>{{ user_obj.email }}</td>
+                    </tr>
+                    <tr>
+                        <th>Username:</th>
+                        <td>{{ user_obj.username }}</td>
+                    </tr>
+                    <tr>
+                        <th>Role:</th>
+                        <td>
+                            <span class="badge bg-success">Student</span>
+                        </td>
+                    </tr>
+                </table>
+                
+                <div class="alert alert-info mt-3">
+                    <i class="fas fa-info-circle"></i> Student details are required for attendance tracking, subject enrollment, and semester progression.
+                </div>
+            </div>
+        </div>
+        
+        <div class="card shadow mb-4">
+            <div class="card-header py-3">
+                <h6 class="m-0 font-weight-bold text-primary">Roll Number Format</h6>
+            </div>
+            <div class="card-body">
+                <p>Recommended roll number format:</p>
+                <ul>
+                    <li><strong>AdmissionYear + DepartmentCode + SequentialNumber</strong></li>
+                    <li>Example: <code>2023CE001</code> for a Computer Engineering student admitted in 2023</li>
+                </ul>
+                <p>This format helps with filtering and sorting students by department and admission year.</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block admin_custom_js %}
+<script>
+    $(document).ready(function() {
+        // Filter class sections by department
+        $('#{{ form.department.id_for_label }}').on('change', function() {
+            const departmentId = $(this).val();
+            
+            // Disable class section dropdown while loading
+            const classSection = $('#{{ form.class_section.id_for_label }}');
+            classSection.empty().append('<option value="">Loading...</option>').prop('disabled', true);
+            
+            // Fetch class sections via AJAX
+            $.ajax({
+                url: "{% url 'admin_portal:get_class_sections_by_department' %}",
+                data: {
+                    'department_id': departmentId
+                },
+                dataType: 'json',
+                success: function(data) {
+                    classSection.empty().append('<option value="">Select Section</option>');
+                    
+                    $.each(data, function(index, section) {
+                        classSection.append(
+                            $('<option></option>').val(section.class_section_id).text(section.section_name)
+                        );
+                    });
+                    
+                    classSection.prop('disabled', false);
+                },
+                error: function() {
+                    classSection.empty().append('<option value="">Error loading sections</option>');
+                    classSection.prop('disabled', false);
+                }
+            });
+            
+            // Auto-generate roll number pattern suggestion
+            const admissionYear = $('#{{ form.admission_year.id_for_label }}').val() || new Date().getFullYear();
+            const departmentCode = $(this).find('option:selected').text().split('(')[1]?.replace(')', '').trim() || '';
+            
+            if (departmentCode && $('#{{ form.roll_number.id_for_label }}').val() === '') {
+                $('#{{ form.roll_number.id_for_label }}').attr('placeholder', `${admissionYear}${departmentCode}XXX`);
+            }
+        });
+        
+        // Update roll number pattern when admission year changes
+        $('#{{ form.admission_year.id_for_label }}').on('change', function() {
+            const year = $(this).val();
+            const departmentCode = $('#{{ form.department.id_for_label }}').find('option:selected').text().split('(')[1]?.replace(')', '').trim() || '';
+            
+            if (departmentCode && $('#{{ form.roll_number.id_for_label }}').val() === '') {
+                $('#{{ form.roll_number.id_for_label }}').attr('placeholder', `${year}${departmentCode}XXX`);
+            }
+        });
+    });
+</script>
+{% endblock %}

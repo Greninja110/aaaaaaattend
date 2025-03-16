@@ -61,7 +61,9 @@ class Subject(models.Model):
         return f"{self.subject_code} - {self.subject_name}"
     
     class Meta:
+        managed = False  # Don't try to create/modify this table
         db_table = 'subjects'
+        
 
 class ElectiveSubject(models.Model):
     """Model for elective subjects"""
@@ -77,6 +79,7 @@ class ElectiveSubject(models.Model):
         return f"{self.subject.subject_name} ({self.elective_group})"
     
     class Meta:
+        managed = False
         db_table = 'elective_subjects'
         constraints = [
             models.UniqueConstraint(fields=['subject'], name='unique_subject_elective')
@@ -101,6 +104,7 @@ class FacultySubject(models.Model):
         return f"{self.faculty.user.full_name} - {self.subject.subject_name}{section}{batch}{lab}"
     
     class Meta:
+        managed = False  # Don't create/alter the table - just use the existing one
         db_table = 'faculty_subject'
         constraints = [
             models.UniqueConstraint(

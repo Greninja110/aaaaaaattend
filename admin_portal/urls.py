@@ -4,26 +4,9 @@ from . import views
 app_name = 'admin_portal'
 
 urlpatterns = [
+    # Dashboard
     path('', views.index, name='index'),
     path('dashboard/', views.index, name='dashboard'),
-
-    path('users/', views.user_list, name='user_list'),
-    path('users/create/', views.user_create, name='user_create'),
-    path('users/<int:user_id>/edit/', views.user_edit, name='user_edit'),
-    path('users/<int:user_id>/delete/', views.user_delete, name='user_delete'),
-    path('users/<int:user_id>/change-password/', views.change_password, name='change_password'),
-    path('users/<int:user_id>/details/<str:role>/', views.user_additional_details, name='user_additional_details'),
-    
-    # Department Management
-    path('departments/', views.department_list, name='department_list'),
-    path('departments/create/', views.department_create, name='department_create'),
-    path('departments/<int:department_id>/edit/', views.department_edit, name='department_edit'),
-    path('departments/<int:department_id>/delete/', views.department_delete, name='department_delete'),
-    
-    # Bulk Import
-    path('import/', views.bulk_import_users, name='bulk_import_users'),
-    path('import/results/<int:log_id>/', views.import_results, name='import_results'),
-    path('import/template/<str:import_type>/', views.download_import_template, name='download_import_template'),
 
     # User Management
     path('users/', views.user_list, name='user_list'),

@@ -1,0 +1,253 @@
+{% extends 'admin_portal/base_admin.html' %}
+{% load static %}
+
+{% block admin_title %}Edit Subject{% endblock %}
+
+{% block admin_content %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2"><i class="fas fa-book"></i> Edit Subject</h1>
+    <div class="btn-toolbar mb-2 mb-md-0">
+        <a href="{% url 'admin_portal:subject_list' %}" class="btn btn-sm btn-secondary">
+            <i class="fas fa-arrow-left"></i> Back to Subjects
+        </a>
+    </div>
+</div>
+
+{% if messages %}
+    {% for message in messages %}
+        <div class="alert {{ message.tags }} alert-dismissible fade show" role="alert">
+            {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    {% endfor %}
+{% endif %}
+
+<div class="row">
+    <div class="col-md-8">
+        <div class="card shadow mb-4">
+            <div class="card-header py-3 d-flex justify-content-between align-items-center">
+                <h6 class="m-0 font-weight-bold text-primary">Subject Information</h6>
+                <a href="{% url 'admin_portal:subject_delete' subject.subject_id %}" class="btn btn-sm btn-danger">
+                    <i class="fas fa-trash"></i> Delete Subject
+                </a>
+            </div>
+            <div class="card-body">
+                <form method="post" class="needs-validation" novalidate>
+                    {% csrf_token %}
+                    
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label for="{{ form.subject_code.id_for_label }}" class="form-label">Subject Code</label>
+                            {{ form.subject_code }}
+                            <div class="form-text">Unique code for the subject (e.g., CE101)</div>
+                            {% if form.subject_code.errors %}
+                            <div class="invalid-feedback d-block">
+                                {{ form.subject_code.errors }}
+                            </div>
+                            {% endif %}
+                        </div>
+                        <div class="col-md-6">
+                            <label for="{{ form.subject_name.id_for_label }}" class="form-label">Subject Name</label>
+                            {{ form.subject_name }}
+                            {% if form.subject_name.errors %}
+                            <div class="invalid-feedback d-block">
+                                {{ form.subject_name.errors }}
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label for="{{ form.department.id_for_label }}" class="form-label">Department</label>
+                            {{ form.department }}
+                            {% if form.department.errors %}
+                            <div class="invalid-feedback d-block">
+                                {{ form.department.errors }}
+                            </div>
+                            {% endif %}
+                        </div>
+                        <div class="col-md-6">
+                            <label for="{{ form.semester.id_for_label }}" class="form-label">Semester</label>
+                            {{ form.semester }}
+                            <div class="form-text">Semester (1-8) in which this subject is taught</div>
+                            {% if form.semester.errors %}
+                            <div class="invalid-feedback d-block">
+                                {{ form.semester.errors }}
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    <div class="row mb-3">
+                        <div class="col-md-4">
+                            <label for="{{ form.credits.id_for_label }}" class="form-label">Credits</label>
+                            {{ form.credits }}
+                            {% if form.credits.errors %}
+                            <div class="invalid-feedback d-block">
+                                {{ form.credits.errors }}
+                            </div>
+                            {% endif %}
+                        </div>
+                        <div class="col-md-8">
+                            <label class="form-label">Subject Type</label>
+                            <div class="d-flex gap-4 mt-2">
+                                <div class="form-check">
+                                    {{ form.has_theory }}
+                                    <label class="form-check-label" for="{{ form.has_theory.id_for_label }}">
+                                        Has Theory
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    {{ form.has_lab }}
+                                    <label class="form-check-label" for="{{ form.has_lab.id_for_label }}">
+                                        Has Lab
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    {{ form.is_elective }}
+                                    <label class="form-check-label" for="{{ form.is_elective.id_for_label }}">
+                                        Is Elective
+                                    </label>
+                                </div>
+                            </div>
+                            {% if form.has_theory.errors or form.has_lab.errors or form.is_elective.errors %}
+                            <div class="invalid-feedback d-block">
+                                {% if form.has_theory.errors %}{{ form.has_theory.errors }}{% endif %}
+                                {% if form.has_lab.errors %}{{ form.has_lab.errors }}{% endif %}
+                                {% if form.is_elective.errors %}{{ form.is_elective.errors }}{% endif %}
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    <div id="elective-details" class="card mb-3 {% if not has_elective and not subject.is_elective %}d-none{% endif %}">
+                        <div class="card-header">
+                            <h6 class="m-0">Elective Details</h6>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <label for="{{ elective_form.elective_group.id_for_label }}" class="form-label">Elective Group</label>
+                                    {{ elective_form.elective_group }}
+                                    <div class="form-text">Group name for related electives (e.g., "Web Technologies")</div>
+                                    {% if elective_form.elective_group.errors %}
+                                    <div class="invalid-feedback d-block">
+                                        {{ elective_form.elective_group.errors }}
+                                    </div>
+                                    {% endif %}
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="{{ elective_form.semester.id_for_label }}" class="form-label">Elective Semester</label>
+                                    {{ elective_form.semester }}
+                                    <div class="form-text">Semester (5-8) in which this elective is offered</div>
+                                    {% if elective_form.semester.errors %}
+                                    <div class="invalid-feedback d-block">
+                                        {{ elective_form.semester.errors }}
+                                    </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mt-4">
+                        <button type="submit" class="btn btn-primary">Update Subject</button>
+                        <a href="{% url 'admin_portal:subject_list' %}" class="btn btn-secondary">Cancel</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4">
+        <div class="card shadow mb-4">
+            <div class="card-header py-3">
+                <h6 class="m-0 font-weight-bold text-primary">Subject Details</h6>
+            </div>
+            <div class="card-body">
+                <table class="table">
+                    <tr>
+                        <th>Subject ID:</th>
+                        <td>{{ subject.subject_id }}</td>
+                    </tr>
+                    <tr>
+                        <th>Created:</th>
+                        <td>{{ subject.created_at }}</td>
+                    </tr>
+                    <tr>
+                        <th>Last Updated:</th>
+                        <td>{{ subject.updated_at }}</td>
+                    </tr>
+                </table>
+                
+                <div class="alert alert-info mt-3">
+                    <i class="fas fa-info-circle"></i> Changing subject details may affect faculty assignments and timetables.
+                </div>
+            </div>
+        </div>
+        
+        <div class="card shadow mb-4">
+            <div class="card-header py-3">
+                <h6 class="m-0 font-weight-bold text-primary">Related Records</h6>
+            </div>
+            <div class="card-body">
+                <div class="row text-center">
+                    <div class="col-md-6 mb-3">
+                        <div class="card">
+                            <div class="card-body">
+                                <h3 class="text-primary">3</h3>
+                                <p class="small text-muted">Faculty Assignments</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <div class="card">
+                            <div class="card-body">
+                                <h3 class="text-success">42</h3>
+                                <p class="small text-muted">Students Enrolled</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <a href="#" class="btn btn-sm btn-outline-primary w-100 mt-2">
+                    <i class="fas fa-users"></i> Assign Faculty
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block admin_custom_js %}
+<script>
+    $(document).ready(function() {
+        // Show/hide elective details based on checkbox
+        $('#{{ form.is_elective.id_for_label }}').on('change', function() {
+            if ($(this).is(':checked')) {
+                $('#elective-details').removeClass('d-none');
+                
+                // Set elective semester to match subject semester if within range 5-8
+                const subjectSemester = parseInt($('#{{ form.semester.id_for_label }}').val());
+                if (subjectSemester >= 5 && subjectSemester <= 8) {
+                    $('#{{ elective_form.semester.id_for_label }}').val(subjectSemester);
+                }
+            } else {
+                $('#elective-details').addClass('d-none');
+            }
+        });
+        
+        // Validate that at least one of theory or lab is checked
+        $('form').on('submit', function(e) {
+            if (!$('#{{ form.has_theory.id_for_label }}').is(':checked') && 
+                !$('#{{ form.has_lab.id_for_label }}').is(':checked')) {
+                alert('A subject must have either theory, lab, or both components.');
+                e.preventDefault();
+                return false;
+            }
+            return true;
+        });
+    });
+</script>
+{% endblock %}
