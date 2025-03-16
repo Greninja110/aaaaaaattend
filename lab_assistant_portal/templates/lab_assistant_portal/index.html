@@ -1,0 +1,246 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Lab Assistant Dashboard - MBIT Attendance System{% endblock %}
+
+{% block nav_items %}
+<li class="nav-item">
+    <a class="nav-link active" href="{% url 'lab_assistant_portal:index' %}">Dashboard</a>
+</li>
+<li class="nav-item">
+    <a class="nav-link" href="#">Leave Applications</a>
+</li>
+<li class="nav-item">
+    <a class="nav-link" href="#">Attendance Exceptions</a>
+</li>
+<li class="nav-item">
+    <a class="nav-link" href="#">Lab Schedule</a>
+</li>
+<li class="nav-item">
+    <a class="nav-link" href="#">Reports</a>
+</li>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <div class="row mb-4">
+        <div class="col-md-12">
+            <h2 class="mb-4">Lab Assistant Dashboard</h2>
+            
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="alert {{ message.tags }} alert-dismissible fade show" role="alert">
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                {% endfor %}
+            {% endif %}
+            
+            <div class="alert alert-info">
+                <h4 class="alert-heading">Welcome to Lab Assistant Portal!</h4>
+                <p>You are logged in as a lab assistant. From here, you can manage leave applications, attendance exceptions, and lab schedules.</p>
+                <hr>
+                <p class="mb-0">You are responsible for maintaining proper lab records and helping faculty with lab sessions.</p>
+            </div>
+        </div>
+    </div>
+    
+    <div class="row">
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-warning shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
+                                Pending Leave Applications</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">7</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-calendar-plus fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-info shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-info text-uppercase mb-1">
+                                Today's Lab Sessions</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">4</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-flask fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-primary shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                                Total Labs</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">5</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-laptop-code fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-success shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
+                                Approved Leaves (This Month)</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">12</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-check-circle fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="row mt-4">
+        <div class="col-md-6">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                    <h6 class="m-0 font-weight-bold text-primary">Today's Lab Schedule</h6>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-bordered">
+                            <thead>
+                                <tr>
+                                    <th>Time</th>
+                                    <th>Lab</th>
+                                    <th>Subject</th>
+                                    <th>Batch</th>
+                                    <th>Faculty</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>9:00 AM - 11:00 AM</td>
+                                    <td>Lab 1</td>
+                                    <td>Programming Lab</td>
+                                    <td>CE1-A</td>
+                                    <td>Prof. Sharma</td>
+                                </tr>
+                                <tr>
+                                    <td>11:00 AM - 1:00 PM</td>
+                                    <td>Lab 2</td>
+                                    <td>Database Lab</td>
+                                    <td>CE2-B</td>
+                                    <td>Prof. Patel</td>
+                                </tr>
+                                <tr>
+                                    <td>2:00 PM - 4:00 PM</td>
+                                    <td>Lab 1</td>
+                                    <td>Networking Lab</td>
+                                    <td>CE3-C</td>
+                                    <td>Prof. Joshi</td>
+                                </tr>
+                                <tr>
+                                    <td>4:00 PM - 6:00 PM</td>
+                                    <td>Lab 3</td>
+                                    <td>Web Development</td>
+                                    <td>IT2-D</td>
+                                    <td>Prof. Kumar</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-6">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                    <h6 class="m-0 font-weight-bold text-primary">Recent Leave Applications</h6>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-bordered">
+                            <thead>
+                                <tr>
+                                    <th>Student</th>
+                                    <th>Roll No</th>
+                                    <th>From</th>
+                                    <th>To</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>Rohit Verma</td>
+                                    <td>CE21037</td>
+                                    <td>15-Mar-2025</td>
+                                    <td>18-Mar-2025</td>
+                                    <td><span class="badge bg-warning">Pending</span></td>
+                                </tr>
+                                <tr>
+                                    <td>Anjali Singh</td>
+                                    <td>CE21012</td>
+                                    <td>14-Mar-2025</td>
+                                    <td>16-Mar-2025</td>
+                                    <td><span class="badge bg-warning">Pending</span></td>
+                                </tr>
+                                <tr>
+                                    <td>Vikram Joshi</td>
+                                    <td>IT21045</td>
+                                    <td>10-Mar-2025</td>
+                                    <td>12-Mar-2025</td>
+                                    <td><span class="badge bg-success">Approved</span></td>
+                                </tr>
+                                <tr>
+                                    <td>Neha Gupta</td>
+                                    <td>IT21032</td>
+                                    <td>8-Mar-2025</td>
+                                    <td>9-Mar-2025</td>
+                                    <td><span class="badge bg-success">Approved</span></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+    .border-left-primary {
+        border-left: 0.25rem solid #007bff;
+    }
+    .border-left-success {
+        border-left: 0.25rem solid #28a745;
+    }
+    .border-left-info {
+        border-left: 0.25rem solid #17a2b8;
+    }
+    .border-left-warning {
+        border-left: 0.25rem solid #ffc107;
+    }
+    .border-left-danger {
+        border-left: 0.25rem solid #dc3545;
+    }
+</style>
+{% endblock %}
