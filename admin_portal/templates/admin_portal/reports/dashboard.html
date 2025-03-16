@@ -1,0 +1,117 @@
+{% extends 'admin_portal/base_admin.html' %}
+{% load static %}
+
+{% block admin_title %}Reports & Analytics{% endblock %}
+
+{% block admin_content %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2"><i class="fas fa-chart-bar"></i> Reports & Analytics</h1>
+</div>
+
+{% if messages %}
+    {% for message in messages %}
+        <div class="alert {{ message.tags }} alert-dismissible fade show" role="alert">
+            {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    {% endfor %}
+{% endif %}
+
+<div class="row">
+    <!-- Attendance Reports -->
+    <div class="col-md-6 mb-4">
+        <div class="card shadow h-100">
+            <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                <h6 class="m-0 font-weight-bold text-primary">Attendance Reports</h6>
+            </div>
+            <div class="card-body">
+                <p>Generate detailed attendance reports by department, class, subject, or student.</p>
+                <div class="d-grid gap-2">
+                    <a href="{% url 'admin_portal:attendance_report' %}" class="btn btn-primary">
+                        <i class="fas fa-clipboard-check"></i> Generate Attendance Report
+                    </a>
+                </div>
+                <hr>
+                <div class="small">
+                    <ul>
+                        <li>View attendance statistics by class or subject</li>
+                        <li>Identify students below attendance threshold</li>
+                        <li>Export data to CSV for further analysis</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Faculty Workload Reports -->
+    <div class="col-md-6 mb-4">
+        <div class="card shadow h-100">
+            <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                <h6 class="m-0 font-weight-bold text-primary">Faculty Workload Reports</h6>
+            </div>
+            <div class="card-body">
+                <p>Analyze faculty teaching hours, subject assignments, and workload distribution.</p>
+                <div class="d-grid gap-2">
+                    <a href="{% url 'admin_portal:faculty_workload_report' %}" class="btn btn-success">
+                        <i class="fas fa-chalkboard-teacher"></i> Generate Workload Report
+                    </a>
+                </div>
+                <hr>
+                <div class="small">
+                    <ul>
+                        <li>View teaching hours per faculty member</li>
+                        <li>Analyze subject distribution across faculty</li>
+                        <li>Identify overloaded or underutilized faculty</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Department Performance -->
+    <div class="col-md-6 mb-4">
+        <div class="card shadow h-100">
+            <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                <h6 class="m-0 font-weight-bold text-primary">Department Performance</h6>
+            </div>
+            <div class="card-body">
+                <p>Compare attendance metrics and performance across departments.</p>
+                <div class="d-grid gap-2">
+                    <button class="btn btn-info" disabled>
+                        <i class="fas fa-university"></i> Generate Department Report
+                    </button>
+                </div>
+                <hr>
+                <div class="small">
+                    <div class="alert alert-warning">
+                        <i class="fas fa-info-circle"></i> This report type is coming soon.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Custom Reports -->
+    <div class="col-md-6 mb-4">
+        <div class="card shadow h-100">
+            <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                <h6 class="m-0 font-weight-bold text-primary">Custom Reports</h6>
+            </div>
+            <div class="card-body">
+                <p>Build custom reports with specific parameters and data points.</p>
+                <div class="d-grid gap-2">
+                    <button class="btn btn-secondary" disabled>
+                        <i class="fas fa-filter"></i> Create Custom Report
+                    </button>
+                </div>
+                <hr>
+                <div class="small">
+                    <div class="alert alert-warning">
+                        <i class="fas fa-info-circle"></i> Custom report builder is under development.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
