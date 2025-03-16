@@ -4,6 +4,33 @@
 
 {% block admin_title %}Admin Dashboard{% endblock %}
 
+{% block extra_css %}
+{{ block.super }}  <!-- This is critical - it includes the parent CSS -->
+<style>
+    /* Dashboard-specific additional styles */
+    .border-left-primary {
+        border-left: 0.25rem solid #007bff;
+    }
+    .border-left-success {
+        border-left: 0.25rem solid #28a745;
+    }
+    .border-left-info {
+        border-left: 0.25rem solid #17a2b8;
+    }
+    .border-left-warning {
+        border-left: 0.25rem solid #ffc107;
+    }
+    
+    .stats-card {
+        transition: transform 0.3s;
+    }
+    
+    .stats-card:hover {
+        transform: translateY(-5px);
+    }
+</style>
+{% endblock %}
+
 {% block admin_content %}
 <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
     <h1 class="h2"><i class="fas fa-tachometer-alt"></i> Admin Dashboard</h1>
@@ -401,29 +428,4 @@
         });
     });
 </script>
-{% endblock %}
-
-{% block extra_css %}
-<style>
-    .border-left-primary {
-        border-left: 0.25rem solid #007bff;
-    }
-    .border-left-success {
-        border-left: 0.25rem solid #28a745;
-    }
-    .border-left-info {
-        border-left: 0.25rem solid #17a2b8;
-    }
-    .border-left-warning {
-        border-left: 0.25rem solid #ffc107;
-    }
-    
-    .stats-card {
-        transition: transform 0.3s;
-    }
-    
-    .stats-card:hover {
-        transform: translateY(-5px);
-    }
-</style>
 {% endblock %}

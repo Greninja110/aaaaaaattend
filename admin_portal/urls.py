@@ -1,3 +1,5 @@
+# Add this to your urls.py file
+
 from django.urls import path
 from . import views
 
@@ -40,6 +42,9 @@ urlpatterns = [
     path('faculty-assignment/create/', views.faculty_assignment_create, name='faculty_assignment_create'),
     path('faculty-assignment/<int:assignment_id>/edit/', views.faculty_assignment_edit, name='faculty_assignment_edit'),
     path('faculty-assignment/<int:assignment_id>/delete/', views.faculty_assignment_delete, name='faculty_assignment_delete'),
+    
+    # Timetable (add this missing route)
+    path('timetable/', views.timetable_view, name='timetable'),
     
     # AJAX endpoints
     path('ajax/subjects-by-department/', views.get_subjects_by_department, name='get_subjects_by_department'),

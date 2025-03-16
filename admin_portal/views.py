@@ -135,7 +135,8 @@ def index(request):
             'user_counts': user_counts,
             'recent_logs': recent_logs,
             'role_distribution': role_distribution,
-            'current_academic_year': current_academic_year
+            'current_academic_year': current_academic_year,
+            'active_page': 'dashboard'  # Add this line to set active page
         }
         
         # Check if this is the dashboard URL or the root URL
@@ -143,8 +144,8 @@ def index(request):
             # Use the detailed dashboard template
             return render(request, 'admin_portal/dashboard/index.html', context)
         else:
-                # Redirect to dashboard
-                return redirect('admin_portal:dashboard')
+            # Fixed indentation here
+            return redirect('admin_portal:dashboard')
             
     except Exception as e:
         logger.error(f"Error in admin dashboard: {str(e)}", exc_info=True)
@@ -1136,7 +1137,7 @@ def faculty_assignment_list(request):
         'subject_filter': subject_filter,
         'department_filter': department_filter,
         'year_filter': year_filter,
-        'active_page': 'faculty_assignment'
+        'active_page': 'faculty'
     }
     
     return render(request, 'admin_portal/faculty_assignment/list.html', context)
@@ -1473,3 +1474,12 @@ def settings_page(request):
         'form': form,
         'active_page': 'settings'
     })
+
+@login_required
+@admin_required
+def timetable_view(request):
+    """View for timetable management"""
+    context = {
+        'active_page': 'timetable'
+    }
+    return render(request, 'admin_portal/timetable/index.html', context)
