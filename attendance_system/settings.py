@@ -15,6 +15,7 @@ ALLOWED_HOSTS = []
 
 # Application definition
 INSTALLED_APPS = [
+    'authentication',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -23,7 +24,6 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     
     # Custom apps
-    'authentication',
     'core',
     'admin_portal',
     'hod_portal',
