@@ -24,6 +24,7 @@ import io
 import pandas as pd
 import datetime
 from django.core.exceptions import ValidationError
+from django.shortcuts import redirect
 
 from django.template.exceptions import TemplateDoesNotExist
 from django.http import HttpResponse
@@ -43,20 +44,20 @@ from .forms import (
 )
 from .utils import log_admin_action, get_current_academic_year, handle_uploaded_csv
 
-@login_required
-def index(request):
-    """Admin Dashboard view"""
-    user = request.user
-    # Check if user has admin role
-    if user.get_role() != 'admin':
-        return render(request, 'error.html', {
-            'error_title': 'Access Denied',
-            'error_heading': 'Unauthorized Access',
-            'error_message': 'You do not have permission to access the Admin Portal.',
-            'return_url': '/'
-        })
+# @login_required
+# def index(request):
+#     """Admin Dashboard view"""
+#     user = request.user
+#     # Check if user has admin role
+#     if user.get_role() != 'admin':
+#         return render(request, 'error.html', {
+#             'error_title': 'Access Denied',
+#             'error_heading': 'Unauthorized Access',
+#             'error_message': 'You do not have permission to access the Admin Portal.',
+#             'return_url': '/'
+#         })
     
-    return render(request, 'admin_portal/index.html')
+#     return render(request, 'admin_portal/index.html')
 
 logger = logging.getLogger(__name__)
 
@@ -100,7 +101,9 @@ def index(request):
     if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
         return JsonResponse({'status': 'success'})
     
-    # Regular view logic for initial page load
+    # Get the current path/URL to determine which template to use
+    current_path = request.path.strip('/')
+    
     try:
         # Get counts for dashboard
         user_counts = {
@@ -110,7 +113,7 @@ def index(request):
             'active_users': User.objects.filter(is_active=True).count()
         }
         
-        # Get recent system logs - handle the case where the table might not exist
+        # Get recent system logs
         try:
             recent_logs = SystemLog.objects.select_related('user').order_by('-created_at')[:10]
         except:
@@ -118,15 +121,14 @@ def index(request):
         
         # Get role distribution for pie chart
         role_distribution = list(User.objects.values('role__role_name')
-                              .annotate(count=Count('user_id'))
-                              .order_by('role__role_name'))
+                             .annotate(count=Count('user_id'))
+                             .order_by('role__role_name'))
         
-        # Get current academic year - handle case where fields might be missing
+        # Get current academic year
         current_academic_year = None
         try:
             current_academic_year = AcademicYear.objects.get(is_current=True)
-        except (AcademicYear.DoesNotExist, Exception) as e:
-            # Just set to None, we'll handle it in the template
+        except (AcademicYear.DoesNotExist, Exception):
             pass
             
         context = {
@@ -136,7 +138,14 @@ def index(request):
             'current_academic_year': current_academic_year
         }
         
-        return render(request, 'admin_portal/index.html', context)
+        # Check if this is the dashboard URL or the root URL
+        if 'dashboard' in current_path:
+            # Use the detailed dashboard template
+            return render(request, 'admin_portal/dashboard/index.html', context)
+        else:
+                # Redirect to dashboard
+                return redirect('admin_portal:dashboard')
+            
     except Exception as e:
         logger.error(f"Error in admin dashboard: {str(e)}", exc_info=True)
         messages.error(request, f"An error occurred while loading the dashboard: {str(e)}")
