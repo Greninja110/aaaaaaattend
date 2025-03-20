@@ -16,7 +16,7 @@ class Department(models.Model):
         return self.department_name
     
     class Meta:
-        managed = False  # Don't let Django manage this table
+        # managed = False  # Don't let Django manage this table
         db_table = 'departments'
         
 class AcademicYear(models.Model):
@@ -41,7 +41,7 @@ class AcademicYear(models.Model):
         super().save(*args, **kwargs)
     
     class Meta:
-        managed = False  # Don't let Django manage this table
+        # managed = False  # Don't let Django manage this table
         db_table = 'academic_years'
 
 class ClassSection(models.Model):
@@ -56,7 +56,7 @@ class ClassSection(models.Model):
         return f"{department_code}-{self.section_name}"
     
     class Meta:
-        managed = False  # Don't let Django manage this table
+        # managed = False  # Don't let Django manage this table
         db_table = 'class_sections'
 
 class Batch(models.Model):
@@ -69,7 +69,7 @@ class Batch(models.Model):
         return self.batch_name
     
     class Meta:
-        managed = False  # Don't let Django manage this table
+        # managed = False  # Don't let Django manage this table
         db_table = 'batches'
         
 class SystemLog(models.Model):
@@ -79,14 +79,14 @@ class SystemLog(models.Model):
     action = models.CharField(max_length=100)
     details = models.TextField(null=True, blank=True)
     ip_address = models.GenericIPAddressField(null=True, blank=True)
-    created_at = models.DateTimeField(auto_now_add=True)  # Keep this if it exists in the DB
+    # created_at = models.DateTimeField(auto_now_add=True)  # Keep this if it exists in the DB
     
     def __str__(self):
         user_name = str(self.user) if self.user else "Unknown"
         return f"{self.action} by {user_name} at {self.created_at}"
     
     class Meta:
-        managed = False  # Don't let Django manage this table
+        # managed = False  # Don't let Django manage this table
         db_table = 'system_logs'
 
 class Faculty(models.Model):
@@ -109,7 +109,7 @@ class Faculty(models.Model):
         return f"{user_name} ({self.employee_id})"
     
     class Meta:
-        managed = False  # Don't let Django manage this table
+        # managed = False  # Don't let Django manage this table
         db_table = 'faculty'
 
 class Student(models.Model):
@@ -135,5 +135,5 @@ class Student(models.Model):
         return f"{user_name} ({self.roll_number})"
     
     class Meta:
-        managed = False  # Don't let Django manage this table
+        # managed = False  # Don't let Django manage this table
         db_table = 'students'

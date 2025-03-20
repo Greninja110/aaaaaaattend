@@ -14,8 +14,8 @@ class AdminSetting(models.Model):
     description = models.TextField(null=True, blank=True)
     created_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, related_name='created_settings')
     updated_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, related_name='updated_settings')
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
+    # created_at = models.DateTimeField(auto_now_add=True)
+    # updated_at = models.DateTimeField(auto_now=True)
     
     def __str__(self):
         return self.setting_key
@@ -33,14 +33,13 @@ class BulkImportLog(models.Model):
     failed_records = models.IntegerField(default=0)
     error_details = models.TextField(null=True, blank=True)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    created_at = models.DateTimeField(auto_now_add=True)
+    # created_at = models.DateTimeField(auto_now_add=True)
     
     def __str__(self):
         return f"{self.import_type} import by {self.user} on {self.created_at}"
     
     class Meta:
         db_table = 'bulk_import_logs'
-
 
 class Subject(models.Model):
     """Subject model for courses offered"""
@@ -54,17 +53,15 @@ class Subject(models.Model):
     has_theory = models.BooleanField(default=True)
     has_lab = models.BooleanField(default=False)
     is_elective = models.BooleanField(default=False)
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
+    # created_at = models.DateTimeField(auto_now_add=True)
+    # updated_at = models.DateTimeField(auto_now=True)
     
     def __str__(self):
         return f"{self.subject_code} - {self.subject_name}"
     
     class Meta:
-        managed = False  # Don't try to create/modify this table
         db_table = 'subjects'
         
-
 class ElectiveSubject(models.Model):
     """Model for elective subjects"""
     elective_id = models.AutoField(primary_key=True)
@@ -72,14 +69,13 @@ class ElectiveSubject(models.Model):
     elective_group = models.CharField(max_length=50, null=False)
     semester = models.IntegerField(null=False, 
                                   validators=[MinValueValidator(5), MaxValueValidator(8)])
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
+    # created_at = models.DateTimeField(auto_now_add=True)
+    # updated_at = models.DateTimeField(auto_now=True)
     
     def __str__(self):
         return f"{self.subject.subject_name} ({self.elective_group})"
     
     class Meta:
-        managed = False
         db_table = 'elective_subjects'
         constraints = [
             models.UniqueConstraint(fields=['subject'], name='unique_subject_elective')
@@ -94,8 +90,8 @@ class FacultySubject(models.Model):
     batch = models.ForeignKey(Batch, on_delete=models.SET_NULL, null=True, blank=True)
     is_lab = models.BooleanField(default=False)
     academic_year = models.ForeignKey(AcademicYear, on_delete=models.CASCADE)
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
+    # created_at = models.DateTimeField(auto_now_add=True)
+    # updated_at = models.DateTimeField(auto_now=True)
     
     def __str__(self):
         section = f" ({self.class_section})" if self.class_section else ""
@@ -104,7 +100,6 @@ class FacultySubject(models.Model):
         return f"{self.faculty.user.full_name} - {self.subject.subject_name}{section}{batch}{lab}"
     
     class Meta:
-        managed = False  # Don't create/alter the table - just use the existing one
         db_table = 'faculty_subject'
         constraints = [
             models.UniqueConstraint(
@@ -134,7 +129,6 @@ class Timetable(models.Model):
         return f"{self.faculty_subject.subject.subject_name} - {self.day_of_week} ({self.start_time} to {self.end_time})"
     
     class Meta:
-        managed = False  # Don't let Django manage this table
         db_table = 'timetable'
         constraints = [
             models.UniqueConstraint(

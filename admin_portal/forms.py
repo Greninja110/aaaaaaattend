@@ -254,7 +254,7 @@ class SubjectForm(forms.ModelForm):
             'subject_code': forms.TextInput(attrs={'class': 'form-control'}),
             'subject_name': forms.TextInput(attrs={'class': 'form-control'}),
             'department': forms.Select(attrs={'class': 'form-select'}),
-            'semester': forms.NumberInput(attrs={'class': 'form-control', 'min': 1, 'max': 8}),
+            'semester': forms.NumberInput(attrs={'class': 'form-control', 'min': 1, 'max': 8 }),
             'credits': forms.NumberInput(attrs={'class': 'form-control', 'min': 1, 'max': 10}),
             'has_theory': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
             'has_lab': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
@@ -275,6 +275,16 @@ class SubjectForm(forms.ModelForm):
             raise forms.ValidationError("Subject must have either theory, lab, or both.")
         
         return cleaned_data
+    
+    def clean_semester(self):
+        semester = self.cleaned_data.get('semester')
+        try:
+            semester = int(semester)
+            if semester < 1 or semester > 8:
+                raise forms.ValidationError("Semester must be between 1 and 8")
+            return semester
+        except (ValueError, TypeError):
+            raise forms.ValidationError("Semester must be a valid integer between 1 and 8")
 
 class ElectiveSubjectForm(forms.ModelForm):
     """Form for managing elective subjects"""

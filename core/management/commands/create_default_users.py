@@ -87,7 +87,7 @@ class Command(BaseCommand):
                             'username': user_data['username'],
                             'full_name': user_data['full_name'],
                             'role': user_data['role'],
-                            'password_hash': make_password(user_data['password']),
+                            'password': make_password(user_data['password']),
                             'is_active': True
                         }
                     )
