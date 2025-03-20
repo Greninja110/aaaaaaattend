@@ -112,3 +112,37 @@ class FacultySubject(models.Model):
                 name='unique_faculty_subject_class_batch_year'
             )
         ]
+
+class Timetable(models.Model):
+    """Timetable model for scheduling classes"""
+    timetable_id = models.AutoField(primary_key=True)
+    faculty_subject = models.ForeignKey(FacultySubject, on_delete=models.CASCADE)
+    day_of_week = models.CharField(max_length=10, choices=[
+        ('Monday', 'Monday'),
+        ('Tuesday', 'Tuesday'),
+        ('Wednesday', 'Wednesday'),
+        ('Thursday', 'Thursday'),
+        ('Friday', 'Friday'),
+        ('Saturday', 'Saturday')
+    ])
+    start_time = models.TimeField()
+    end_time = models.TimeField()
+    room_number = models.CharField(max_length=20)
+    academic_year = models.ForeignKey(AcademicYear, on_delete=models.CASCADE)
+    
+    def __str__(self):
+        return f"{self.faculty_subject.subject.subject_name} - {self.day_of_week} ({self.start_time} to {self.end_time})"
+    
+    class Meta:
+        managed = False  # Don't let Django manage this table
+        db_table = 'timetable'
+        constraints = [
+            models.UniqueConstraint(
+                fields=['room_number', 'start_time', 'day_of_week', 'academic_year'],
+                name='unique_room_time_day'
+            ),
+            models.UniqueConstraint(
+                fields=['faculty_subject', 'start_time', 'day_of_week', 'academic_year'],
+                name='unique_faculty_time_day'
+            )
+        ]

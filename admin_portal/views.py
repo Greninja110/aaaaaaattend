@@ -44,6 +44,18 @@ from .forms import (
 )
 from .utils import log_admin_action, get_current_academic_year, handle_uploaded_csv
 
+from .models import Timetable, FacultySubject
+# Then use Timetable directly without models. prefix
+
+from authentication.models import User, Role
+from core.models import Department, AcademicYear, SystemLog, ClassSection, Batch
+from .models import AdminSetting, BulkImportLog, FacultySubject, Timetable
+from .forms import TimetableForm
+
+from .utils import log_admin_action, get_current_academic_year
+
+from django.core.paginator import Paginator
+
 # @login_required
 # def index(request):
 #     """Admin Dashboard view"""
@@ -1478,8 +1490,413 @@ def settings_page(request):
 @login_required
 @admin_required
 def timetable_view(request):
-    """View for timetable management"""
+    """View for listing and filtering timetable entries"""
+    # Get query parameters
+    faculty_filter = request.GET.get('faculty', '')
+    department_filter = request.GET.get('department', '')
+    day_filter = request.GET.get('day', '')
+    class_section_filter = request.GET.get('class_section', '')
+    
+    # Get default academic year
+    try:
+        academic_year = AcademicYear.objects.get(is_current=True)
+        academic_year_id = academic_year.academic_year_id
+    except AcademicYear.DoesNotExist:
+        academic_year = None
+        academic_year_id = None
+    
+    # Override with query parameter if provided
+    academic_year_filter = request.GET.get('academic_year', str(academic_year_id) if academic_year_id else '')
+    
+    # Base queryset
+    timetable_entries = None
+    try:
+        timetable_entries = Timetable.objects.select_related(
+            'faculty_subject', 
+            'faculty_subject__faculty', 
+            'faculty_subject__faculty__user', 
+            'faculty_subject__subject',
+            'faculty_subject__class_section',
+            'faculty_subject__batch',
+            'academic_year'
+        ).order_by('day_of_week', 'start_time')
+        
+        # Apply filters
+        if academic_year_filter:
+            timetable_entries = timetable_entries.filter(academic_year_id=academic_year_filter)
+            
+        if faculty_filter:
+            timetable_entries = timetable_entries.filter(faculty_subject__faculty_id=faculty_filter)
+            
+        if department_filter:
+            timetable_entries = timetable_entries.filter(
+                faculty_subject__subject__department_id=department_filter
+            )
+            
+        if day_filter:
+            timetable_entries = timetable_entries.filter(day_of_week=day_filter)
+            
+        if class_section_filter:
+            timetable_entries = timetable_entries.filter(
+                faculty_subject__class_section_id=class_section_filter
+            )
+    except Exception as e:
+        logger.error(f"Error fetching timetable entries: {str(e)}", exc_info=True)
+        messages.error(request, f"Error loading timetable data: {str(e)}")
+        timetable_entries = []
+    
+    # Get filter options
+    departments = Department.objects.order_by('department_name')
+    faculties = Faculty.objects.select_related('user').order_by('user__full_name')
+    class_sections = ClassSection.objects.select_related('department').order_by('section_name')
+    academic_years = AcademicYear.objects.order_by('-year_start')
+    
+    # Day of week choices
+    day_choices = [
+        ('Monday', 'Monday'),
+        ('Tuesday', 'Tuesday'),
+        ('Wednesday', 'Wednesday'),
+        ('Thursday', 'Thursday'),
+        ('Friday', 'Friday'),
+        ('Saturday', 'Saturday')
+    ]
+    
     context = {
+        'timetable_entries': timetable_entries,
+        'departments': departments,
+        'faculties': faculties,
+        'class_sections': class_sections,
+        'academic_years': academic_years,
+        'day_choices': day_choices,
+        'faculty_filter': faculty_filter,
+        'department_filter': department_filter,
+        'day_filter': day_filter,
+        'class_section_filter': class_section_filter,
+        'academic_year_filter': academic_year_filter,
+        'current_academic_year': academic_year,
         'active_page': 'timetable'
     }
+    
     return render(request, 'admin_portal/timetable/index.html', context)
+
+@login_required
+@admin_required
+def timetable_create(request):
+    """View for creating a new timetable entry"""
+    if request.method == 'POST':
+        form = TimetableForm(request.POST)
+        if form.is_valid():
+            try:
+                timetable_entry = form.save()
+                
+                # Log the action
+                log_admin_action(
+                    request.user,
+                    f"Created new timetable entry: {timetable_entry.faculty_subject.faculty.user.full_name} - "
+                    f"{timetable_entry.faculty_subject.subject.subject_name} on {timetable_entry.day_of_week}",
+                    ip_address=request.META.get('REMOTE_ADDR')
+                )
+                
+                messages.success(request, "Timetable entry created successfully.")
+                return redirect('admin_portal:timetable')
+            except Exception as e:
+                logger.error(f"Error creating timetable entry: {str(e)}", exc_info=True)
+                messages.error(request, f"Error creating timetable entry: {str(e)}")
+    else:
+        # Try to get current academic year for default
+        try:
+            current_year = AcademicYear.objects.get(is_current=True)
+            form = TimetableForm(initial={'academic_year': current_year})
+        except AcademicYear.DoesNotExist:
+            form = TimetableForm()
+    
+    # Get faculty assignments for the dropdown
+    faculty_assignments = FacultySubject.objects.select_related(
+        'faculty', 'faculty__user', 'subject', 'class_section', 'batch'
+    ).order_by('faculty__user__full_name')
+    
+    # Day of week choices
+    day_choices = [
+        ('Monday', 'Monday'),
+        ('Tuesday', 'Tuesday'),
+        ('Wednesday', 'Wednesday'),
+        ('Thursday', 'Thursday'),
+        ('Friday', 'Friday'),
+        ('Saturday', 'Saturday')
+    ]
+    
+    return render(request, 'admin_portal/timetable/create.html', {
+        'form': form,
+        'faculty_assignments': faculty_assignments,
+        'day_choices': day_choices,
+        'active_page': 'timetable'
+    })
+
+@login_required
+@admin_required
+def timetable_edit(request, timetable_id):
+    """View for editing a timetable entry"""
+    timetable_entry = get_object_or_404(Timetable, timetable_id=timetable_id)
+    
+    if request.method == 'POST':
+        form = TimetableForm(request.POST, instance=timetable_entry)
+        if form.is_valid():
+            try:
+                timetable_entry = form.save()
+                
+                # Log the action
+                log_admin_action(
+                    request.user,
+                    f"Updated timetable entry: {timetable_entry.faculty_subject.faculty.user.full_name} - "
+                    f"{timetable_entry.faculty_subject.subject.subject_name} on {timetable_entry.day_of_week}",
+                    ip_address=request.META.get('REMOTE_ADDR')
+                )
+                
+                messages.success(request, "Timetable entry updated successfully.")
+                return redirect('admin_portal:timetable')
+            except Exception as e:
+                logger.error(f"Error updating timetable entry: {str(e)}", exc_info=True)
+                messages.error(request, f"Error updating timetable entry: {str(e)}")
+    else:
+        form = TimetableForm(instance=timetable_entry)
+    
+    # Get faculty assignments for the dropdown
+    faculty_assignments = FacultySubject.objects.select_related(
+        'faculty', 'faculty__user', 'subject', 'class_section', 'batch'
+    ).order_by('faculty__user__full_name')
+    
+    # Day of week choices
+    day_choices = [
+        ('Monday', 'Monday'),
+        ('Tuesday', 'Tuesday'),
+        ('Wednesday', 'Wednesday'),
+        ('Thursday', 'Thursday'),
+        ('Friday', 'Friday'),
+        ('Saturday', 'Saturday')
+    ]
+    
+    return render(request, 'admin_portal/timetable/edit.html', {
+        'form': form,
+        'timetable_entry': timetable_entry,
+        'faculty_assignments': faculty_assignments,
+        'day_choices': day_choices,
+        'active_page': 'timetable'
+    })
+
+@login_required
+@admin_required
+def timetable_delete(request, timetable_id):
+    """View for deleting a timetable entry"""
+    timetable_entry = get_object_or_404(Timetable, timetable_id=timetable_id)
+    
+    if request.method == 'POST':
+        try:
+            # Store info for logging
+            faculty_name = timetable_entry.faculty_subject.faculty.user.full_name
+            subject_name = timetable_entry.faculty_subject.subject.subject_name
+            day = timetable_entry.day_of_week
+            
+            # Delete the entry
+            timetable_entry.delete()
+            
+            # Log the action
+            log_admin_action(
+                request.user,
+                f"Deleted timetable entry: {faculty_name} - {subject_name} on {day}",
+                ip_address=request.META.get('REMOTE_ADDR')
+            )
+            
+            messages.success(request, "Timetable entry deleted successfully.")
+            return redirect('admin_portal:timetable')
+        except Exception as e:
+            logger.error(f"Error deleting timetable entry: {str(e)}", exc_info=True)
+            messages.error(request, f"Error deleting timetable entry: {str(e)}")
+            return redirect('admin_portal:timetable_edit', timetable_id=timetable_id)
+    
+    return render(request, 'admin_portal/timetable/delete_confirm.html', {
+        'timetable_entry': timetable_entry,
+        'active_page': 'timetable'
+    })
+
+@login_required
+@admin_required
+def get_faculty_subjects(request):
+    """AJAX view to get faculty subjects based on filters"""
+    faculty_id = request.GET.get('faculty_id')
+    academic_year_id = request.GET.get('academic_year_id')
+    
+    if not faculty_id:
+        return JsonResponse([], safe=False)
+    
+    try:
+        # Base query for faculty subjects
+        faculty_subjects = FacultySubject.objects.filter(faculty_id=faculty_id)
+        
+        # Apply academic year filter if provided
+        if academic_year_id:
+            faculty_subjects = faculty_subjects.filter(academic_year_id=academic_year_id)
+        
+        # Select related fields for efficient querying
+        faculty_subjects = faculty_subjects.select_related(
+            'subject', 'class_section', 'batch'
+        )
+        
+        # Format data for JSON response
+        result = []
+        for fs in faculty_subjects:
+            class_section = fs.class_section.section_name if fs.class_section else "N/A"
+            batch = f"Batch {fs.batch.batch_name}" if fs.batch else "N/A"
+            
+            result.append({
+                'faculty_subject_id': fs.faculty_subject_id,
+                'subject_name': fs.subject.subject_name,
+                'subject_code': fs.subject.subject_code,
+                'class_section': class_section,
+                'batch': batch,
+                'is_lab': fs.is_lab,
+                'display_text': f"{fs.subject.subject_code} - {fs.subject.subject_name} ({class_section})"
+            })
+        
+        return JsonResponse(result, safe=False)
+    except Exception as e:
+        logger.error(f"Error fetching faculty subjects: {str(e)}", exc_info=True)
+        return JsonResponse({'error': str(e)}, status=500)
+
+@login_required
+@admin_required
+def system_logs(request):
+    """View for listing system logs with filtering and pagination"""
+    # Get query parameters
+    search_query = request.GET.get('search', '')
+    user_filter = request.GET.get('user', '')
+    action_filter = request.GET.get('action', '')
+    date_from = request.GET.get('date_from', '')
+    date_to = request.GET.get('date_to', '')
+    page_number = request.GET.get('page', 1)
+    
+    # Base queryset with most recent logs first
+    logs = SystemLog.objects.select_related('user').order_by('-created_at')
+    
+    # Apply filters
+    if search_query:
+        logs = logs.filter(
+            Q(action__icontains=search_query) | 
+            Q(details__icontains=search_query) |
+            Q(user__full_name__icontains=search_query)
+        )
+    
+    if user_filter:
+        logs = logs.filter(user_id=user_filter)
+        
+    if action_filter:
+        logs = logs.filter(action__icontains=action_filter)
+        
+    # Date range filtering
+    if date_from:
+        try:
+            date_from_obj = datetime.datetime.strptime(date_from, '%Y-%m-%d').date()
+            logs = logs.filter(created_at__date__gte=date_from_obj)
+        except ValueError:
+            messages.warning(request, "Invalid 'from' date format. Using all dates.")
+    
+    if date_to:
+        try:
+            date_to_obj = datetime.datetime.strptime(date_to, '%Y-%m-%d').date()
+            # Add one day to include entries from the end date
+            date_to_obj = date_to_obj + datetime.timedelta(days=1)
+            logs = logs.filter(created_at__date__lt=date_to_obj)
+        except ValueError:
+            messages.warning(request, "Invalid 'to' date format. Using all dates.")
+    
+    # Pagination
+    paginator = Paginator(logs, 25)  # 25 logs per page
+    page_obj = paginator.get_page(page_number)
+    
+    # Get all users for filter dropdown
+    users = User.objects.filter(
+        user_id__in=SystemLog.objects.values_list('user_id', flat=True).distinct()
+    ).order_by('full_name')
+    
+    # Get common actions for filter dropdown
+    common_actions = SystemLog.objects.values('action').annotate(
+        count=Count('log_id')
+    ).order_by('-count')[:20]
+    
+    context = {
+        'page_obj': page_obj,
+        'search_query': search_query,
+        'user_filter': user_filter,
+        'action_filter': action_filter,
+        'date_from': date_from,
+        'date_to': date_to,
+        'users': users,
+        'common_actions': common_actions,
+        'active_page': 'logs'
+    }
+    
+    return render(request, 'admin_portal/logs/index.html', context)
+
+@login_required
+@admin_required
+def export_system_logs(request):
+    """View for exporting system logs as CSV"""
+    # Get query parameters (same as in system_logs view)
+    search_query = request.GET.get('search', '')
+    user_filter = request.GET.get('user', '')
+    action_filter = request.GET.get('action', '')
+    date_from = request.GET.get('date_from', '')
+    date_to = request.GET.get('date_to', '')
+    
+    # Base queryset with most recent logs first
+    logs = SystemLog.objects.select_related('user').order_by('-created_at')
+    
+    # Apply the same filters as in the system_logs view
+    if search_query:
+        logs = logs.filter(
+            Q(action__icontains=search_query) | 
+            Q(details__icontains=search_query) |
+            Q(user__full_name__icontains=search_query)
+        )
+    
+    if user_filter:
+        logs = logs.filter(user_id=user_filter)
+        
+    if action_filter:
+        logs = logs.filter(action__icontains=action_filter)
+        
+    # Date range filtering
+    if date_from:
+        try:
+            date_from_obj = datetime.datetime.strptime(date_from, '%Y-%m-%d').date()
+            logs = logs.filter(created_at__date__gte=date_from_obj)
+        except ValueError:
+            pass
+    
+    if date_to:
+        try:
+            date_to_obj = datetime.datetime.strptime(date_to, '%Y-%m-%d').date()
+            date_to_obj = date_to_obj + datetime.timedelta(days=1)
+            logs = logs.filter(created_at__date__lt=date_to_obj)
+        except ValueError:
+            pass
+    
+    # Create the HttpResponse with CSV content
+    response = HttpResponse(content_type='text/csv')
+    timestamp = timezone.now().strftime('%Y%m%d_%H%M%S')
+    response['Content-Disposition'] = f'attachment; filename="system_logs_{timestamp}.csv"'
+    
+    # Write to CSV
+    writer = csv.writer(response)
+    writer.writerow(['Log ID', 'User', 'Action', 'Details', 'IP Address', 'Timestamp'])
+    
+    for log in logs:
+        writer.writerow([
+            log.log_id,
+            log.user.full_name if log.user else 'Unknown',
+            log.action,
+            log.details,
+            log.ip_address or 'N/A',
+            log.created_at.strftime('%Y-%m-%d %H:%M:%S')
+        ])
+    
+    return response

@@ -6,6 +6,17 @@ from django.core.exceptions import ValidationError
 
 from .models import  FacultySubject , ElectiveSubject ,Subject
 
+from django import forms
+from django.core.exceptions import ValidationError
+from django.db.models import Q
+
+from core.models import Department, AcademicYear, ClassSection, Batch
+from authentication.models import User, Role
+from .models import AdminSetting, BulkImportLog, FacultySubject, Timetable
+
+from .models import Timetable, FacultySubject
+# Then use Timetable directly without models. prefix
+
 class AcademicYearForm(forms.ModelForm):
     """Form for managing academic years"""
     class Meta:
@@ -324,5 +335,77 @@ class FacultySubjectForm(forms.ModelForm):
             # If lab assignment, batch should be provided
             if is_lab and not batch:
                 raise forms.ValidationError("Batch must be specified for lab assignments.")
+        
+        return cleaned_data
+    
+
+class TimetableForm(forms.ModelForm):
+    """Form for timetable entries"""
+    class Meta:
+        model = Timetable
+        fields = ['faculty_subject', 'day_of_week', 'start_time', 'end_time', 'room_number', 'academic_year']
+        widgets = {
+            'faculty_subject': forms.Select(attrs={'class': 'form-select'}),
+            'day_of_week': forms.Select(attrs={'class': 'form-select'}),
+            'start_time': forms.TimeInput(attrs={'class': 'form-control', 'type': 'time'}),
+            'end_time': forms.TimeInput(attrs={'class': 'form-control', 'type': 'time'}),
+            'room_number': forms.TextInput(attrs={'class': 'form-control'}),
+            'academic_year': forms.Select(attrs={'class': 'form-select'})
+        }
+    
+    def clean(self):
+        cleaned_data = super().clean()
+        start_time = cleaned_data.get('start_time')
+        end_time = cleaned_data.get('end_time')
+        day_of_week = cleaned_data.get('day_of_week')
+        room_number = cleaned_data.get('room_number')
+        academic_year = cleaned_data.get('academic_year')
+        faculty_subject = cleaned_data.get('faculty_subject')
+        
+        # Validate start/end time
+        if start_time and end_time and start_time >= end_time:
+            raise forms.ValidationError("End time must be after start time")
+        
+        # Check for room conflicts (same room, same time, same day, same academic year)
+        if start_time and end_time and day_of_week and room_number and academic_year:
+            conflicts = Timetable.objects.filter(
+                day_of_week=day_of_week,
+                room_number=room_number,
+                academic_year=academic_year
+            ).exclude(pk=self.instance.pk if self.instance.pk else None)
+            
+            # Check for overlapping time
+            room_conflicts = conflicts.filter(
+                Q(start_time__lt=end_time, end_time__gt=start_time)
+            )
+            
+            if room_conflicts.exists():
+                conflict = room_conflicts.first()
+                raise forms.ValidationError(
+                    f"Room conflict: {room_number} is already booked at this time by "
+                    f"{conflict.faculty_subject.faculty.user.full_name} for "
+                    f"{conflict.faculty_subject.subject.subject_name}"
+                )
+        
+        # Check for faculty conflicts (same faculty, same time, same day, same academic year)
+        if start_time and end_time and day_of_week and faculty_subject and academic_year:
+            faculty_id = faculty_subject.faculty_id
+            conflicts = Timetable.objects.filter(
+                day_of_week=day_of_week,
+                academic_year=academic_year,
+                faculty_subject__faculty_id=faculty_id
+            ).exclude(pk=self.instance.pk if self.instance.pk else None)
+            
+            # Check for overlapping time
+            faculty_conflicts = conflicts.filter(
+                Q(start_time__lt=end_time, end_time__gt=start_time)
+            )
+            
+            if faculty_conflicts.exists():
+                conflict = faculty_conflicts.first()
+                raise forms.ValidationError(
+                    f"Faculty conflict: {faculty_subject.faculty.user.full_name} is already assigned at this time for "
+                    f"{conflict.faculty_subject.subject.subject_name} in room {conflict.room_number}"
+                )
         
         return cleaned_data

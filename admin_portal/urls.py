@@ -43,8 +43,17 @@ urlpatterns = [
     path('faculty-assignment/<int:assignment_id>/edit/', views.faculty_assignment_edit, name='faculty_assignment_edit'),
     path('faculty-assignment/<int:assignment_id>/delete/', views.faculty_assignment_delete, name='faculty_assignment_delete'),
     
-    # Timetable (add this missing route)
+    # Existing timetable path
     path('timetable/', views.timetable_view, name='timetable'),
+    path('timetable/create/', views.timetable_create, name='timetable_create'),
+    path('timetable/<int:timetable_id>/edit/', views.timetable_edit, name='timetable_edit'),
+    path('timetable/<int:timetable_id>/delete/', views.timetable_delete, name='timetable_delete'),
+    path('ajax/get-faculty-subjects/', views.get_faculty_subjects, name='get_faculty_subjects'),
+
+    # System logs
+    path('logs/', views.system_logs, name='system_logs'),
+    path('logs/export/', views.export_system_logs, name='export_system_logs'),
+    
     
     # AJAX endpoints
     path('ajax/subjects-by-department/', views.get_subjects_by_department, name='get_subjects_by_department'),
