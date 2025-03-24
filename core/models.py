@@ -79,7 +79,7 @@ class SystemLog(models.Model):
     action = models.CharField(max_length=100)
     details = models.TextField(null=True, blank=True)
     ip_address = models.GenericIPAddressField(null=True, blank=True)
-    # created_at = models.DateTimeField(auto_now_add=True)  # Keep this if it exists in the DB
+    created_at = models.DateTimeField(auto_now_add=True)  # Keep this if it exists in the DB
     
     def __str__(self):
         user_name = str(self.user) if self.user else "Unknown"
