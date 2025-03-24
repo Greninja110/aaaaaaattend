@@ -17,7 +17,7 @@
             </button>
         </div>
     </div>
-
+    
     <!-- Timetable View Selector -->
     <div class="card shadow mb-4 dashboard-card">
         <div class="card-header py-3">
@@ -49,7 +49,7 @@
                             <button type="button" class="btn btn-sm btn-outline-primary" id="prevWeek">
                                 <i class="fas fa-chevron-left"></i>
                             </button>
-                            <button type="button" class="btn btn-sm btn-outline-primary active" id="currentWeek">
+                            <button type="button" class="btn btn-sm btn-outline-primary active" id="currentWeek" data-week="{{ current_week_id }}">
                                 Current Week
                             </button>
                             <button type="button" class="btn btn-sm btn-outline-primary" id="nextWeek">
@@ -72,197 +72,31 @@
                                 </tr>
                             </thead>
                             <tbody>
+                                {% for time_slot in weekly_timetable.time_slots %}
                                 <tr>
-                                    <td class="text-center font-weight-bold bg-light">9:00 - 10:00</td>
-                                    <td class="timetable-cell theory-cell">
+                                    <td class="text-center font-weight-bold bg-light">{{ time_slot.start_time }} - {{ time_slot.end_time }}</td>
+                                    
+                                    {% for day in time_slot.days %}
+                                    <td class="timetable-cell {% if day.class %}{% if day.class.is_lab %}lab-cell{% else %}theory-cell{% endif %}{% endif %}">
+                                        {% if day.class %}
                                         <div class="class-details">
-                                            <h6>Operating Systems</h6>
-                                            <p class="mb-0">Prof. Mehta</p>
-                                            <span class="room-tag">Room 301</span>
+                                            <h6>{{ day.class.subject_name }}</h6>
+                                            <p class="mb-0">{{ day.class.faculty_name }}</p>
+                                            <span class="room-tag">{{ day.class.room_number }}</span>
                                         </div>
+                                        {% endif %}
                                     </td>
-                                    <td class="timetable-cell theory-cell">
-                                        <div class="class-details">
-                                            <h6>Database Systems</h6>
-                                            <p class="mb-0">Prof. Joshi</p>
-                                            <span class="room-tag">Room 301</span>
-                                        </div>
-                                    </td>
-                                    <td class="timetable-cell theory-cell">
-                                        <div class="class-details">
-                                            <h6>Operating Systems</h6>
-                                            <p class="mb-0">Prof. Mehta</p>
-                                            <span class="room-tag">Room 301</span>
-                                        </div>
-                                    </td>
-                                    <td class="timetable-cell theory-cell">
-                                        <div class="class-details">
-                                            <h6>Database Systems</h6>
-                                            <p class="mb-0">Prof. Joshi</p>
-                                            <span class="room-tag">Room 301</span>
-                                        </div>
-                                    </td>
-                                    <td class="timetable-cell theory-cell">
-                                        <div class="class-details">
-                                            <h6>Artificial Intelligence</h6>
-                                            <p class="mb-0">Prof. Gupta</p>
-                                            <span class="room-tag">Room 304</span>
-                                        </div>
-                                    </td>
-                                    <td class="timetable-cell"></td>
+                                    {% endfor %}
                                 </tr>
+                                {% endfor %}
+                                
+                                <!-- Break Times -->
+                                {% for break in weekly_timetable.breaks %}
                                 <tr>
-                                    <td class="text-center font-weight-bold bg-light">10:00 - 11:00</td>
-                                    <td class="timetable-cell theory-cell">
-                                        <div class="class-details">
-                                            <h6>Computer Networks</h6>
-                                            <p class="mb-0">Prof. Sharma</p>
-                                            <span class="room-tag">Room 302</span>
-                                        </div>
-                                    </td>
-                                    <td class="timetable-cell theory-cell">
-                                        <div class="class-details">
-                                            <h6>Software Engineering</h6>
-                                            <p class="mb-0">Prof. Patel</p>
-                                            <span class="room-tag">Room 303</span>
-                                        </div>
-                                    </td>
-                                    <td class="timetable-cell theory-cell">
-                                        <div class="class-details">
-                                            <h6>Computer Networks</h6>
-                                            <p class="mb-0">Prof. Sharma</p>
-                                            <span class="room-tag">Room 302</span>
-                                        </div>
-                                    </td>
-                                    <td class="timetable-cell theory-cell">
-                                        <div class="class-details">
-                                            <h6>Software Engineering</h6>
-                                            <p class="mb-0">Prof. Patel</p>
-                                            <span class="room-tag">Room 303</span>
-                                        </div>
-                                    </td>
-                                    <td class="timetable-cell theory-cell">
-                                        <div class="class-details">
-                                            <h6>Web Development</h6>
-                                            <p class="mb-0">Prof. Kumar</p>
-                                            <span class="room-tag">Room 303</span>
-                                        </div>
-                                    </td>
-                                    <td class="timetable-cell theory-cell">
-                                        <div class="class-details">
-                                            <h6>Mobile App Development</h6>
-                                            <p class="mb-0">Prof. Singh</p>
-                                            <span class="room-tag">Room 305</span>
-                                        </div>
-                                    </td>
+                                    <td class="text-center font-weight-bold bg-light">{{ break.start_time }} - {{ break.end_time }}</td>
+                                    <td colspan="6" class="text-center bg-break">{{ break.name }}</td>
                                 </tr>
-                                <tr>
-                                    <td class="text-center font-weight-bold bg-light">11:00 - 11:15</td>
-                                    <td colspan="6" class="text-center bg-break">Break</td>
-                                </tr>
-                                <tr>
-                                    <td class="text-center font-weight-bold bg-light">11:15 - 12:15</td>
-                                    <td class="timetable-cell theory-cell">
-                                        <div class="class-details">
-                                            <h6>Database Systems</h6>
-                                            <p class="mb-0">Prof. Joshi</p>
-                                            <span class="room-tag">Room 301</span>
-                                        </div>
-                                    </td>
-                                    <td class="timetable-cell theory-cell">
-                                        <div class="class-details">
-                                            <h6>Artificial Intelligence</h6>
-                                            <p class="mb-0">Prof. Gupta</p>
-                                            <span class="room-tag">Room 304</span>
-                                        </div>
-                                    </td>
-                                    <td class="timetable-cell theory-cell">
-                                        <div class="class-details">
-                                            <h6>Web Development</h6>
-                                            <p class="mb-0">Prof. Kumar</p>
-                                            <span class="room-tag">Room 303</span>
-                                        </div>
-                                    </td>
-                                    <td class="timetable-cell theory-cell">
-                                        <div class="class-details">
-                                            <h6>Artificial Intelligence</h6>
-                                            <p class="mb-0">Prof. Gupta</p>
-                                            <span class="room-tag">Room 304</span>
-                                        </div>
-                                    </td>
-                                    <td class="timetable-cell theory-cell">
-                                        <div class="class-details">
-                                            <h6>Database Systems</h6>
-                                            <p class="mb-0">Prof. Joshi</p>
-                                            <span class="room-tag">Room 301</span>
-                                        </div>
-                                    </td>
-                                    <td class="timetable-cell theory-cell">
-                                        <div class="class-details">
-                                            <h6>Mobile App Development</h6>
-                                            <p class="mb-0">Prof. Singh</p>
-                                            <span class="room-tag">Room 305</span>
-                                        </div>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td class="text-center font-weight-bold bg-light">12:15 - 1:00</td>
-                                    <td colspan="6" class="text-center bg-break">Lunch Break</td>
-                                </tr>
-                                <tr>
-                                    <td class="text-center font-weight-bold bg-light">1:00 - 3:00</td>
-                                    <td class="timetable-cell lab-cell">
-                                        <div class="class-details">
-                                            <h6>OS Lab</h6>
-                                            <p class="mb-0">Prof. Mehta</p>
-                                            <span class="room-tag">Lab 2</span>
-                                        </div>
-                                    </td>
-                                    <td class="timetable-cell"></td>
-                                    <td class="timetable-cell lab-cell">
-                                        <div class="class-details">
-                                            <h6>Networking Lab</h6>
-                                            <p class="mb-0">Prof. Sharma</p>
-                                            <span class="room-tag">Lab 3</span>
-                                        </div>
-                                    </td>
-                                    <td class="timetable-cell"></td>
-                                    <td class="timetable-cell lab-cell">
-                                        <div class="class-details">
-                                            <h6>DBMS Lab</h6>
-                                            <p class="mb-0">Prof. Joshi</p>
-                                            <span class="room-tag">Lab 1</span>
-                                        </div>
-                                    </td>
-                                    <td class="timetable-cell"></td>
-                                </tr>
-                                <tr>
-                                    <td class="text-center font-weight-bold bg-light">3:15 - 4:15</td>
-                                    <td class="timetable-cell"></td>
-                                    <td class="timetable-cell lab-cell">
-                                        <div class="class-details">
-                                            <h6>Web Development Lab</h6>
-                                            <p class="mb-0">Prof. Kumar</p>
-                                            <span class="room-tag">Lab 4</span>
-                                        </div>
-                                    </td>
-                                    <td class="timetable-cell"></td>
-                                    <td class="timetable-cell lab-cell">
-                                        <div class="class-details">
-                                            <h6>Mobile App Dev Lab</h6>
-                                            <p class="mb-0">Prof. Singh</p>
-                                            <span class="room-tag">Lab 5</span>
-                                        </div>
-                                    </td>
-                                    <td class="timetable-cell lab-cell">
-                                        <div class="class-details">
-                                            <h6>AI Lab</h6>
-                                            <p class="mb-0">Prof. Gupta</p>
-                                            <span class="room-tag">Lab 6</span>
-                                        </div>
-                                    </td>
-                                    <td class="timetable-cell"></td>
-                                </tr>
+                                {% endfor %}
                             </tbody>
                         </table>
                     </div>
@@ -274,193 +108,52 @@
                         <h5 class="mb-0">Daily Schedule</h5>
                         <div class="input-group date-picker-group" style="width: 200px;">
                             <span class="input-group-text"><i class="fas fa-calendar"></i></span>
-                            <input type="date" class="form-control" id="dailyDatePicker" value="2025-04-18">
+                            <input type="date" class="form-control" id="dailyDatePicker" value="{{ current_date|date:'Y-m-d' }}">
                         </div>
                     </div>
                     
                     <div class="day-schedule">
                         <div class="day-header">
-                            <h4>Friday, April 18, 2025</h4>
-                            <p class="text-muted">5 classes scheduled today</p>
+                            <h4>{{ current_date|date:"l, F j, Y" }}</h4>
+                            <p class="text-muted">{{ daily_classes|length }} classes scheduled today</p>
                         </div>
                         
                         <div class="daily-timeline">
+                            {% for class in daily_classes %}
                             <div class="timeline-item">
                                 <div class="timeline-left">
                                     <div class="time-block">
-                                        <span class="time">9:00</span>
+                                        <span class="time">{{ class.start_time }}</span>
                                         <span class="to">to</span>
-                                        <span class="time">10:00</span>
+                                        <span class="time">{{ class.end_time }}</span>
                                     </div>
                                 </div>
                                 <div class="timeline-center">
                                     <div class="timeline-line"></div>
-                                    <div class="timeline-marker theory"></div>
+                                    <div class="timeline-marker {% if class.is_lab %}lab{% else %}theory{% endif %}"></div>
                                 </div>
                                 <div class="timeline-right">
-                                    <div class="class-card theory">
+                                    <div class="class-card {% if class.is_lab %}lab{% else %}theory{% endif %}">
                                         <div class="card-header">
-                                            <h5>Artificial Intelligence</h5>
-                                            <span class="badge bg-secondary">Theory</span>
+                                            <h5>{{ class.subject_name }}</h5>
+                                            <span class="badge {% if class.is_lab %}bg-primary{% else %}bg-secondary{% endif %}">
+                                                {% if class.is_lab %}Practical{% else %}Theory{% endif %}
+                                            </span>
                                         </div>
                                         <div class="card-body">
-                                            <p><i class="fas fa-user-tie me-2"></i> Prof. Gupta</p>
-                                            <p><i class="fas fa-map-marker-alt me-2"></i> Room 304</p>
-                                            <p><i class="fas fa-book me-2"></i> Neural Networks and Deep Learning</p>
+                                            <p><i class="fas fa-user-tie me-2"></i> {{ class.faculty_name }}</p>
+                                            <p><i class="fas fa-map-marker-alt me-2"></i> {{ class.room_number }}</p>
+                                            <p><i class="fas fa-book me-2"></i> {{ class.topic|default:"Regular Class" }}</p>
                                         </div>
                                     </div>
                                 </div>
                             </div>
-                            
-                            <div class="timeline-item">
-                                <div class="timeline-left">
-                                    <div class="time-block">
-                                        <span class="time">10:00</span>
-                                        <span class="to">to</span>
-                                        <span class="time">11:00</span>
-                                    </div>
-                                </div>
-                                <div class="timeline-center">
-                                    <div class="timeline-line"></div>
-                                    <div class="timeline-marker theory"></div>
-                                </div>
-                                <div class="timeline-right">
-                                    <div class="class-card theory">
-                                        <div class="card-header">
-                                            <h5>Web Development</h5>
-                                            <span class="badge bg-secondary">Theory</span>
-                                        </div>
-                                        <div class="card-body">
-                                            <p><i class="fas fa-user-tie me-2"></i> Prof. Kumar</p>
-                                            <p><i class="fas fa-map-marker-alt me-2"></i> Room 303</p>
-                                            <p><i class="fas fa-book me-2"></i> RESTful API Design</p>
-                                        </div>
-                                    </div>
-                                </div>
+                            {% empty %}
+                            <div class="text-center py-4 text-muted">
+                                <i class="fas fa-calendar-day fa-3x mb-3"></i>
+                                <p>No classes scheduled for today.</p>
                             </div>
-                            
-                            <div class="timeline-item">
-                                <div class="timeline-left">
-                                    <div class="time-block">
-                                        <span class="time">11:00</span>
-                                        <span class="to">to</span>
-                                        <span class="time">11:15</span>
-                                    </div>
-                                </div>
-                                <div class="timeline-center">
-                                    <div class="timeline-line"></div>
-                                    <div class="timeline-marker break"></div>
-                                </div>
-                                <div class="timeline-right">
-                                    <div class="class-card break">
-                                        <div class="card-header">
-                                            <h5>Break</h5>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            
-                            <div class="timeline-item">
-                                <div class="timeline-left">
-                                    <div class="time-block">
-                                        <span class="time">11:15</span>
-                                        <span class="to">to</span>
-                                        <span class="time">12:15</span>
-                                    </div>
-                                </div>
-                                <div class="timeline-center">
-                                    <div class="timeline-line"></div>
-                                    <div class="timeline-marker theory"></div>
-                                </div>
-                                <div class="timeline-right">
-                                    <div class="class-card theory">
-                                        <div class="card-header">
-                                            <h5>Database Systems</h5>
-                                            <span class="badge bg-secondary">Theory</span>
-                                        </div>
-                                        <div class="card-body">
-                                            <p><i class="fas fa-user-tie me-2"></i> Prof. Joshi</p>
-                                            <p><i class="fas fa-map-marker-alt me-2"></i> Room 301</p>
-                                            <p><i class="fas fa-book me-2"></i> Normalization Techniques</p>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            
-                            <div class="timeline-item">
-                                <div class="timeline-left">
-                                    <div class="time-block">
-                                        <span class="time">12:15</span>
-                                        <span class="to">to</span>
-                                        <span class="time">1:00</span>
-                                    </div>
-                                </div>
-                                <div class="timeline-center">
-                                    <div class="timeline-line"></div>
-                                    <div class="timeline-marker break"></div>
-                                </div>
-                                <div class="timeline-right">
-                                    <div class="class-card break">
-                                        <div class="card-header">
-                                            <h5>Lunch Break</h5>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            
-                            <div class="timeline-item">
-                                <div class="timeline-left">
-                                    <div class="time-block">
-                                        <span class="time">1:00</span>
-                                        <span class="to">to</span>
-                                        <span class="time">3:00</span>
-                                    </div>
-                                </div>
-                                <div class="timeline-center">
-                                    <div class="timeline-line"></div>
-                                    <div class="timeline-marker lab"></div>
-                                </div>
-                                <div class="timeline-right">
-                                    <div class="class-card lab">
-                                        <div class="card-header">
-                                            <h5>DBMS Lab</h5>
-                                            <span class="badge bg-primary">Practical</span>
-                                        </div>
-                                        <div class="card-body">
-                                            <p><i class="fas fa-user-tie me-2"></i> Prof. Joshi</p>
-                                            <p><i class="fas fa-map-marker-alt me-2"></i> Lab 1</p>
-                                            <p><i class="fas fa-book me-2"></i> Advanced Queries & Stored Procedures</p>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            
-                            <div class="timeline-item">
-                                <div class="timeline-left">
-                                    <div class="time-block">
-                                        <span class="time">3:15</span>
-                                        <span class="to">to</span>
-                                        <span class="time">4:15</span>
-                                    </div>
-                                </div>
-                                <div class="timeline-center">
-                                    <div class="timeline-line"></div>
-                                    <div class="timeline-marker lab"></div>
-                                </div>
-                                <div class="timeline-right">
-                                    <div class="class-card lab">
-                                        <div class="card-header">
-                                            <h5>AI Lab</h5>
-                                            <span class="badge bg-primary">Practical</span>
-                                        </div>
-                                        <div class="card-body">
-                                            <p><i class="fas fa-user-tie me-2"></i> Prof. Gupta</p>
-                                            <p><i class="fas fa-map-marker-alt me-2"></i> Lab 6</p>
-                                            <p><i class="fas fa-book me-2"></i> TensorFlow Implementation</p>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
+                            {% endfor %}
                         </div>
                     </div>
                 </div>
@@ -490,71 +183,24 @@
                                 </tr>
                             </thead>
                             <tbody>
+                                {% for class in list_view_classes %}
                                 <tr>
-                                    <td>Monday</td>
-                                    <td>9:00 - 10:00</td>
-                                    <td>Operating Systems</td>
-                                    <td><span class="badge bg-secondary">Theory</span></td>
-                                    <td>Prof. Mehta</td>
-                                    <td>Room 301</td>
+                                    <td>{{ class.day_of_week }}</td>
+                                    <td>{{ class.start_time }} - {{ class.end_time }}</td>
+                                    <td>{{ class.subject_name }}</td>
+                                    <td>
+                                        <span class="badge {% if class.is_lab %}bg-primary{% else %}bg-secondary{% endif %}">
+                                            {% if class.is_lab %}Practical{% else %}Theory{% endif %}
+                                        </span>
+                                    </td>
+                                    <td>{{ class.faculty_name }}</td>
+                                    <td>{{ class.room_number }}</td>
                                 </tr>
+                                {% empty %}
                                 <tr>
-                                    <td>Monday</td>
-                                    <td>10:00 - 11:00</td>
-                                    <td>Computer Networks</td>
-                                    <td><span class="badge bg-secondary">Theory</span></td>
-                                    <td>Prof. Sharma</td>
-                                    <td>Room 302</td>
+                                    <td colspan="6" class="text-center">No classes found</td>
                                 </tr>
-                                <tr>
-                                    <td>Monday</td>
-                                    <td>11:15 - 12:15</td>
-                                    <td>Database Systems</td>
-                                    <td><span class="badge bg-secondary">Theory</span></td>
-                                    <td>Prof. Joshi</td>
-                                    <td>Room 301</td>
-                                </tr>
-                                <tr>
-                                    <td>Monday</td>
-                                    <td>1:00 - 3:00</td>
-                                    <td>OS Lab</td>
-                                    <td><span class="badge bg-primary">Practical</span></td>
-                                    <td>Prof. Mehta</td>
-                                    <td>Lab 2</td>
-                                </tr>
-                                <tr>
-                                    <td>Tuesday</td>
-                                    <td>9:00 - 10:00</td>
-                                    <td>Database Systems</td>
-                                    <td><span class="badge bg-secondary">Theory</span></td>
-                                    <td>Prof. Joshi</td>
-                                    <td>Room 301</td>
-                                </tr>
-                                <tr>
-                                    <td>Tuesday</td>
-                                    <td>10:00 - 11:00</td>
-                                    <td>Software Engineering</td>
-                                    <td><span class="badge bg-secondary">Theory</span></td>
-                                    <td>Prof. Patel</td>
-                                    <td>Room 303</td>
-                                </tr>
-                                <tr>
-                                    <td>Tuesday</td>
-                                    <td>11:15 - 12:15</td>
-                                    <td>Artificial Intelligence</td>
-                                    <td><span class="badge bg-secondary">Theory</span></td>
-                                    <td>Prof. Gupta</td>
-                                    <td>Room 304</td>
-                                </tr>
-                                <tr>
-                                    <td>Tuesday</td>
-                                    <td>3:15 - 4:15</td>
-                                    <td>Web Development Lab</td>
-                                    <td><span class="badge bg-primary">Practical</span></td>
-                                    <td>Prof. Kumar</td>
-                                    <td>Lab 4</td>
-                                </tr>
-                                <!-- More rows omitted for brevity -->
+                                {% endfor %}
                             </tbody>
                         </table>
                     </div>
@@ -572,46 +218,31 @@
                 </div>
                 <div class="card-body">
                     <div class="today-classes">
-                        <div class="class-item complete">
-                            <span class="time">9:00 - 10:00</span>
+                        {% for class in today_classes %}
+                        <div class="class-item {% if class.is_past %}{% if class.attended %}complete{% else %}absent{% endif %}{% else %}upcoming{% endif %}">
+                            <span class="time">{{ class.start_time }} - {{ class.end_time }}</span>
                             <div class="class-content">
-                                <h6>Artificial Intelligence</h6>
-                                <p class="mb-0">Prof. Gupta | Room 304</p>
+                                <h6>{{ class.subject_name }}</h6>
+                                <p class="mb-0">{{ class.faculty_name }} | {{ class.room_number }}</p>
                             </div>
-                            <span class="status-icon"><i class="fas fa-check-circle"></i></span>
+                            <span class="status-icon">
+                                {% if class.is_past %}
+                                    {% if class.attended %}
+                                        <i class="fas fa-check-circle"></i>
+                                    {% else %}
+                                        <i class="fas fa-times-circle"></i>
+                                    {% endif %}
+                                {% else %}
+                                    <i class="fas fa-hourglass-half"></i>
+                                {% endif %}
+                            </span>
                         </div>
-                        <div class="class-item complete">
-                            <span class="time">10:00 - 11:00</span>
-                            <div class="class-content">
-                                <h6>Web Development</h6>
-                                <p class="mb-0">Prof. Kumar | Room 303</p>
-                            </div>
-                            <span class="status-icon"><i class="fas fa-check-circle"></i></span>
+                        {% empty %}
+                        <div class="text-center py-4 text-muted">
+                            <i class="fas fa-calendar-times fa-3x mb-3"></i>
+                            <p>No classes scheduled for today.</p>
                         </div>
-                        <div class="class-item complete">
-                            <span class="time">11:15 - 12:15</span>
-                            <div class="class-content">
-                                <h6>Database Systems</h6>
-                                <p class="mb-0">Prof. Joshi | Room 301</p>
-                            </div>
-                            <span class="status-icon"><i class="fas fa-check-circle"></i></span>
-                        </div>
-                        <div class="class-item complete">
-                            <span class="time">1:00 - 3:00</span>
-                            <div class="class-content">
-                                <h6>DBMS Lab</h6>
-                                <p class="mb-0">Prof. Joshi | Lab 1</p>
-                            </div>
-                            <span class="status-icon"><i class="fas fa-check-circle"></i></span>
-                        </div>
-                        <div class="class-item upcoming">
-                            <span class="time">3:15 - 4:15</span>
-                            <div class="class-content">
-                                <h6>AI Lab</h6>
-                                <p class="mb-0">Prof. Gupta | Lab 6</p>
-                            </div>
-                            <span class="status-icon"><i class="fas fa-hourglass-half"></i></span>
-                        </div>
+                        {% endfor %}
                     </div>
                 </div>
             </div>
@@ -624,66 +255,32 @@
                 </div>
                 <div class="card-body">
                     <div class="faculty-list">
+                        {% for faculty in faculty_contacts %}
                         <div class="faculty-item">
-                            <img src="{% static 'img/faculty/mehta.jpg' %}" alt="Prof. Mehta" class="faculty-avatar">
+                            {% if faculty.profile_photo %}
+                                <img src="{{ faculty.profile_photo.url }}" alt="{{ faculty.name }}" class="faculty-avatar">
+                            {% else %}
+                                <img src="{% static 'img/faculty/default.jpg' %}" alt="{{ faculty.name }}" class="faculty-avatar">
+                            {% endif %}
                             <div class="faculty-details">
-                                <h6>Prof. Mehta</h6>
-                                <p class="mb-0">Operating Systems</p>
+                                <h6>{{ faculty.name }}</h6>
+                                <p class="mb-0">{{ faculty.subjects|join:", " }}</p>
                                 <div class="faculty-contact">
-                                    <a href="mailto:mehta@mbit.edu.in" class="btn btn-sm btn-outline-primary">
+                                    <a href="mailto:{{ faculty.email }}" class="btn btn-sm btn-outline-primary">
                                         <i class="fas fa-envelope"></i>
                                     </a>
-                                    <a href="#" class="btn btn-sm btn-outline-success">
+                                    <a href="tel:{{ faculty.phone }}" class="btn btn-sm btn-outline-success">
                                         <i class="fas fa-phone"></i>
                                     </a>
                                 </div>
                             </div>
                         </div>
-                        <div class="faculty-item">
-                            <img src="{% static 'img/faculty/sharma.jpg' %}" alt="Prof. Sharma" class="faculty-avatar">
-                            <div class="faculty-details">
-                                <h6>Prof. Sharma</h6>
-                                <p class="mb-0">Computer Networks</p>
-                                <div class="faculty-contact">
-                                    <a href="mailto:sharma@mbit.edu.in" class="btn btn-sm btn-outline-primary">
-                                        <i class="fas fa-envelope"></i>
-                                    </a>
-                                    <a href="#" class="btn btn-sm btn-outline-success">
-                                        <i class="fas fa-phone"></i>
-                                    </a>
-                                </div>
-                            </div>
+                        {% empty %}
+                        <div class="text-center py-4 text-muted">
+                            <i class="fas fa-user-tie fa-3x mb-3"></i>
+                            <p>No faculty contacts available.</p>
                         </div>
-                        <div class="faculty-item">
-                            <img src="{% static 'img/faculty/joshi.jpg' %}" alt="Prof. Joshi" class="faculty-avatar">
-                            <div class="faculty-details">
-                                <h6>Prof. Joshi</h6>
-                                <p class="mb-0">Database Systems</p>
-                                <div class="faculty-contact">
-                                    <a href="mailto:joshi@mbit.edu.in" class="btn btn-sm btn-outline-primary">
-                                        <i class="fas fa-envelope"></i>
-                                    </a>
-                                    <a href="#" class="btn btn-sm btn-outline-success">
-                                        <i class="fas fa-phone"></i>
-                                    </a>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="faculty-item">
-                            <img src="{% static 'img/faculty/kumar.jpg' %}" alt="Prof. Kumar" class="faculty-avatar">
-                            <div class="faculty-details">
-                                <h6>Prof. Kumar</h6>
-                                <p class="mb-0">Web Development</p>
-                                <div class="faculty-contact">
-                                    <a href="mailto:kumar@mbit.edu.in" class="btn btn-sm btn-outline-primary">
-                                        <i class="fas fa-envelope"></i>
-                                    </a>
-                                    <a href="#" class="btn btn-sm btn-outline-success">
-                                        <i class="fas fa-phone"></i>
-                                    </a>
-                                </div>
-                            </div>
-                        </div>
+                        {% endfor %}
                     </div>
                 </div>
             </div>
@@ -696,38 +293,27 @@
                 </div>
                 <div class="card-body">
                     <div class="schedule-changes">
+                        {% for change in schedule_changes %}
                         <div class="change-item">
-                            <div class="change-date">APR 22</div>
+                            <div class="change-date">{{ change.date|date:"M d" }}</div>
                             <div class="change-content">
-                                <h6>Class Rescheduled</h6>
-                                <p>Operating Systems class moved from 9:00 to 11:15</p>
-                                <span class="badge bg-warning">Rescheduled</span>
+                                <h6>{{ change.title }}</h6>
+                                <p>{{ change.description }}</p>
+                                <span class="badge 
+                                    {% if change.type == 'rescheduled' %}bg-warning
+                                    {% elif change.type == 'cancelled' %}bg-danger
+                                    {% elif change.type == 'substitution' %}bg-info
+                                    {% elif change.type == 'added' %}bg-success{% endif %}">
+                                    {{ change.type|title }}
+                                </span>
                             </div>
                         </div>
-                        <div class="change-item">
-                            <div class="change-date">APR 24</div>
-                            <div class="change-content">
-                                <h6>Class Cancelled</h6>
-                                <p>No Software Engineering class due to faculty meeting</p>
-                                <span class="badge bg-danger">Cancelled</span>
-                            </div>
+                        {% empty %}
+                        <div class="text-center py-4 text-muted">
+                            <i class="fas fa-calendar-alt fa-3x mb-3"></i>
+                            <p>No upcoming schedule changes.</p>
                         </div>
-                        <div class="change-item">
-                            <div class="change-date">APR 25</div>
-                            <div class="change-content">
-                                <h6>Faculty Substitution</h6>
-                                <p>Prof. Gupta will be substituted by Prof. Singh for AI class</p>
-                                <span class="badge bg-info">Substitution</span>
-                            </div>
-                        </div>
-                        <div class="change-item">
-                            <div class="change-date">APR 29</div>
-                            <div class="change-content">
-                                <h6>Extra Class</h6>
-                                <p>Extra DBMS Lab from 3:15 to 5:15</p>
-                                <span class="badge bg-success">Added</span>
-                            </div>
-                        </div>
+                        {% endfor %}
                     </div>
                 </div>
             </div>
@@ -948,6 +534,10 @@
         border-left: 4px solid #f6c23e;
     }
     
+    .class-item.absent {
+        border-left: 4px solid #e74a3b;
+    }
+    
     .class-item .time {
         width: 100px;
         font-size: 0.8rem;
@@ -983,6 +573,10 @@
     
     .class-item.upcoming .status-icon {
         color: #f6c23e;
+    }
+    
+    .class-item.absent .status-icon {
+        color: #e74a3b;
     }
     
     /* Faculty list styling */
@@ -1092,137 +686,168 @@
 {% block student_custom_js %}
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        // Initialize DataTable for list view
-        const timetableListTable = $('#timetableListTable').DataTable({
-            pageLength: 10,
-            lengthMenu: [5, 10, 25, 50],
-            order: [[0, 'asc'], [1, 'asc']],
-            language: {
-                search: "_INPUT_",
-                searchPlaceholder: "Search classes..."
-            }
-        });
-        
-        // Handle search button click
-        $('#searchButton').on('click', function() {
-            timetableListTable.search($('#searchTimetable').val()).draw();
-        });
-        
-        // Handle search input enter key
-        $('#searchTimetable').on('keyup', function(e) {
-            if (e.key === 'Enter') {
-                timetableListTable.search(this.value).draw();
-            }
-        });
-        
-        // Handle date picker change
-        $('#dailyDatePicker').on('change', function() {
-            // In a real app, this would fetch the schedule for the selected date
-            Swal.fire({
-                title: 'Loading Schedule',
-                html: 'Fetching schedule for selected date...',
-                timer: 1500,
-                timerProgressBar: true,
-                didOpen: () => {
-                    Swal.showLoading();
+        try {
+            // Log page load
+            logToFile('Timetable page loaded');
+            
+            // Initialize DataTable for list view
+            const timetableListTable = $('#timetableListTable').DataTable({
+                pageLength: 10,
+                lengthMenu: [5, 10, 25, 50],
+                order: [[0, 'asc'], [1, 'asc']],
+                language: {
+                    search: "_INPUT_",
+                    searchPlaceholder: "Search classes..."
                 }
-            }).then(() => {
-                const selectedDate = new Date($(this).val());
-                const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
-                const formattedDate = selectedDate.toLocaleDateString('en-US', options);
-                
-                $('.day-header h4').text(formattedDate);
-                
-                Swal.fire({
-                    title: 'Schedule Updated',
-                    text: `Showing schedule for ${formattedDate}`,
-                    icon: 'success',
-                    confirmButtonColor: '#4e73df',
-                    timer: 1500,
-                    timerProgressBar: true,
-                    showConfirmButton: false
-                });
             });
-        });
-        
-        // Handle week navigation buttons
-        $('#prevWeek, #nextWeek, #currentWeek').on('click', function() {
-            // In a real app, this would fetch the schedule for the selected week
             
-            // Remove active class from all buttons
-            $('#prevWeek, #nextWeek, #currentWeek').removeClass('active');
+            // Handle search button click
+            $('#searchButton').on('click', function() {
+                timetableListTable.search($('#searchTimetable').val()).draw();
+                logToFile(`Timetable search performed: ${$('#searchTimetable').val()}`);
+            });
             
-            // Add active class to clicked button
-            $(this).addClass('active');
-            
-            let weekText = 'Current Week';
-            if (this.id === 'prevWeek') weekText = 'Previous Week';
-            if (this.id === 'nextWeek') weekText = 'Next Week';
-            
-            Swal.fire({
-                title: 'Loading Schedule',
-                html: `Fetching schedule for ${weekText.toLowerCase()}...`,
-                timer: 1500,
-                timerProgressBar: true,
-                didOpen: () => {
-                    Swal.showLoading();
+            // Handle search input enter key
+            $('#searchTimetable').on('keyup', function(e) {
+                if (e.key === 'Enter') {
+                    timetableListTable.search(this.value).draw();
+                    logToFile(`Timetable search performed with Enter key: ${this.value}`);
                 }
-            }).then(() => {
-                Swal.fire({
-                    title: 'Schedule Updated',
-                    text: `Showing schedule for ${weekText.toLowerCase()}`,
-                    icon: 'success',
-                    confirmButtonColor: '#4e73df',
-                    timer: 1500,
-                    timerProgressBar: true,
-                    showConfirmButton: false
-                });
             });
-        });
-        
-        // Handle print timetable button
-        $('#printTimetable').on('click', function() {
-            window.print();
-        });
-        
-        // Handle download timetable button
-        $('#downloadTimetable').on('click', function() {
-            Swal.fire({
-                title: 'Download Timetable',
-                html: 'Choose format:<br><br>',
-                showDenyButton: true,
-                showCancelButton: true,
-                confirmButtonText: 'PDF',
-                denyButtonText: 'Excel',
-                cancelButtonText: 'iCal',
-                confirmButtonColor: '#4e73df',
-                denyButtonColor: '#1cc88a',
-                cancelButtonColor: '#36b9cc'
-            }).then((result) => {
-                if (result.isConfirmed || result.isDenied || result.dismiss === Swal.DismissReason.cancel) {
-                    let format = 'PDF';
-                    if (result.isDenied) format = 'Excel';
-                    if (result.dismiss === Swal.DismissReason.cancel) format = 'iCal';
-                    
-                    Swal.fire({
-                        title: 'Downloading...',
-                        html: `Preparing ${format} file...`,
-                        timer: 2000,
-                        timerProgressBar: true,
-                        didOpen: () => {
-                            Swal.showLoading();
-                        }
-                    }).then(() => {
+            
+            // Handle date picker change
+            $('#dailyDatePicker').on('change', function() {
+                const selectedDate = $(this).val();
+                logToFile(`Daily timetable date changed to: ${selectedDate}`);
+                
+                // Redirect to the day view with the selected date
+                window.location.href = `{% url 'student_portal:day_timetable' 'placeholder' %}`.replace('placeholder', selectedDate);
+            });
+            
+            // Handle week navigation buttons
+            $('#prevWeek, #nextWeek, #currentWeek').on('click', function() {
+                const buttonId = this.id;
+                const currentWeekId = $('#currentWeek').data('week');
+                let weekId = currentWeekId;
+                
+                if (buttonId === 'prevWeek') {
+                    weekId = currentWeekId - 1;
+                } else if (buttonId === 'nextWeek') {
+                    weekId = currentWeekId + 1;
+                }
+                
+                logToFile(`Week navigation: ${buttonId}, week ID: ${weekId}`);
+                
+                // Remove active class from all buttons
+                $('#prevWeek, #nextWeek, #currentWeek').removeClass('active');
+                
+                // Add active class to clicked button
+                $(this).addClass('active');
+                
+                // Update timetable via AJAX
+                $.ajax({
+                    url: '{% url "student_portal:timetable" %}',
+                    data: {
+                        week_id: weekId,
+                        format: 'json'
+                    },
+                    type: 'GET',
+                    dataType: 'json',
+                    beforeSend: function() {
+                        // Show loading indicator
                         Swal.fire({
-                            title: 'Success!',
-                            text: `Timetable has been downloaded as ${format}.`,
-                            icon: 'success',
-                            confirmButtonColor: '#4e73df'
+                            title: 'Loading Schedule',
+                            html: `Fetching schedule...`,
+                            timer: 1500,
+                            timerProgressBar: true,
+                            didOpen: () => {
+                                Swal.showLoading();
+                            }
                         });
-                    });
-                }
+                    },
+                    success: function(data) {
+                        // In a real app, you would update the timetable with the fetched data
+                        // For this demo, we're just showing a success message
+                        
+                        Swal.fire({
+                            title: 'Schedule Updated',
+                            text: `Showing schedule for ${data.week_label || 'selected week'}`,
+                            icon: 'success',
+                            confirmButtonColor: '#4e73df',
+                            timer: 1500,
+                            timerProgressBar: true,
+                            showConfirmButton: false
+                        });
+                    },
+                    error: function(xhr, status, error) {
+                        logToFile(`Error fetching timetable: ${error}`, 'error');
+                        
+                        Swal.fire({
+                            title: 'Error',
+                            text: 'Failed to load timetable. Please try again.',
+                            icon: 'error',
+                            confirmButtonColor: '#e74a3b'
+                        });
+                    }
+                });
             });
-        });
+            
+            // Handle print timetable button
+            $('#printTimetable').on('click', function() {
+                logToFile('Print timetable requested');
+                window.print();
+            });
+            
+            // Handle download timetable button
+            $('#downloadTimetable').on('click', function() {
+                logToFile('Download timetable requested');
+                
+                Swal.fire({
+                    title: 'Download Timetable',
+                    html: 'Choose format:<br><br>',
+                    showDenyButton: true,
+                    showCancelButton: true,
+                    confirmButtonText: 'PDF',
+                    denyButtonText: 'Excel',
+                    cancelButtonText: 'iCal',
+                    confirmButtonColor: '#4e73df',
+                    denyButtonColor: '#1cc88a',
+                    cancelButtonColor: '#36b9cc'
+                }).then((result) => {
+                    if (result.isConfirmed || result.isDenied || result.dismiss === Swal.DismissReason.cancel) {
+                        let format = 'PDF';
+                        if (result.isDenied) format = 'Excel';
+                        if (result.dismiss === Swal.DismissReason.cancel) format = 'iCal';
+                        
+                        logToFile(`Download timetable started in ${format} format`);
+                        
+                        // In a real app, this would make an AJAX call to generate the download
+                        Swal.fire({
+                            title: 'Downloading...',
+                            html: `Preparing ${format} file...`,
+                            timer: 2000,
+                            timerProgressBar: true,
+                            didOpen: () => {
+                                Swal.showLoading();
+                            }
+                        }).then(() => {
+                            logToFile(`Download timetable completed in ${format} format`);
+                            
+                            Swal.fire({
+                                title: 'Success!',
+                                text: `Timetable has been downloaded as ${format}.`,
+                                icon: 'success',
+                                confirmButtonColor: '#4e73df'
+                            });
+                        });
+                    }
+                });
+            });
+            
+        } catch (error) {
+            logToFile(`Error in timetable page: ${error.message}`, 'error');
+            console.error("An error occurred:", error);
+        }
     });
 </script>
 {% endblock %}
