@@ -1,0 +1,705 @@
+{% extends 'student_portal/base_student.html' %}
+{% load static %}
+
+{% block student_title %}Attendance History{% endblock %}
+
+{% block student_content %}
+<div class="container-fluid py-4">
+    <!-- Page Header -->
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+        <h2 class="h3 mb-0">Attendance History</h2>
+        <div>
+            <button type="button" class="btn btn-sm btn-primary" id="downloadHistory">
+                <i class="fas fa-download mr-1"></i> Export Complete History
+            </button>
+        </div>
+    </div>
+    
+    <!-- Semester Navigation Tabs -->
+    <div class="card shadow mb-4 dashboard-card">
+        <div class="card-header py-3">
+            <ul class="nav nav-tabs card-header-tabs" id="semesterTabs" role="tablist">
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link active" id="semester-4-tab" data-bs-toggle="tab" data-bs-target="#semester-4" type="button" role="tab" aria-controls="semester-4" aria-selected="true">
+                        Semester 4 <span class="badge bg-primary ms-1">Current</span>
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="semester-3-tab" data-bs-toggle="tab" data-bs-target="#semester-3" type="button" role="tab" aria-controls="semester-3" aria-selected="false">
+                        Semester 3
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="semester-2-tab" data-bs-toggle="tab" data-bs-target="#semester-2" type="button" role="tab" aria-controls="semester-2" aria-selected="false">
+                        Semester 2
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="semester-1-tab" data-bs-toggle="tab" data-bs-target="#semester-1" type="button" role="tab" aria-controls="semester-1" aria-selected="false">
+                        Semester 1
+                    </button>
+                </li>
+            </ul>
+        </div>
+        <div class="card-body">
+            <div class="tab-content" id="semesterTabsContent">
+                <!-- Semester 4 (Current) -->
+                <div class="tab-pane fade show active" id="semester-4" role="tabpanel" aria-labelledby="semester-4-tab">
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <div>
+                            <h4 class="mb-0">Semester 4</h4>
+                            <p class="text-muted mb-0">Academic Year 2024-25 (Current Semester)</p>
+                        </div>
+                        <div class="overall-stat">
+                            <div class="d-flex align-items-center">
+                                <div class="attendance-meter">
+                                    <div class="meter-fill good" style="width: 85%"></div>
+                                </div>
+                                <span class="ms-2 fw-bold">85.2% Overall</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="table-responsive">
+                        <table class="table table-hover semester-table">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Subject Code</th>
+                                    <th>Subject Name</th>
+                                    <th>Faculty</th>
+                                    <th>Classes</th>
+                                    <th>Attended</th>
+                                    <th>Percentage</th>
+                                    <th>Status</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>CS401</td>
+                                    <td>Operating Systems</td>
+                                    <td>Prof. Mehta</td>
+                                    <td>20</td>
+                                    <td>17</td>
+                                    <td>85%</td>
+                                    <td><span class="badge bg-success">Good</span></td>
+                                    <td><a href="{% url 'student_portal:subject_attendance' 1 %}" class="btn btn-sm btn-primary">View</a></td>
+                                </tr>
+                                <tr>
+                                    <td>CS402</td>
+                                    <td>Computer Networks</td>
+                                    <td>Prof. Sharma</td>
+                                    <td>19</td>
+                                    <td>14</td>
+                                    <td>74%</td>
+                                    <td><span class="badge bg-warning">Warning</span></td>
+                                    <td><a href="{% url 'student_portal:subject_attendance' 2 %}" class="btn btn-sm btn-primary">View</a></td>
+                                </tr>
+                                <tr>
+                                    <td>CS403</td>
+                                    <td>Database Systems</td>
+                                    <td>Prof. Joshi</td>
+                                    <td>18</td>
+                                    <td>13</td>
+                                    <td>72%</td>
+                                    <td><span class="badge bg-warning">Warning</span></td>
+                                    <td><a href="{% url 'student_portal:subject_attendance' 3 %}" class="btn btn-sm btn-primary">View</a></td>
+                                </tr>
+                                <tr>
+                                    <td>CS404</td>
+                                    <td>Software Engineering</td>
+                                    <td>Prof. Patel</td>
+                                    <td>21</td>
+                                    <td>19</td>
+                                    <td>90%</td>
+                                    <td><span class="badge bg-success">Excellent</span></td>
+                                    <td><a href="{% url 'student_portal:subject_attendance' 4 %}" class="btn btn-sm btn-primary">View</a></td>
+                                </tr>
+                                <tr>
+                                    <td>CS405</td>
+                                    <td>Web Development</td>
+                                    <td>Prof. Kumar</td>
+                                    <td>25</td>
+                                    <td>22</td>
+                                    <td>88%</td>
+                                    <td><span class="badge bg-success">Good</span></td>
+                                    <td><a href="{% url 'student_portal:subject_attendance' 5 %}" class="btn btn-sm btn-primary">View</a></td>
+                                </tr>
+                                <tr>
+                                    <td>CS406</td>
+                                    <td>Mobile App Development</td>
+                                    <td>Prof. Singh</td>
+                                    <td>20</td>
+                                    <td>19</td>
+                                    <td>95%</td>
+                                    <td><span class="badge bg-success">Excellent</span></td>
+                                    <td><a href="{% url 'student_portal:subject_attendance' 6 %}" class="btn btn-sm btn-primary">View</a></td>
+                                </tr>
+                                <tr>
+                                    <td>CS407</td>
+                                    <td>Artificial Intelligence</td>
+                                    <td>Prof. Gupta</td>
+                                    <td>19</td>
+                                    <td>17.5</td>
+                                    <td>92%</td>
+                                    <td><span class="badge bg-success">Excellent</span></td>
+                                    <td><a href="{% url 'student_portal:subject_attendance' 7 %}" class="btn btn-sm btn-primary">View</a></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                
+                <!-- Semester 3 -->
+                <div class="tab-pane fade" id="semester-3" role="tabpanel" aria-labelledby="semester-3-tab">
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <div>
+                            <h4 class="mb-0">Semester 3</h4>
+                            <p class="text-muted mb-0">Academic Year 2023-24 (Jul 2023 - Dec 2023)</p>
+                        </div>
+                        <div class="overall-stat">
+                            <div class="d-flex align-items-center">
+                                <div class="attendance-meter">
+                                    <div class="meter-fill good" style="width: 88%"></div>
+                                </div>
+                                <span class="ms-2 fw-bold">88% Overall</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="table-responsive">
+                        <table class="table table-hover semester-table">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Subject Code</th>
+                                    <th>Subject Name</th>
+                                    <th>Faculty</th>
+                                    <th>Classes</th>
+                                    <th>Attended</th>
+                                    <th>Percentage</th>
+                                    <th>Status</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>CS301</td>
+                                    <td>Data Structures</td>
+                                    <td>Prof. Rahman</td>
+                                    <td>25</td>
+                                    <td>22</td>
+                                    <td>88%</td>
+                                    <td><span class="badge bg-success">Good</span></td>
+                                    <td><a href="#" class="btn btn-sm btn-primary">View</a></td>
+                                </tr>
+                                <tr>
+                                    <td>CS302</td>
+                                    <td>Object Oriented Programming</td>
+                                    <td>Prof. Sharma</td>
+                                    <td>22</td>
+                                    <td>20</td>
+                                    <td>91%</td>
+                                    <td><span class="badge bg-success">Excellent</span></td>
+                                    <td><a href="#" class="btn btn-sm btn-primary">View</a></td>
+                                </tr>
+                                <tr>
+                                    <td>CS303</td>
+                                    <td>Computer Architecture</td>
+                                    <td>Prof. Mehta</td>
+                                    <td>20</td>
+                                    <td>17</td>
+                                    <td>85%</td>
+                                    <td><span class="badge bg-success">Good</span></td>
+                                    <td><a href="#" class="btn btn-sm btn-primary">View</a></td>
+                                </tr>
+                                <tr>
+                                    <td>CS304</td>
+                                    <td>Discrete Mathematics</td>
+                                    <td>Prof. Gupta</td>
+                                    <td>21</td>
+                                    <td>18</td>
+                                    <td>86%</td>
+                                    <td><span class="badge bg-success">Good</span></td>
+                                    <td><a href="#" class="btn btn-sm btn-primary">View</a></td>
+                                </tr>
+                                <tr>
+                                    <td>CS305</td>
+                                    <td>Digital Logic Design</td>
+                                    <td>Prof. Kumar</td>
+                                    <td>24</td>
+                                    <td>22</td>
+                                    <td>92%</td>
+                                    <td><span class="badge bg-success">Excellent</span></td>
+                                    <td><a href="#" class="btn btn-sm btn-primary">View</a></td>
+                                </tr>
+                                <tr>
+                                    <td>CS306</td>
+                                    <td>Communication Skills</td>
+                                    <td>Prof. Singh</td>
+                                    <td>15</td>
+                                    <td>13</td>
+                                    <td>87%</td>
+                                    <td><span class="badge bg-success">Good</span></td>
+                                    <td><a href="#" class="btn btn-sm btn-primary">View</a></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                
+                <!-- Semester 2 -->
+                <div class="tab-pane fade" id="semester-2" role="tabpanel" aria-labelledby="semester-2-tab">
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <div>
+                            <h4 class="mb-0">Semester 2</h4>
+                            <p class="text-muted mb-0">Academic Year 2023-24 (Jan 2023 - Jun 2023)</p>
+                        </div>
+                        <div class="overall-stat">
+                            <div class="d-flex align-items-center">
+                                <div class="attendance-meter">
+                                    <div class="meter-fill good" style="width: 90%"></div>
+                                </div>
+                                <span class="ms-2 fw-bold">90% Overall</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="table-responsive">
+                        <table class="table table-hover semester-table">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Subject Code</th>
+                                    <th>Subject Name</th>
+                                    <th>Faculty</th>
+                                    <th>Classes</th>
+                                    <th>Attended</th>
+                                    <th>Percentage</th>
+                                    <th>Status</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>CS201</td>
+                                    <td>Programming Fundamentals</td>
+                                    <td>Prof. Sharma</td>
+                                    <td>30</td>
+                                    <td>27</td>
+                                    <td>90%</td>
+                                    <td><span class="badge bg-success">Excellent</span></td>
+                                    <td><a href="#" class="btn btn-sm btn-primary">View</a></td>
+                                </tr>
+                                <tr>
+                                    <td>CS202</td>
+                                    <td>Basic Electronics</td>
+                                    <td>Prof. Patel</td>
+                                    <td>25</td>
+                                    <td>22</td>
+                                    <td>88%</td>
+                                    <td><span class="badge bg-success">Good</span></td>
+                                    <td><a href="#" class="btn btn-sm btn-primary">View</a></td>
+                                </tr>
+                                <tr>
+                                    <td>CS203</td>
+                                    <td>Mathematics II</td>
+                                    <td>Prof. Gupta</td>
+                                    <td>28</td>
+                                    <td>26</td>
+                                    <td>93%</td>
+                                    <td><span class="badge bg-success">Excellent</span></td>
+                                    <td><a href="#" class="btn btn-sm btn-primary">View</a></td>
+                                </tr>
+                                <tr>
+                                    <td>CS204</td>
+                                    <td>Physics</td>
+                                    <td>Prof. Kumar</td>
+                                    <td>26</td>
+                                    <td>23</td>
+                                    <td>88%</td>
+                                    <td><span class="badge bg-success">Good</span></td>
+                                    <td><a href="#" class="btn btn-sm btn-primary">View</a></td>
+                                </tr>
+                                <tr>
+                                    <td>CS205</td>
+                                    <td>Introduction to Web</td>
+                                    <td>Prof. Singh</td>
+                                    <td>24</td>
+                                    <td>22</td>
+                                    <td>92%</td>
+                                    <td><span class="badge bg-success">Excellent</span></td>
+                                    <td><a href="#" class="btn btn-sm btn-primary">View</a></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                
+                <!-- Semester 1 -->
+                <div class="tab-pane fade" id="semester-1" role="tabpanel" aria-labelledby="semester-1-tab">
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <div>
+                            <h4 class="mb-0">Semester 1</h4>
+                            <p class="text-muted mb-0">Academic Year 2022-23 (Jul 2022 - Dec 2022)</p>
+                        </div>
+                        <div class="overall-stat">
+                            <div class="d-flex align-items-center">
+                                <div class="attendance-meter">
+                                    <div class="meter-fill good" style="width: 94%"></div>
+                                </div>
+                                <span class="ms-2 fw-bold">94% Overall</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="table-responsive">
+                        <table class="table table-hover semester-table">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Subject Code</th>
+                                    <th>Subject Name</th>
+                                    <th>Faculty</th>
+                                    <th>Classes</th>
+                                    <th>Attended</th>
+                                    <th>Percentage</th>
+                                    <th>Status</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>CS101</td>
+                                    <td>Introduction to Computing</td>
+                                    <td>Prof. Patel</td>
+                                    <td>32</td>
+                                    <td>30</td>
+                                    <td>94%</td>
+                                    <td><span class="badge bg-success">Excellent</span></td>
+                                    <td><a href="#" class="btn btn-sm btn-primary">View</a></td>
+                                </tr>
+                                <tr>
+                                    <td>CS102</td>
+                                    <td>Mathematics I</td>
+                                    <td>Prof. Gupta</td>
+                                    <td>30</td>
+                                    <td>29</td>
+                                    <td>97%</td>
+                                    <td><span class="badge bg-success">Excellent</span></td>
+                                    <td><a href="#" class="btn btn-sm btn-primary">View</a></td>
+                                </tr>
+                                <tr>
+                                    <td>CS103</td>
+                                    <td>Engineering Graphics</td>
+                                    <td>Prof. Singh</td>
+                                    <td>25</td>
+                                    <td>23</td>
+                                    <td>92%</td>
+                                    <td><span class="badge bg-success">Excellent</span></td>
+                                    <td><a href="#" class="btn btn-sm btn-primary">View</a></td>
+                                </tr>
+                                <tr>
+                                    <td>CS104</td>
+                                    <td>Chemistry</td>
+                                    <td>Prof. Mehta</td>
+                                    <td>28</td>
+                                    <td>26</td>
+                                    <td>93%</td>
+                                    <td><span class="badge bg-success">Excellent</span></td>
+                                    <td><a href="#" class="btn btn-sm btn-primary">View</a></td>
+                                </tr>
+                                <tr>
+                                    <td>CS105</td>
+                                    <td>Environmental Studies</td>
+                                    <td>Prof. Kumar</td>
+                                    <td>20</td>
+                                    <td>19</td>
+                                    <td>95%</td>
+                                    <td><span class="badge bg-success">Excellent</span></td>
+                                    <td><a href="#" class="btn btn-sm btn-primary">View</a></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Semester-wise Attendance Comparison -->
+    <div class="card shadow mb-4 dashboard-card">
+        <div class="card-header py-3">
+            <h6 class="m-0 font-weight-bold">Semester-wise Attendance Comparison</h6>
+        </div>
+        <div class="card-body">
+            <div class="chart-container" style="position: relative; height:300px;">
+                <canvas id="semesterComparisonChart"></canvas>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Key Observations -->
+    <div class="card shadow dashboard-card">
+        <div class="card-header py-3">
+            <h6 class="m-0 font-weight-bold">Key Observations</h6>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-3 mb-4">
+                    <div class="observation-card">
+                        <div class="observation-icon">
+                            <i class="fas fa-chart-line"></i>
+                        </div>
+                        <h5>Attendance Trend</h5>
+                        <p>Your attendance has been consistently good but has slightly decreased in recent semesters. Take note of this trend.</p>
+                    </div>
+                </div>
+                <div class="col-md-3 mb-4">
+                    <div class="observation-card">
+                        <div class="observation-icon">
+                            <i class="fas fa-exclamation-triangle"></i>
+                        </div>
+                        <h5>Warning Subjects</h5>
+                        <p>You currently have 2 subjects with attendance below threshold (72% and 74%). Focus on improving these.</p>
+                    </div>
+                </div>
+                <div class="col-md-3 mb-4">
+                    <div class="observation-card">
+                        <div class="observation-icon">
+                            <i class="fas fa-medal"></i>
+                        </div>
+                        <h5>Best Performance</h5>
+                        <p>Your best attendance was in Semester 1 with a 94% average. Mathematics I had your highest at 97%.</p>
+                    </div>
+                </div>
+                <div class="col-md-3 mb-4">
+                    <div class="observation-card">
+                        <div class="observation-icon">
+                            <i class="fas fa-check-circle"></i>
+                        </div>
+                        <h5>Overall Status</h5>
+                        <p>Your attendance has been satisfactory across all semesters, averaging 89.3% overall.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block student_custom_css %}
+<style>
+    /* Attendance meter styling */
+    .attendance-meter {
+        width: 100px;
+        height: 10px;
+        background-color: #f1f1f1;
+        border-radius: 5px;
+        overflow: hidden;
+    }
+    
+    .meter-fill {
+        height: 100%;
+        border-radius: 5px;
+    }
+    
+    .meter-fill.good {
+        background-color: #1cc88a;
+    }
+    
+    .meter-fill.warning {
+        background-color: #f6c23e;
+    }
+    
+    .meter-fill.danger {
+        background-color: #e74a3b;
+    }
+    
+    /* Observation cards */
+    .observation-card {
+        padding: 20px;
+        border-radius: 10px;
+        background-color: #f8f9fc;
+        box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.1);
+        height: 100%;
+        transition: all 0.3s ease;
+    }
+    
+    .observation-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 0.5rem 1.5rem 0 rgba(58, 59, 69, 0.15);
+    }
+    
+    .observation-icon {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 50px;
+        height: 50px;
+        background-color: #4e73df;
+        color: white;
+        border-radius: 50%;
+        font-size: 1.5rem;
+        margin-bottom: 15px;
+    }
+    
+    .observation-card h5 {
+        font-size: 1.1rem;
+        font-weight: 700;
+        margin-bottom: 10px;
+        color: #4e73df;
+    }
+    
+    .observation-card p {
+        font-size: 0.85rem;
+        color: #5a5c69;
+        margin: 0;
+    }
+    
+    /* Semester table styling */
+    .semester-table th {
+        font-weight: 600;
+        color: #4e73df;
+    }
+    
+    /* Tab styling */
+    .nav-tabs .nav-link {
+        color: #5a5c69;
+        border: none;
+        border-bottom: 3px solid transparent;
+        font-weight: 600;
+    }
+    
+    .nav-tabs .nav-link.active {
+        color: #4e73df;
+        border-bottom: 3px solid #4e73df;
+        background-color: transparent;
+    }
+    
+    .nav-tabs .nav-link:hover {
+        border-color: transparent;
+        border-bottom: 3px solid #e3e6f0;
+    }
+</style>
+{% endblock %}
+
+{% block student_custom_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Initialize DataTables for semester tables
+        $('.semester-table').DataTable({
+            pageLength: 10,
+            lengthMenu: [5, 10, 25, 50],
+            ordering: true,
+            info: false
+        });
+        
+        // Initialize Semester Comparison Chart
+        const semesterCtx = document.getElementById('semesterComparisonChart').getContext('2d');
+        const semesterComparisonChart = new Chart(semesterCtx, {
+            type: 'bar',
+            data: {
+                labels: ['Semester 1', 'Semester 2', 'Semester 3', 'Semester 4 (Current)'],
+                datasets: [{
+                    label: 'Average Attendance %',
+                    data: [94, 90, 88, 85.2],
+                    backgroundColor: [
+                        'rgba(28, 200, 138, 0.8)',
+                        'rgba(28, 200, 138, 0.8)',
+                        'rgba(28, 200, 138, 0.8)',
+                        'rgba(78, 115, 223, 0.8)'
+                    ],
+                    borderColor: [
+                        'rgb(28, 200, 138)',
+                        'rgb(28, 200, 138)',
+                        'rgb(28, 200, 138)',
+                        'rgb(78, 115, 223)'
+                    ],
+                    borderWidth: 1
+                }, {
+                    label: 'Required Threshold',
+                    data: [75, 75, 75, 75],
+                    type: 'line',
+                    fill: false,
+                    borderColor: '#e74a3b',
+                    borderDash: [5, 5],
+                    pointRadius: 0,
+                    borderWidth: 2
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        beginAtZero: false,
+                        min: 50,
+                        max: 100,
+                        ticks: {
+                            stepSize: 10
+                        },
+                        title: {
+                            display: true,
+                            text: 'Attendance %'
+                        }
+                    },
+                    x: {
+                        grid: {
+                            display: false
+                        }
+                    }
+                },
+                plugins: {
+                    legend: {
+                        position: 'top'
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                return context.dataset.label + ': ' + context.raw + '%';
+                            }
+                        }
+                    }
+                }
+            }
+        });
+        
+        // Handle Export Complete History Button
+        document.getElementById('downloadHistory').addEventListener('click', function() {
+            Swal.fire({
+                title: 'Export Attendance History',
+                html: 'Choose export format:<br><br>',
+                showDenyButton: true,
+                showCancelButton: true,
+                confirmButtonText: 'PDF',
+                denyButtonText: 'Excel',
+                cancelButtonText: 'CSV',
+                confirmButtonColor: '#4e73df',
+                denyButtonColor: '#1cc88a',
+                cancelButtonColor: '#36b9cc'
+            }).then((result) => {
+                if (result.isConfirmed || result.isDenied || result.dismiss === Swal.DismissReason.cancel) {
+                    let format = 'PDF';
+                    if (result.isDenied) format = 'Excel';
+                    if (result.dismiss === Swal.DismissReason.cancel) format = 'CSV';
+                    
+                    Swal.fire({
+                        title: 'Exporting...',
+                        html: `Preparing ${format} file...`,
+                        timer: 2000,
+                        timerProgressBar: true,
+                        didOpen: () => {
+                            Swal.showLoading();
+                        }
+                    }).then(() => {
+                        Swal.fire({
+                            title: 'Success!',
+                            text: `Complete attendance history has been exported as ${format}.`,
+                            icon: 'success',
+                            confirmButtonColor: '#4e73df'
+                        });
+                    });
+                }
+            });
+        });
+    });
+</script>
+{% endblock %}

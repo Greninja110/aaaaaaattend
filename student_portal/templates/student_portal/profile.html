@@ -1,0 +1,1056 @@
+{% extends 'student_portal/base_student.html' %}
+{% load static %}
+
+{% block student_title %}My Profile{% endblock %}
+
+{% block student_content %}
+<div class="container-fluid py-4">
+    <!-- Page Header -->
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+        <h2 class="h3 mb-0">My Profile</h2>
+        <div>
+            <button type="button" class="btn btn-outline-primary me-2" data-bs-toggle="modal" data-bs-target="#changePasswordModal">
+                <i class="fas fa-key mr-1"></i> Change Password
+            </button>
+            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#editProfileModal">
+                <i class="fas fa-user-edit mr-1"></i> Edit Profile
+            </button>
+        </div>
+    </div>
+    
+    <!-- Profile Information -->
+    <div class="row">
+        <div class="col-lg-4">
+            <!-- Profile Card -->
+            <div class="card shadow mb-4 dashboard-card">
+                <div class="card-body text-center position-relative">
+                    <div class="profile-image-container">
+                        <img src="{% static 'img/profile-placeholder.jpg' %}" alt="Profile Photo" class="profile-image">
+                        <button class="change-photo-btn" data-bs-toggle="modal" data-bs-target="#changePhotoModal">
+                            <i class="fas fa-camera"></i>
+                        </button>
+                    </div>
+                    <h4 class="mt-3 mb-1">John Doe</h4>
+                    <p class="text-muted mb-2">Computer Engineering - CE2</p>
+                    <p class="enrollment-number">MBIT-CE-2022-001</p>
+                    <hr>
+                    <div class="profile-meta">
+                        <div class="meta-item">
+                            <i class="fas fa-envelope text-primary"></i>
+                            <span>johndoe@mbit.edu.in</span>
+                        </div>
+                        <div class="meta-item">
+                            <i class="fas fa-phone text-success"></i>
+                            <span>+91 98765 43210</span>
+                        </div>
+                        <div class="meta-item">
+                            <i class="fas fa-calendar-alt text-info"></i>
+                            <span>DOB: June 15, 2003</span>
+                        </div>
+                        <div class="meta-item">
+                            <i class="fas fa-map-marker-alt text-danger"></i>
+                            <span>Ahmedabad, Gujarat</span>
+                        </div>
+                    </div>
+                    <hr>
+                    <div class="social-links">
+                        <a href="#" class="social-link" title="LinkedIn">
+                            <i class="fab fa-linkedin-in"></i>
+                        </a>
+                        <a href="#" class="social-link" title="GitHub">
+                            <i class="fab fa-github"></i>
+                        </a>
+                        <a href="#" class="social-link" title="Twitter">
+                            <i class="fab fa-twitter"></i>
+                        </a>
+                        <a href="#" class="social-link" title="Instagram">
+                            <i class="fab fa-instagram"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Skills Card -->
+            <div class="card shadow mb-4 dashboard-card">
+                <div class="card-header py-3 d-flex justify-content-between align-items-center">
+                    <h6 class="m-0 font-weight-bold">Skills</h6>
+                    <button class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#editSkillsModal">
+                        <i class="fas fa-edit"></i>
+                    </button>
+                </div>
+                <div class="card-body">
+                    <div class="skill-tags">
+                        <span class="skill-tag">Java</span>
+                        <span class="skill-tag">Python</span>
+                        <span class="skill-tag">Web Development</span>
+                        <span class="skill-tag">SQL</span>
+                        <span class="skill-tag">Data Structures</span>
+                        <span class="skill-tag">Machine Learning</span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Quick Links Card -->
+            <div class="card shadow mb-4 dashboard-card">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold">Quick Links</h6>
+                </div>
+                <div class="card-body">
+                    <div class="quick-links">
+                        <a href="{% url 'student_portal:index' %}" class="quick-link">
+                            <i class="fas fa-tachometer-alt"></i>
+                            <span>Dashboard</span>
+                        </a>
+                        <a href="{% url 'student_portal:attendance' %}" class="quick-link">
+                            <i class="fas fa-calendar-check"></i>
+                            <span>Attendance</span>
+                        </a>
+                        <a href="{% url 'student_portal:timetable' %}" class="quick-link">
+                            <i class="fas fa-clock"></i>
+                            <span>Timetable</span>
+                        </a>
+                        <a href="{% url 'student_portal:leave_application' %}" class="quick-link">
+                            <i class="fas fa-file-alt"></i>
+                            <span>Leave Application</span>
+                        </a>
+                        <a href="{% url 'logout' %}" class="quick-link text-danger">
+                            <i class="fas fa-sign-out-alt"></i>
+                            <span>Logout</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-lg-8">
+            <!-- Academic Information -->
+            <div class="card shadow mb-4 dashboard-card">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold">Academic Information</h6>
+                </div>
+                <div class="card-body">
+                    <table class="table academic-info-table">
+                        <tr>
+                            <th width="200">Roll Number</th>
+                            <td>CE2022001</td>
+                        </tr>
+                        <tr>
+                            <th>Department</th>
+                            <td>Computer Engineering</td>
+                        </tr>
+                        <tr>
+                            <th>Batch</th>
+                            <td>2022-26</td>
+                        </tr>
+                        <tr>
+                            <th>Current Semester</th>
+                            <td>Semester 4</td>
+                        </tr>
+                        <tr>
+                            <th>Class & Section</th>
+                            <td>CE2</td>
+                        </tr>
+                        <tr>
+                            <th>Lab Batch</th>
+                            <td>Batch B</td>
+                        </tr>
+                        <tr>
+                            <th>Academic Year</th>
+                            <td>2024-25</td>
+                        </tr>
+                        <tr>
+                            <th>Admission Year</th>
+                            <td>2022</td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+            
+            <!-- Personal Information -->
+            <div class="card shadow mb-4 dashboard-card">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold">Personal Information</h6>
+                </div>
+                <div class="card-body">
+                    <table class="table personal-info-table">
+                        <tr>
+                            <th width="200">Full Name</th>
+                            <td>John Doe</td>
+                        </tr>
+                        <tr>
+                            <th>Email</th>
+                            <td>johndoe@mbit.edu.in</td>
+                        </tr>
+                        <tr>
+                            <th>Contact Number</th>
+                            <td>+91 98765 43210</td>
+                        </tr>
+                        <tr>
+                            <th>Date of Birth</th>
+                            <td>June 15, 2003</td>
+                        </tr>
+                        <tr>
+                            <th>Gender</th>
+                            <td>Male</td>
+                        </tr>
+                        <tr>
+                            <th>Blood Group</th>
+                            <td>B+</td>
+                        </tr>
+                        <tr>
+                            <th>Address</th>
+                            <td>123 Main Street, Satellite, Ahmedabad, Gujarat, 380015</td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+            
+            <!-- Parents/Guardian Information -->
+            <div class="card shadow mb-4 dashboard-card">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold">Parents/Guardian Information</h6>
+                </div>
+                <div class="card-body">
+                    <table class="table guardian-info-table">
+                        <tr>
+                            <th width="200">Father's Name</th>
+                            <td>Robert Doe</td>
+                        </tr>
+                        <tr>
+                            <th>Father's Occupation</th>
+                            <td>Software Engineer</td>
+                        </tr>
+                        <tr>
+                            <th>Father's Contact</th>
+                            <td>+91 98765 43211</td>
+                        </tr>
+                        <tr>
+                            <th>Mother's Name</th>
+                            <td>Jennifer Doe</td>
+                        </tr>
+                        <tr>
+                            <th>Mother's Occupation</th>
+                            <td>Teacher</td>
+                        </tr>
+                        <tr>
+                            <th>Mother's Contact</th>
+                            <td>+91 98765 43212</td>
+                        </tr>
+                        <tr>
+                            <th>Emergency Contact</th>
+                            <td>+91 98765 43211 (Father)</td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+            
+            <!-- Theme Preferences -->
+            <div class="card shadow mb-4 dashboard-card">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold">Interface Preferences</h6>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group mb-3">
+                                <label class="form-label">Theme</label>
+                                <div class="d-flex theme-selector">
+                                    <div class="theme-option active" data-theme="light">
+                                        <div class="theme-preview light-theme"></div>
+                                        <span>Light</span>
+                                    </div>
+                                    <div class="theme-option" data-theme="dark">
+                                        <div class="theme-preview dark-theme"></div>
+                                        <span>Dark</span>
+                                    </div>
+                                    <div class="theme-option" data-theme="blue">
+                                        <div class="theme-preview blue-theme"></div>
+                                        <span>Blue</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group mb-3">
+                                <label class="form-label">Default View</label>
+                                <select class="form-select" id="defaultView">
+                                    <option value="dashboard">Dashboard</option>
+                                    <option value="attendance">Attendance</option>
+                                    <option value="timetable">Timetable</option>
+                                </select>
+                            </div>
+                            <div class="form-check mb-3">
+                                <input class="form-check-input" type="checkbox" id="enableNotifications" checked>
+                                <label class="form-check-label" for="enableNotifications">
+                                    Enable Email Notifications
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="d-grid mt-3">
+                        <button class="btn btn-primary" id="savePreferences">
+                            <i class="fas fa-save me-1"></i> Save Preferences
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Edit Profile Modal -->
+    <div class="modal fade" id="editProfileModal" tabindex="-1" aria-labelledby="editProfileModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header bg-primary text-white">
+                    <h5 class="modal-title" id="editProfileModalLabel">Edit Profile</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="alert alert-info">
+                        <i class="fas fa-info-circle me-2"></i> Note: Some information cannot be edited as they are maintained by the administration. Please contact the admin office for any changes in those fields.
+                    </div>
+                    
+                    <form id="editProfileForm">
+                        <div class="mb-3">
+                            <label for="contactNumber" class="form-label">Contact Number</label>
+                            <input type="tel" class="form-control" id="contactNumber" value="+91 98765 43210" pattern="[+][0-9]{2} [0-9]{5} [0-9]{5}" placeholder="+91 XXXXX XXXXX">
+                            <div class="form-text">Format: +91 XXXXX XXXXX</div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="address" class="form-label">Address</label>
+                            <textarea class="form-control" id="address" rows="3">123 Main Street, Satellite, Ahmedabad, Gujarat, 380015</textarea>
+                        </div>
+                        
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label for="bloodGroup" class="form-label">Blood Group</label>
+                                <select class="form-select" id="bloodGroup">
+                                    <option>A+</option>
+                                    <option>A-</option>
+                                    <option>B+</option>
+                                    <option>B-</option>
+                                    <option>AB+</option>
+                                    <option>AB-</option>
+                                    <option>O+</option>
+                                    <option>O-</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="emergencyContact" class="form-label">Emergency Contact</label>
+                                <input type="tel" class="form-control" id="emergencyContact" value="+91 98765 43211" pattern="[+][0-9]{2} [0-9]{5} [0-9]{5}" placeholder="+91 XXXXX XXXXX">
+                            </div>
+                        </div>
+                        
+                        <h5 class="mt-4 mb-3">Social Media Links</h5>
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label for="linkedinProfile" class="form-label">LinkedIn Profile</label>
+                                <div class="input-group">
+                                    <span class="input-group-text"><i class="fab fa-linkedin-in"></i></span>
+                                    <input type="url" class="form-control" id="linkedinProfile" placeholder="https://linkedin.com/in/your-profile">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="githubProfile" class="form-label">GitHub Profile</label>
+                                <div class="input-group">
+                                    <span class="input-group-text"><i class="fab fa-github"></i></span>
+                                    <input type="url" class="form-control" id="githubProfile" placeholder="https://github.com/your-username">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="twitterProfile" class="form-label">Twitter Profile</label>
+                                <div class="input-group">
+                                    <span class="input-group-text"><i class="fab fa-twitter"></i></span>
+                                    <input type="url" class="form-control" id="twitterProfile" placeholder="https://twitter.com/your-username">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="instagramProfile" class="form-label">Instagram Profile</label>
+                                <div class="input-group">
+                                    <span class="input-group-text"><i class="fab fa-instagram"></i></span>
+                                    <input type="url" class="form-control" id="instagramProfile" placeholder="https://instagram.com/your-username">
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary" id="saveProfileChanges">Save Changes</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Change Password Modal -->
+    <div class="modal fade" id="changePasswordModal" tabindex="-1" aria-labelledby="changePasswordModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header bg-primary text-white">
+                    <h5 class="modal-title" id="changePasswordModalLabel">Change Password</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="changePasswordForm">
+                        <div class="mb-3">
+                            <label for="currentPassword" class="form-label">Current Password</label>
+                            <input type="password" class="form-control" id="currentPassword" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="newPassword" class="form-label">New Password</label>
+                            <input type="password" class="form-control" id="newPassword" required>
+                            <div class="password-strength mt-2">
+                                <div class="progress" style="height: 5px;">
+                                    <div class="progress-bar bg-danger" role="progressbar" style="width: 0%;" id="passwordStrengthBar"></div>
+                                </div>
+                                <small class="form-text text-muted" id="passwordStrengthText">Password must be at least 8 characters long with a mix of letters, numbers, and special characters.</small>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="confirmPassword" class="form-label">Confirm New Password</label>
+                            <input type="password" class="form-control" id="confirmPassword" required>
+                            <div class="invalid-feedback" id="passwordMatchFeedback">
+                                Passwords do not match.
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary" id="changePasswordButton">Change Password</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Change Photo Modal -->
+    <div class="modal fade" id="changePhotoModal" tabindex="-1" aria-labelledby="changePhotoModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header bg-primary text-white">
+                    <h5 class="modal-title" id="changePhotoModalLabel">Change Profile Photo</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="profilePhoto" class="form-label">Upload Photo</label>
+                        <input class="form-control" type="file" id="profilePhoto" accept="image/*">
+                        <div class="form-text">Recommended size: 500x500 pixels. Maximum file size: 2MB.</div>
+                    </div>
+                    
+                    <div class="photo-preview-container text-center mt-4" id="photoPreviewContainer" style="display: none;">
+                        <h6 class="mb-3">Preview</h6>
+                        <img src="" alt="Profile Photo Preview" id="photoPreview" class="photo-preview">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary" id="uploadPhotoButton">Upload Photo</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Edit Skills Modal -->
+    <div class="modal fade" id="editSkillsModal" tabindex="-1" aria-labelledby="editSkillsModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header bg-primary text-white">
+                    <h5 class="modal-title" id="editSkillsModalLabel">Edit Skills</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="skillsInput" class="form-label">Add Skills (comma separated)</label>
+                        <input type="text" class="form-control" id="skillsInput" placeholder="e.g. Java, Python, Web Development">
+                    </div>
+                    
+                    <div class="current-skills mt-4">
+                        <h6>Current Skills</h6>
+                        <div class="selected-skills" id="selectedSkills">
+                            <span class="skill-tag">Java <button class="remove-skill" data-skill="Java"><i class="fas fa-times"></i></button></span>
+                            <span class="skill-tag">Python <button class="remove-skill" data-skill="Python"><i class="fas fa-times"></i></button></span>
+                            <span class="skill-tag">Web Development <button class="remove-skill" data-skill="Web Development"><i class="fas fa-times"></i></button></span>
+                            <span class="skill-tag">SQL <button class="remove-skill" data-skill="SQL"><i class="fas fa-times"></i></button></span>
+                            <span class="skill-tag">Data Structures <button class="remove-skill" data-skill="Data Structures"><i class="fas fa-times"></i></button></span>
+                            <span class="skill-tag">Machine Learning <button class="remove-skill" data-skill="Machine Learning"><i class="fas fa-times"></i></button></span>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary" id="saveSkillsButton">Save Skills</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block student_custom_css %}
+<style>
+    /* Profile image styling */
+    .profile-image-container {
+        position: relative;
+        width: 150px;
+        height: 150px;
+        margin: 0 auto;
+    }
+    
+    .profile-image {
+        width: 100%;
+        height: 100%;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 5px solid #f8f9fc;
+        box-shadow: 0 0.5rem 1.5rem 0 rgba(58, 59, 69, 0.1);
+    }
+    
+    .change-photo-btn {
+        position: absolute;
+        bottom: 10px;
+        right: 0;
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background-color: #4e73df;
+        color: white;
+        border: none;
+        box-shadow: 0 0.25rem 0.5rem rgba(0, 0, 0, 0.15);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: all 0.2s ease;
+    }
+    
+    .change-photo-btn:hover {
+        background-color: #2e59d9;
+        transform: scale(1.1);
+    }
+    
+    .enrollment-number {
+        display: inline-block;
+        padding: 5px 10px;
+        background-color: #f8f9fc;
+        border-radius: 30px;
+        font-size: 0.8rem;
+        color: #5a5c69;
+    }
+    
+    /* Profile meta styling */
+    .profile-meta {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+    }
+    
+    .meta-item {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+    
+    .meta-item i {
+        width: 20px;
+        text-align: center;
+    }
+    
+    /* Social links styling */
+    .social-links {
+        display: flex;
+        justify-content: center;
+        gap: 15px;
+    }
+    
+    .social-link {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background-color: #f8f9fc;
+        color: #4e73df;
+        text-decoration: none;
+        transition: all 0.2s ease;
+    }
+    
+    .social-link:hover {
+        background-color: #4e73df;
+        color: white;
+        transform: translateY(-3px);
+    }
+    
+    /* Skills tags styling */
+    .skill-tags {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+    
+    .skill-tag {
+        display: inline-block;
+        padding: 5px 12px;
+        background-color: #f1f8ff;
+        color: #4e73df;
+        border-radius: 30px;
+        font-size: 0.85rem;
+        border: 1px solid #d0e3ff;
+    }
+    
+    /* Quick links styling */
+    .quick-links {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+    
+    .quick-link {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 10px;
+        border-radius: 5px;
+        color: #5a5c69;
+        text-decoration: none;
+        transition: all 0.2s ease;
+    }
+    
+    .quick-link:hover {
+        background-color: #f8f9fc;
+        color: #4e73df;
+        transform: translateX(5px);
+    }
+    
+    .quick-link i {
+        width: 20px;
+        text-align: center;
+    }
+    
+    /* Info tables styling */
+    .academic-info-table th,
+    .personal-info-table th,
+    .guardian-info-table th {
+        font-weight: 600;
+        color: #4e73df;
+        background-color: #f8f9fc;
+    }
+    
+    /* Theme selector styling */
+    .theme-selector {
+        display: flex;
+        gap: 15px;
+    }
+    
+    .theme-option {
+        text-align: center;
+        cursor: pointer;
+        opacity: 0.7;
+        transition: all 0.2s ease;
+    }
+    
+    .theme-option:hover {
+        opacity: 1;
+    }
+    
+    .theme-option.active {
+        opacity: 1;
+    }
+    
+    .theme-preview {
+        width: 80px;
+        height: 50px;
+        border-radius: 5px;
+        margin-bottom: 5px;
+        border: 2px solid transparent;
+    }
+    
+    .theme-option.active .theme-preview {
+        border-color: #4e73df;
+    }
+    
+    .light-theme {
+        background-color: #f8f9fc;
+        border: 1px solid #e3e6f0;
+    }
+    
+    .dark-theme {
+        background-color: #393939;
+        border: 1px solid #2e2e2e;
+    }
+    
+    .blue-theme {
+        background-color: #3a62cc;
+        border: 1px solid #2e51b6;
+    }
+    
+    /* Photo preview styling */
+    .photo-preview {
+        width: 150px;
+        height: 150px;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 5px solid #f8f9fc;
+        box-shadow: 0 0.5rem 1.5rem 0 rgba(58, 59, 69, 0.1);
+    }
+    
+    /* Edit skills styling */
+    .selected-skills {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-top: 10px;
+    }
+    
+    .selected-skills .skill-tag {
+        display: flex;
+        align-items: center;
+        gap: 5px;
+    }
+    
+    .remove-skill {
+        background: none;
+        border: none;
+        color: #dc3545;
+        font-size: 12px;
+        cursor: pointer;
+        padding: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+</style>
+{% endblock %}
+
+{% block student_custom_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Password strength checker
+        const newPasswordInput = document.getElementById('newPassword');
+        const confirmPasswordInput = document.getElementById('confirmPassword');
+        const passwordStrengthBar = document.getElementById('passwordStrengthBar');
+        const passwordStrengthText = document.getElementById('passwordStrengthText');
+        const passwordMatchFeedback = document.getElementById('passwordMatchFeedback');
+        
+        newPasswordInput.addEventListener('input', function() {
+            const password = this.value;
+            let strength = 0;
+            
+            // Check length
+            if (password.length >= 8) strength += 25;
+            
+            // Check lowercase and uppercase
+            if (password.match(/[a-z]+/) && password.match(/[A-Z]+/)) strength += 25;
+            
+            // Check numbers
+            if (password.match(/[0-9]+/)) strength += 25;
+            
+            // Check special characters
+            if (password.match(/[^a-zA-Z0-9]+/)) strength += 25;
+            
+            // Update strength bar
+            passwordStrengthBar.style.width = strength + '%';
+            
+            // Update color
+            if (strength < 50) {
+                passwordStrengthBar.className = 'progress-bar bg-danger';
+                passwordStrengthText.textContent = 'Weak password';
+            } else if (strength < 75) {
+                passwordStrengthBar.className = 'progress-bar bg-warning';
+                passwordStrengthText.textContent = 'Medium password';
+            } else {
+                passwordStrengthBar.className = 'progress-bar bg-success';
+                passwordStrengthText.textContent = 'Strong password';
+            }
+            
+            // Check if passwords match
+            if (confirmPasswordInput.value) {
+                checkPasswordsMatch();
+            }
+        });
+        
+        confirmPasswordInput.addEventListener('input', checkPasswordsMatch);
+        
+        function checkPasswordsMatch() {
+            if (newPasswordInput.value !== confirmPasswordInput.value) {
+                confirmPasswordInput.classList.add('is-invalid');
+                passwordMatchFeedback.style.display = 'block';
+            } else {
+                confirmPasswordInput.classList.remove('is-invalid');
+                passwordMatchFeedback.style.display = 'none';
+            }
+        }
+        
+        // Change password form submission
+        document.getElementById('changePasswordButton').addEventListener('click', function() {
+            const currentPassword = document.getElementById('currentPassword').value;
+            const newPassword = newPasswordInput.value;
+            const confirmPassword = confirmPasswordInput.value;
+            
+            // Check if form is valid
+            if (!currentPassword || !newPassword || !confirmPassword) {
+                Swal.fire({
+                    title: 'Missing Information',
+                    text: 'Please fill all password fields',
+                    icon: 'error',
+                    confirmButtonColor: '#4e73df'
+                });
+                return;
+            }
+            
+            // Check if passwords match
+            if (newPassword !== confirmPassword) {
+                Swal.fire({
+                    title: 'Password Mismatch',
+                    text: 'New password and confirmation do not match',
+                    icon: 'error',
+                    confirmButtonColor: '#4e73df'
+                });
+                return;
+            }
+            
+            // Simulate password change request
+            Swal.fire({
+                title: 'Changing Password',
+                html: 'Please wait...',
+                timer: 2000,
+                timerProgressBar: true,
+                didOpen: () => {
+                    Swal.showLoading();
+                }
+            }).then(() => {
+                Swal.fire({
+                    title: 'Password Changed',
+                    text: 'Your password has been changed successfully',
+                    icon: 'success',
+                    confirmButtonColor: '#4e73df'
+                }).then(() => {
+                    // Close modal and reset form
+                    $('#changePasswordModal').modal('hide');
+                    document.getElementById('changePasswordForm').reset();
+                    passwordStrengthBar.style.width = '0%';
+                    passwordStrengthBar.className = 'progress-bar bg-danger';
+                    passwordStrengthText.textContent = 'Password must be at least 8 characters long with a mix of letters, numbers, and special characters.';
+                });
+            });
+        });
+        
+        // Profile photo change preview
+        document.getElementById('profilePhoto').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            
+            if (file) {
+                const reader = new FileReader();
+                
+                reader.onload = function(e) {
+                    document.getElementById('photoPreview').src = e.target.result;
+                    document.getElementById('photoPreviewContainer').style.display = 'block';
+                }
+                
+                reader.readAsDataURL(file);
+            } else {
+                document.getElementById('photoPreviewContainer').style.display = 'none';
+            }
+        });
+        
+        // Upload photo button
+        document.getElementById('uploadPhotoButton').addEventListener('click', function() {
+            const photoInput = document.getElementById('profilePhoto');
+            
+            if (!photoInput.files || photoInput.files.length === 0) {
+                Swal.fire({
+                    title: 'No File Selected',
+                    text: 'Please select a photo to upload',
+                    icon: 'warning',
+                    confirmButtonColor: '#4e73df'
+                });
+                return;
+            }
+            
+            // Simulate upload
+            Swal.fire({
+                title: 'Uploading Photo',
+                html: 'Please wait while we upload your photo...',
+                timer: 2000,
+                timerProgressBar: true,
+                didOpen: () => {
+                    Swal.showLoading();
+                }
+            }).then(() => {
+                // Update profile image
+                const profileImage = document.querySelector('.profile-image');
+                profileImage.src = document.getElementById('photoPreview').src;
+                
+                Swal.fire({
+                    title: 'Photo Updated',
+                    text: 'Your profile photo has been updated successfully',
+                    icon: 'success',
+                    confirmButtonColor: '#4e73df'
+                }).then(() => {
+                    // Close modal and reset form
+                    $('#changePhotoModal').modal('hide');
+                    document.getElementById('photoPreviewContainer').style.display = 'none';
+                });
+            });
+        });
+        
+        // Skills management
+        document.getElementById('skillsInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                addSkills();
+            }
+        });
+        
+        document.getElementById('saveSkillsButton').addEventListener('click', function() {
+            addSkills();
+            
+            // Simulate saving
+            Swal.fire({
+                title: 'Saving Skills',
+                html: 'Please wait...',
+                timer: 1500,
+                timerProgressBar: true,
+                didOpen: () => {
+                    Swal.showLoading();
+                }
+            }).then(() => {
+                // Update skills in the main view
+                const mainSkillTags = document.querySelector('.skill-tags');
+                mainSkillTags.innerHTML = '';
+                
+                const selectedSkills = document.querySelectorAll('#selectedSkills .skill-tag');
+                selectedSkills.forEach(skillTag => {
+                    const skillName = skillTag.textContent.replace(' ×', '');
+                    const skillElement = document.createElement('span');
+                    skillElement.className = 'skill-tag';
+                    skillElement.textContent = skillName;
+                    mainSkillTags.appendChild(skillElement);
+                });
+                
+                Swal.fire({
+                    title: 'Skills Saved',
+                    text: 'Your skills have been updated successfully',
+                    icon: 'success',
+                    confirmButtonColor: '#4e73df'
+                }).then(() => {
+                    // Close modal
+                    $('#editSkillsModal').modal('hide');
+                });
+            });
+        });
+        
+        function addSkills() {
+            const skillsInput = document.getElementById('skillsInput');
+            const skills = skillsInput.value.split(',').map(skill => skill.trim()).filter(skill => skill);
+            
+            if (skills.length === 0) return;
+            
+            const selectedSkills = document.getElementById('selectedSkills');
+            
+            skills.forEach(skill => {
+                // Check if skill already exists
+                const existingSkills = Array.from(selectedSkills.querySelectorAll('.skill-tag')).map(tag => 
+                    tag.textContent.replace(' ×', '')
+                );
+                
+                if (!existingSkills.includes(skill)) {
+                    const skillTag = document.createElement('span');
+                    skillTag.className = 'skill-tag';
+                    skillTag.innerHTML = `${skill} <button class="remove-skill" data-skill="${skill}"><i class="fas fa-times"></i></button>`;
+                    selectedSkills.appendChild(skillTag);
+                }
+            });
+            
+            // Clear input
+            skillsInput.value = '';
+        }
+        
+        // Remove skill
+        document.addEventListener('click', function(e) {
+            if (e.target.closest('.remove-skill')) {
+                const skillTag = e.target.closest('.skill-tag');
+                skillTag.remove();
+            }
+        });
+        
+        // Save profile changes
+        document.getElementById('saveProfileChanges').addEventListener('click', function() {
+            // Simulate saving
+            Swal.fire({
+                title: 'Saving Changes',
+                html: 'Please wait while we update your profile...',
+                timer: 2000,
+                timerProgressBar: true,
+                didOpen: () => {
+                    Swal.showLoading();
+                }
+            }).then(() => {
+                // Update visible contact number
+                const contactNumber = document.getElementById('contactNumber').value;
+                const metaItems = document.querySelectorAll('.meta-item');
+                metaItems[1].querySelector('span').textContent = contactNumber;
+                
+                // Update personal info table
+                const personalInfoTable = document.querySelector('.personal-info-table');
+                const rows = personalInfoTable.querySelectorAll('tr');
+                rows[2].querySelector('td').textContent = contactNumber; // Contact number
+                rows[6].querySelector('td').textContent = document.getElementById('address').value; // Address
+                rows[5].querySelector('td').textContent = document.getElementById('bloodGroup').value; // Blood Group
+                
+                Swal.fire({
+                    title: 'Profile Updated',
+                    text: 'Your profile has been updated successfully',
+                    icon: 'success',
+                    confirmButtonColor: '#4e73df'
+                }).then(() => {
+                    // Close modal
+                    $('#editProfileModal').modal('hide');
+                });
+            });
+        });
+        
+        // Theme selection
+        document.querySelectorAll('.theme-option').forEach(option => {
+            option.addEventListener('click', function() {
+                // Remove active class from all options
+                document.querySelectorAll('.theme-option').forEach(opt => {
+                    opt.classList.remove('active');
+                });
+                
+                // Add active class to clicked option
+                this.classList.add('active');
+            });
+        });
+        
+        // Save preferences
+        document.getElementById('savePreferences').addEventListener('click', function() {
+            // Get selected theme
+            const selectedTheme = document.querySelector('.theme-option.active').dataset.theme;
+            const defaultView = document.getElementById('defaultView').value;
+            const enableNotifications = document.getElementById('enableNotifications').checked;
+            
+            // Simulate saving
+            Swal.fire({
+                title: 'Saving Preferences',
+                html: 'Please wait...',
+                timer: 1500,
+                timerProgressBar: true,
+                didOpen: () => {
+                    Swal.showLoading();
+                }
+            }).then(() => {
+                Swal.fire({
+                    title: 'Preferences Saved',
+                    text: 'Your interface preferences have been saved successfully',
+                    icon: 'success',
+                    confirmButtonColor: '#4e73df'
+                });
+            });
+        });
+    });
+</script>
+{% endblock %}

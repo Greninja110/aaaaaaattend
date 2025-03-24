@@ -1,0 +1,740 @@
+{% extends 'student_portal/base_student.html' %}
+{% load static %}
+
+{% block student_title %}Notifications{% endblock %}
+
+{% block student_content %}
+<div class="container-fluid py-4">
+    <!-- Page Header -->
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+        <h2 class="h3 mb-0">Notifications</h2>
+        <div>
+            <button type="button" class="btn btn-outline-primary me-2" id="refreshNotifications">
+                <i class="fas fa-sync-alt mr-1"></i> Refresh
+            </button>
+            <button type="button" class="btn btn-primary" id="markAllRead">
+                <i class="fas fa-check-double mr-1"></i> Mark All as Read
+            </button>
+        </div>
+    </div>
+    
+    <!-- Notification Filters -->
+    <div class="card shadow mb-4 dashboard-card">
+        <div class="card-body p-3">
+            <div class="row">
+                <div class="col-md-8">
+                    <div class="btn-group" role="group">
+                        <button type="button" class="btn btn-outline-primary active filter-btn" data-filter="all">All Notifications</button>
+                        <button type="button" class="btn btn-outline-primary filter-btn" data-filter="unread">Unread</button>
+                        <button type="button" class="btn btn-outline-primary filter-btn" data-filter="attendance">Attendance</button>
+                        <button type="button" class="btn btn-outline-primary filter-btn" data-filter="academics">Academics</button>
+                        <button type="button" class="btn btn-outline-primary filter-btn" data-filter="leave">Leave Applications</button>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="input-group">
+                        <input type="text" class="form-control" placeholder="Search notifications..." id="searchNotifications">
+                        <button class="btn btn-outline-primary" type="button" id="searchButton">
+                            <i class="fas fa-search"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Notifications List -->
+    <div class="card shadow mb-4 dashboard-card">
+        <div class="card-body p-0">
+            <div class="notification-list">
+                <!-- Unread notifications -->
+                <div class="notification-item unread">
+                    <div class="notification-icon attendance">
+                        <i class="fas fa-bell"></i>
+                    </div>
+                    <div class="notification-content">
+                        <h5>Attendance Alert: Database Systems</h5>
+                        <p>Your attendance in Database Systems is below 75%. You need to attend at least 3 more classes to reach the threshold.</p>
+                        <div class="notification-meta">
+                            <span class="notification-time"><i class="far fa-clock me-1"></i> 2 hours ago</span>
+                            <span class="notification-category attendance">Attendance</span>
+                        </div>
+                    </div>
+                    <div class="notification-actions">
+                        <button class="btn btn-sm btn-outline-primary notification-action" data-action="view" data-id="1">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                        <button class="btn btn-sm btn-outline-success notification-action" data-action="mark-read" data-id="1">
+                            <i class="fas fa-check"></i>
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="notification-item unread">
+                    <div class="notification-icon leave">
+                        <i class="fas fa-file-alt"></i>
+                    </div>
+                    <div class="notification-content">
+                        <h5>Leave Application Approved</h5>
+                        <p>Your leave application for April 22, 2025 has been approved by Prof. Sharma.</p>
+                        <div class="notification-meta">
+                            <span class="notification-time"><i class="far fa-clock me-1"></i> 4 hours ago</span>
+                            <span class="notification-category leave">Leave</span>
+                        </div>
+                    </div>
+                    <div class="notification-actions">
+                        <button class="btn btn-sm btn-outline-primary notification-action" data-action="view" data-id="2">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                        <button class="btn btn-sm btn-outline-success notification-action" data-action="mark-read" data-id="2">
+                            <i class="fas fa-check"></i>
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="notification-item unread">
+                    <div class="notification-icon academics">
+                        <i class="fas fa-calendar-alt"></i>
+                    </div>
+                    <div class="notification-content">
+                        <h5>Timetable Update</h5>
+                        <p>Web Development class on April 24, 2025 has been rescheduled from 10:00 AM to 3:15 PM due to faculty meeting.</p>
+                        <div class="notification-meta">
+                            <span class="notification-time"><i class="far fa-clock me-1"></i> 8 hours ago</span>
+                            <span class="notification-category academics">Academics</span>
+                        </div>
+                    </div>
+                    <div class="notification-actions">
+                        <button class="btn btn-sm btn-outline-primary notification-action" data-action="view" data-id="3">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                        <button class="btn btn-sm btn-outline-success notification-action" data-action="mark-read" data-id="3">
+                            <i class="fas fa-check"></i>
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Read notifications -->
+                <div class="notification-item">
+                    <div class="notification-icon attendance">
+                        <i class="fas fa-bell"></i>
+                    </div>
+                    <div class="notification-content">
+                        <h5>Attendance Alert: Computer Networks</h5>
+                        <p>Your attendance in Computer Networks is borderline at 74%. Please ensure you attend all remaining classes.</p>
+                        <div class="notification-meta">
+                            <span class="notification-time"><i class="far fa-clock me-1"></i> 1 day ago</span>
+                            <span class="notification-category attendance">Attendance</span>
+                        </div>
+                    </div>
+                    <div class="notification-actions">
+                        <button class="btn btn-sm btn-outline-primary notification-action" data-action="view" data-id="4">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="notification-item">
+                    <div class="notification-icon system">
+                        <i class="fas fa-cog"></i>
+                    </div>
+                    <div class="notification-content">
+                        <h5>Password Changed</h5>
+                        <p>Your account password was changed on April 15, 2025. If you did not make this change, please contact the administrator immediately.</p>
+                        <div class="notification-meta">
+                            <span class="notification-time"><i class="far fa-clock me-1"></i> 3 days ago</span>
+                            <span class="notification-category system">System</span>
+                        </div>
+                    </div>
+                    <div class="notification-actions">
+                        <button class="btn btn-sm btn-outline-primary notification-action" data-action="view" data-id="5">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="notification-item">
+                    <div class="notification-icon leave">
+                        <i class="fas fa-file-alt"></i>
+                    </div>
+                    <div class="notification-content">
+                        <h5>Leave Application Reminder</h5>
+                        <p>Your leave application for April 10-12, 2025 is scheduled for next week. Remember to inform your project partners about your absence.</p>
+                        <div class="notification-meta">
+                            <span class="notification-time"><i class="far fa-clock me-1"></i> 5 days ago</span>
+                            <span class="notification-category leave">Leave</span>
+                        </div>
+                    </div>
+                    <div class="notification-actions">
+                        <button class="btn btn-sm btn-outline-primary notification-action" data-action="view" data-id="6">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="notification-item">
+                    <div class="notification-icon academics">
+                        <i class="fas fa-calendar-alt"></i>
+                    </div>
+                    <div class="notification-content">
+                        <h5>Extra Class Scheduled</h5>
+                        <p>An extra class for Operating Systems has been scheduled on April 20, 2025 from 3:15 PM to 4:15 PM in Room 301.</p>
+                        <div class="notification-meta">
+                            <span class="notification-time"><i class="far fa-clock me-1"></i> 1 week ago</span>
+                            <span class="notification-category academics">Academics</span>
+                        </div>
+                    </div>
+                    <div class="notification-actions">
+                        <button class="btn btn-sm btn-outline-primary notification-action" data-action="view" data-id="7">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="notification-item">
+                    <div class="notification-icon system">
+                        <i class="fas fa-cog"></i>
+                    </div>
+                    <div class="notification-content">
+                        <h5>Account Activated</h5>
+                        <p>Your student portal account has been successfully activated. Welcome to MBIT Attendance System!</p>
+                        <div class="notification-meta">
+                            <span class="notification-time"><i class="far fa-clock me-1"></i> 2 weeks ago</span>
+                            <span class="notification-category system">System</span>
+                        </div>
+                    </div>
+                    <div class="notification-actions">
+                        <button class="btn btn-sm btn-outline-primary notification-action" data-action="view" data-id="8">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Pagination -->
+            <div class="pagination-container p-3 border-top">
+                <nav aria-label="Notifications pagination">
+                    <ul class="pagination justify-content-center mb-0">
+                        <li class="page-item disabled">
+                            <a class="page-link" href="#" tabindex="-1" aria-disabled="true">Previous</a>
+                        </li>
+                        <li class="page-item active"><a class="page-link" href="#">1</a></li>
+                        <li class="page-item"><a class="page-link" href="#">2</a></li>
+                        <li class="page-item"><a class="page-link" href="#">3</a></li>
+                        <li class="page-item">
+                            <a class="page-link" href="#">Next</a>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Notification Settings -->
+    <div class="card shadow dashboard-card">
+        <div class="card-header py-3">
+            <h6 class="m-0 font-weight-bold">Notification Settings</h6>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-6">
+                    <h5 class="mb-3">Email Notifications</h5>
+                    <div class="form-check mb-2">
+                        <input class="form-check-input" type="checkbox" id="attendanceEmails" checked>
+                        <label class="form-check-label" for="attendanceEmails">
+                            Attendance Alerts
+                        </label>
+                    </div>
+                    <div class="form-check mb-2">
+                        <input class="form-check-input" type="checkbox" id="leaveEmails" checked>
+                        <label class="form-check-label" for="leaveEmails">
+                            Leave Application Updates
+                        </label>
+                    </div>
+                    <div class="form-check mb-2">
+                        <input class="form-check-input" type="checkbox" id="timetableEmails" checked>
+                        <label class="form-check-label" for="timetableEmails">
+                            Timetable Changes
+                        </label>
+                    </div>
+                    <div class="form-check mb-2">
+                        <input class="form-check-input" type="checkbox" id="systemEmails" checked>
+                        <label class="form-check-label" for="systemEmails">
+                            System Notifications
+                        </label>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <h5 class="mb-3">In-App Notifications</h5>
+                    <div class="form-check mb-2">
+                        <input class="form-check-input" type="checkbox" id="attendanceInApp" checked>
+                        <label class="form-check-label" for="attendanceInApp">
+                            Attendance Alerts
+                        </label>
+                    </div>
+                    <div class="form-check mb-2">
+                        <input class="form-check-input" type="checkbox" id="leaveInApp" checked>
+                        <label class="form-check-label" for="leaveInApp">
+                            Leave Application Updates
+                        </label>
+                    </div>
+                    <div class="form-check mb-2">
+                        <input class="form-check-input" type="checkbox" id="timetableInApp" checked>
+                        <label class="form-check-label" for="timetableInApp">
+                            Timetable Changes
+                        </label>
+                    </div>
+                    <div class="form-check mb-2">
+                        <input class="form-check-input" type="checkbox" id="systemInApp" checked>
+                        <label class="form-check-label" for="systemInApp">
+                            System Notifications
+                        </label>
+                    </div>
+                </div>
+            </div>
+            <div class="d-grid mt-3">
+                <button class="btn btn-primary" id="saveNotificationSettings">
+                    <i class="fas fa-save me-1"></i> Save Settings
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Notification Detail Modal -->
+<div class="modal fade" id="notificationDetailModal" tabindex="-1" aria-labelledby="notificationDetailModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="notificationDetailModalLabel">Notification Details</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="notification-detail-header">
+                    <div class="notification-detail-icon attendance">
+                        <i class="fas fa-bell"></i>
+                    </div>
+                    <div class="notification-detail-title">
+                        <h5>Attendance Alert: Database Systems</h5>
+                        <span class="notification-detail-time">April 18, 2025 | 10:30 AM</span>
+                    </div>
+                </div>
+                <div class="notification-detail-content">
+                    <p>Your attendance in Database Systems is below 75%. You need to attend at least 3 more classes to reach the threshold.</p>
+                    <p>Current attendance: 72% (13/18 classes)</p>
+                    <p>Required attendance: 75% (minimum)</p>
+                    <p>To improve your attendance, please ensure you attend all remaining classes for this subject. If you have any medical or personal emergencies, submit a leave application with proper documentation.</p>
+                </div>
+                <div class="notification-detail-actions">
+                    <a href="{% url 'student_portal:subject_attendance' 3 %}" class="btn btn-primary">
+                        <i class="fas fa-eye me-1"></i> View Attendance
+                    </a>
+                    <a href="{% url 'student_portal:leave_application' %}" class="btn btn-outline-primary">
+                        <i class="fas fa-file-alt me-1"></i> Apply for Leave
+                    </a>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-success" id="markReadInModal">
+                    <i class="fas fa-check me-1"></i> Mark as Read
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block student_custom_css %}
+<style>
+    /* Notification list styling */
+    .notification-list {
+        display: flex;
+        flex-direction: column;
+    }
+    
+    .notification-item {
+        display: flex;
+        padding: 15px;
+        border-bottom: 1px solid #e3e6f0;
+        transition: all 0.2s ease;
+    }
+    
+    .notification-item:hover {
+        background-color: #f8f9fc;
+    }
+    
+    .notification-item.unread {
+        background-color: rgba(78, 115, 223, 0.05);
+        border-left: 4px solid #4e73df;
+    }
+    
+    .notification-icon {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        margin-right: 15px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        flex-shrink: 0;
+    }
+    
+    .notification-icon.attendance {
+        background-color: #4e73df;
+    }
+    
+    .notification-icon.academics {
+        background-color: #1cc88a;
+    }
+    
+    .notification-icon.leave {
+        background-color: #f6c23e;
+    }
+    
+    .notification-icon.system {
+        background-color: #36b9cc;
+    }
+    
+    .notification-content {
+        flex: 1;
+    }
+    
+    .notification-content h5 {
+        margin-bottom: 5px;
+        font-size: 1rem;
+        font-weight: 600;
+    }
+    
+    .notification-content p {
+        margin-bottom: 10px;
+        color: #5a5c69;
+        font-size: 0.9rem;
+    }
+    
+    .notification-meta {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+    }
+    
+    .notification-time {
+        font-size: 0.8rem;
+        color: #858796;
+    }
+    
+    .notification-category {
+        font-size: 0.75rem;
+        padding: 2px 8px;
+        border-radius: 30px;
+    }
+    
+    .notification-category.attendance {
+        background-color: #eaecf4;
+        color: #4e73df;
+    }
+    
+    .notification-category.academics {
+        background-color: #e3fcef;
+        color: #1cc88a;
+    }
+    
+    .notification-category.leave {
+        background-color: #fff8e5;
+        color: #f6c23e;
+    }
+    
+    .notification-category.system {
+        background-color: #e3f6f8;
+        color: #36b9cc;
+    }
+    
+    .notification-actions {
+        display: flex;
+        flex-direction: column;
+        gap: 5px;
+        margin-left: 15px;
+    }
+    
+    /* Filter buttons */
+    .filter-btn.active {
+        background-color: #4e73df;
+        color: white;
+        border-color: #4e73df;
+    }
+    
+    /* Notification detail modal */
+    .notification-detail-header {
+        display: flex;
+        margin-bottom: 20px;
+    }
+    
+    .notification-detail-icon {
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        margin-right: 15px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 1.2rem;
+    }
+    
+    .notification-detail-title {
+        flex: 1;
+    }
+    
+    .notification-detail-title h5 {
+        margin-bottom: 5px;
+        font-size: 1.2rem;
+        font-weight: 600;
+    }
+    
+    .notification-detail-time {
+        font-size: 0.85rem;
+        color: #858796;
+    }
+    
+    .notification-detail-content {
+        margin-bottom: 20px;
+        padding: 15px;
+        background-color: #f8f9fc;
+        border-radius: 5px;
+    }
+    
+    .notification-detail-content p:last-child {
+        margin-bottom: 0;
+    }
+    
+    .notification-detail-actions {
+        display: flex;
+        gap: 10px;
+        margin-bottom: 10px;
+    }
+</style>
+{% endblock %}
+
+{% block student_custom_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Handle notification filtering
+        document.querySelectorAll('.filter-btn').forEach(button => {
+            button.addEventListener('click', function() {
+                // Remove active class from all buttons
+                document.querySelectorAll('.filter-btn').forEach(btn => {
+                    btn.classList.remove('active');
+                });
+                
+                // Add active class to clicked button
+                this.classList.add('active');
+                
+                // Get filter value
+                const filter = this.dataset.filter;
+                
+                // Apply filter to notifications
+                const notifications = document.querySelectorAll('.notification-item');
+                
+                if (filter === 'all') {
+                    notifications.forEach(item => {
+                        item.style.display = 'flex';
+                    });
+                } else if (filter === 'unread') {
+                    notifications.forEach(item => {
+                        if (item.classList.contains('unread')) {
+                            item.style.display = 'flex';
+                        } else {
+                            item.style.display = 'none';
+                        }
+                    });
+                } else {
+                    notifications.forEach(item => {
+                        const category = item.querySelector('.notification-category');
+                        if (category && category.classList.contains(filter)) {
+                            item.style.display = 'flex';
+                        } else {
+                            item.style.display = 'none';
+                        }
+                    });
+                }
+            });
+        });
+        
+        // Handle notification search
+        document.getElementById('searchButton').addEventListener('click', function() {
+            const searchQuery = document.getElementById('searchNotifications').value.toLowerCase();
+            
+            if (!searchQuery) return;
+            
+            const notifications = document.querySelectorAll('.notification-item');
+            
+            notifications.forEach(item => {
+                const title = item.querySelector('h5').textContent.toLowerCase();
+                const content = item.querySelector('p').textContent.toLowerCase();
+                
+                if (title.includes(searchQuery) || content.includes(searchQuery)) {
+                    item.style.display = 'flex';
+                } else {
+                    item.style.display = 'none';
+                }
+            });
+        });
+        
+        // Search on enter key
+        document.getElementById('searchNotifications').addEventListener('keyup', function(e) {
+            if (e.key === 'Enter') {
+                document.getElementById('searchButton').click();
+            }
+        });
+        
+        // Handle "Mark All as Read" button
+        document.getElementById('markAllRead').addEventListener('click', function() {
+            Swal.fire({
+                title: 'Mark All as Read?',
+                text: 'Are you sure you want to mark all notifications as read?',
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonColor: '#4e73df',
+                cancelButtonColor: '#6c757d',
+                confirmButtonText: 'Yes, mark all'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // In a real app, this would make an AJAX call to mark all as read
+                    
+                    // Remove unread class from all notifications
+                    document.querySelectorAll('.notification-item.unread').forEach(item => {
+                        item.classList.remove('unread');
+                        
+                        // Remove mark as read button from actions
+                        const markReadBtn = item.querySelector('[data-action="mark-read"]');
+                        if (markReadBtn) {
+                            markReadBtn.remove();
+                        }
+                    });
+                    
+                    Swal.fire({
+                        title: 'Marked as Read',
+                        text: 'All notifications have been marked as read.',
+                        icon: 'success',
+                        confirmButtonColor: '#4e73df',
+                        timer: 2000,
+                        timerProgressBar: true
+                    });
+                }
+            });
+        });
+        
+        // Handle notification actions
+        document.addEventListener('click', function(e) {
+            const actionBtn = e.target.closest('.notification-action');
+            
+            if (actionBtn) {
+                const action = actionBtn.dataset.action;
+                const id = actionBtn.dataset.id;
+                
+                if (action === 'view') {
+                    // Show notification detail modal
+                    $('#notificationDetailModal').modal('show');
+                    
+                    // In a real app, you would fetch the notification details
+                    // and update the modal content
+                    
+                } else if (action === 'mark-read') {
+                    // Mark notification as read
+                    const notificationItem = actionBtn.closest('.notification-item');
+                    
+                    // In a real app, this would make an AJAX call
+                    
+                    // Update UI
+                    notificationItem.classList.remove('unread');
+                    actionBtn.remove();
+                    
+                    Swal.fire({
+                        title: 'Marked as Read',
+                        text: 'Notification has been marked as read.',
+                        icon: 'success',
+                        confirmButtonColor: '#4e73df',
+                        toast: true,
+                        position: 'top-end',
+                        showConfirmButton: false,
+                        timer: 3000,
+                        timerProgressBar: true
+                    });
+                }
+            }
+        });
+        
+        // Handle "Mark as Read" button in modal
+        document.getElementById('markReadInModal').addEventListener('click', function() {
+            // In a real app, this would make an AJAX call
+            
+            // Update UI - you would need to identify which notification is shown in the modal
+            // For now, we'll just close the modal and show a success message
+            
+            $('#notificationDetailModal').modal('hide');
+            
+            Swal.fire({
+                title: 'Marked as Read',
+                text: 'Notification has been marked as read.',
+                icon: 'success',
+                confirmButtonColor: '#4e73df',
+                toast: true,
+                position: 'top-end',
+                showConfirmButton: false,
+                timer: 3000,
+                timerProgressBar: true
+            });
+        });
+        
+        // Handle "Save Settings" button
+        document.getElementById('saveNotificationSettings').addEventListener('click', function() {
+            // In a real app, this would make an AJAX call to save settings
+            
+            Swal.fire({
+                title: 'Saving Settings',
+                html: 'Please wait...',
+                timer: 1500,
+                timerProgressBar: true,
+                didOpen: () => {
+                    Swal.showLoading();
+                }
+            }).then(() => {
+                Swal.fire({
+                    title: 'Settings Saved',
+                    text: 'Your notification settings have been saved successfully.',
+                    icon: 'success',
+                    confirmButtonColor: '#4e73df',
+                    timer: 2000,
+                    timerProgressBar: true
+                });
+            });
+        });
+        
+        // Handle refresh button
+        document.getElementById('refreshNotifications').addEventListener('click', function() {
+            // In a real app, this would make an AJAX call to refresh notifications
+            
+            Swal.fire({
+                title: 'Refreshing...',
+                html: 'Fetching latest notifications...',
+                timer: 1500,
+                timerProgressBar: true,
+                didOpen: () => {
+                    Swal.showLoading();
+                }
+            }).then(() => {
+                Swal.fire({
+                    title: 'Refreshed!',
+                    text: 'Notifications have been refreshed.',
+                    icon: 'success',
+                    confirmButtonColor: '#4e73df',
+                    timer: 1500,
+                    timerProgressBar: true,
+                    showConfirmButton: false
+                });
+            });
+        });
+    });
+</script>
+{% endblock %}

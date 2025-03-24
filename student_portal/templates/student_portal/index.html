@@ -1,31 +1,25 @@
-{% extends 'base.html' %}
+{% extends 'student_portal/base_student.html' %}
 {% load static %}
 
-{% block title %}Student Dashboard - MBIT Attendance System{% endblock %}
+{% block student_title %}Dashboard{% endblock %}
 
-{% block nav_items %}
-<li class="nav-item">
-    <a class="nav-link active" href="{% url 'student_portal:index' %}">Dashboard</a>
-</li>
-<li class="nav-item">
-    <a class="nav-link" href="#">Attendance</a>
-</li>
-<li class="nav-item">
-    <a class="nav-link" href="#">Timetable</a>
-</li>
-<li class="nav-item">
-    <a class="nav-link" href="#">Leave Applications</a>
-</li>
-<li class="nav-item">
-    <a class="nav-link" href="#">Subjects</a>
-</li>
-{% endblock %}
-
-{% block content %}
+{% block student_content %}
 <div class="container-fluid py-4">
+    <!-- Welcome and Summary Section -->
     <div class="row mb-4">
         <div class="col-md-12">
-            <h2 class="mb-4">Student Dashboard</h2>
+            <h2 class="mb-3">Student Dashboard</h2>
+            <div class="d-sm-flex align-items-center justify-content-between mb-4">
+                <p class="text-muted">Welcome back, <strong>{{ user.full_name }}</strong>! Here's your attendance summary.</p>
+                <div>
+                    <button class="btn btn-sm btn-primary" id="refreshDashboard">
+                        <i class="fas fa-sync-alt mr-1"></i> Refresh
+                    </button>
+                    <a href="{% url 'student_portal:attendance' %}" class="btn btn-sm btn-outline-primary">
+                        <i class="fas fa-calendar-check mr-1"></i> View Details
+                    </a>
+                </div>
+            </div>
             
             {% if messages %}
                 {% for message in messages %}
@@ -35,25 +29,23 @@
                     </div>
                 {% endfor %}
             {% endif %}
-            
-            <div class="alert alert-primary">
-                <h4 class="alert-heading">Welcome to Student Portal!</h4>
-                <p>You are logged in as a student. From here, you can view your attendance, timetable, and apply for leave.</p>
-                <hr>
-                <p class="mb-0">Make sure to maintain at least 75% attendance in all subjects to qualify for examinations.</p>
-            </div>
         </div>
     </div>
     
+    <!-- Status Cards -->
     <div class="row">
         <div class="col-xl-3 col-md-6 mb-4">
-            <div class="card border-left-primary shadow h-100 py-2">
+            <div class="card border-left-primary shadow h-100 py-2 stats-card">
                 <div class="card-body">
                     <div class="row no-gutters align-items-center">
                         <div class="col mr-2">
                             <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
-                                Average Attendance</div>
-                            <div class="h5 mb-0 font-weight-bold text-gray-800">83.5%</div>
+                                Overall Attendance</div>
+                            <div class="h5 mb-0 font-weight-bold">85.2%</div>
+                            <div class="progress mt-2" style="height: 8px;">
+                                <div class="progress-bar bg-primary" role="progressbar" style="width: 85.2%" 
+                                    aria-valuenow="85.2" aria-valuemin="0" aria-valuemax="100"></div>
+                            </div>
                         </div>
                         <div class="col-auto">
                             <i class="fas fa-calendar-check fa-2x text-gray-300"></i>
@@ -64,13 +56,14 @@
         </div>
         
         <div class="col-xl-3 col-md-6 mb-4">
-            <div class="card border-left-info shadow h-100 py-2">
+            <div class="card border-left-success shadow h-100 py-2 stats-card">
                 <div class="card-body">
                     <div class="row no-gutters align-items-center">
                         <div class="col mr-2">
-                            <div class="text-xs font-weight-bold text-info text-uppercase mb-1">
+                            <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
                                 Total Subjects</div>
-                            <div class="h5 mb-0 font-weight-bold text-gray-800">7</div>
+                            <div class="h5 mb-0 font-weight-bold">7</div>
+                            <div class="small text-muted mt-2">Semester 4</div>
                         </div>
                         <div class="col-auto">
                             <i class="fas fa-book fa-2x text-gray-300"></i>
@@ -81,13 +74,14 @@
         </div>
         
         <div class="col-xl-3 col-md-6 mb-4">
-            <div class="card border-left-warning shadow h-100 py-2">
+            <div class="card border-left-warning shadow h-100 py-2 stats-card">
                 <div class="card-body">
                     <div class="row no-gutters align-items-center">
                         <div class="col mr-2">
                             <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
-                                Low Attendance Subjects</div>
-                            <div class="h5 mb-0 font-weight-bold text-gray-800">1</div>
+                                Warning Subjects</div>
+                            <div class="h5 mb-0 font-weight-bold">2</div>
+                            <div class="small text-muted mt-2">Below 75% threshold</div>
                         </div>
                         <div class="col-auto">
                             <i class="fas fa-exclamation-triangle fa-2x text-gray-300"></i>
@@ -98,16 +92,20 @@
         </div>
         
         <div class="col-xl-3 col-md-6 mb-4">
-            <div class="card border-left-success shadow h-100 py-2">
+            <div class="card border-left-info shadow h-100 py-2 stats-card">
                 <div class="card-body">
                     <div class="row no-gutters align-items-center">
                         <div class="col mr-2">
-                            <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
-                                Approved Leaves</div>
-                            <div class="h5 mb-0 font-weight-bold text-gray-800">3</div>
+                            <div class="text-xs font-weight-bold text-info text-uppercase mb-1">
+                                Today's Classes</div>
+                            <div class="h5 mb-0 font-weight-bold">4 / 5</div>
+                            <div class="progress mt-2" style="height: 8px;">
+                                <div class="progress-bar bg-info" role="progressbar" style="width: 80%" 
+                                    aria-valuenow="80" aria-valuemin="0" aria-valuemax="100"></div>
+                            </div>
                         </div>
                         <div class="col-auto">
-                            <i class="fas fa-check-circle fa-2x text-gray-300"></i>
+                            <i class="fas fa-clipboard-list fa-2x text-gray-300"></i>
                         </div>
                     </div>
                 </div>
@@ -115,118 +113,226 @@
         </div>
     </div>
     
-    <div class="row mt-4">
+    <!-- Attendance Warning Alert (if needed) -->
+    <div class="row mb-4">
+        <div class="col-md-12">
+            <div class="alert alert-attendance-warning alert-dismissible fade show" role="alert">
+                <h5 class="alert-heading"><i class="fas fa-exclamation-triangle me-2"></i> Attendance Warning</h5>
+                <p>Your attendance in <strong>Database Systems (72%)</strong> and <strong>Computer Networks (74%)</strong> is below the required threshold of 75%.</p>
+                <hr>
+                <p class="mb-0">Please ensure your attendance improves to avoid being detained from exams.</p>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Today's Schedule & Subject-wise Attendance -->
+    <div class="row">
         <div class="col-md-6">
-            <div class="card shadow mb-4">
+            <div class="card shadow mb-4 dashboard-card">
                 <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
-                    <h6 class="m-0 font-weight-bold text-primary">Today's Schedule</h6>
+                    <h6 class="m-0 font-weight-bold">Today's Schedule</h6>
+                    <div class="dropdown no-arrow">
+                        <a class="dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            <i class="fas fa-ellipsis-v fa-sm fa-fw text-gray-400"></i>
+                        </a>
+                        <div class="dropdown-menu dropdown-menu-right shadow animated--fade-in" aria-labelledby="dropdownMenuLink">
+                            <a class="dropdown-item" href="{% url 'student_portal:timetable' %}">View Full Timetable</a>
+                            <div class="dropdown-divider"></div>
+                            <a class="dropdown-item" href="#">Download Schedule</a>
+                        </div>
+                    </div>
                 </div>
                 <div class="card-body">
-                    <div class="table-responsive">
-                        <table class="table table-bordered">
-                            <thead>
-                                <tr>
-                                    <th>Time</th>
-                                    <th>Subject</th>
-                                    <th>Faculty</th>
-                                    <th>Room</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td>9:00 AM - 10:00 AM</td>
-                                    <td>Operating Systems</td>
-                                    <td>Prof. Mehta</td>
-                                    <td>301</td>
-                                </tr>
-                                <tr>
-                                    <td>10:00 AM - 11:00 AM</td>
-                                    <td>Computer Networks</td>
-                                    <td>Prof. Sharma</td>
-                                    <td>301</td>
-                                </tr>
-                                <tr>
-                                    <td>11:15 AM - 12:15 PM</td>
-                                    <td>Database Systems</td>
-                                    <td>Prof. Joshi</td>
-                                    <td>301</td>
-                                </tr>
-                                <tr>
-                                    <td>1:00 PM - 3:00 PM</td>
-                                    <td>OS Lab</td>
-                                    <td>Prof. Mehta</td>
-                                    <td>Lab 2</td>
-                                </tr>
-                            </tbody>
-                        </table>
+                    <div class="timeline">
+                        <div class="timeline-item">
+                            <div class="timeline-marker bg-success"></div>
+                            <div class="timeline-content">
+                                <div class="d-flex justify-content-between">
+                                    <h6 class="timeline-title">Operating Systems</h6>
+                                    <small class="text-muted">9:00 - 10:00 AM</small>
+                                </div>
+                                <p>Prof. Mehta | Room 301</p>
+                                <span class="badge bg-success">Attended</span>
+                            </div>
+                        </div>
+                        <div class="timeline-item">
+                            <div class="timeline-marker bg-success"></div>
+                            <div class="timeline-content">
+                                <div class="d-flex justify-content-between">
+                                    <h6 class="timeline-title">Computer Networks</h6>
+                                    <small class="text-muted">10:00 - 11:00 AM</small>
+                                </div>
+                                <p>Prof. Sharma | Room 301</p>
+                                <span class="badge bg-success">Attended</span>
+                            </div>
+                        </div>
+                        <div class="timeline-item">
+                            <div class="timeline-marker bg-success"></div>
+                            <div class="timeline-content">
+                                <div class="d-flex justify-content-between">
+                                    <h6 class="timeline-title">Database Systems</h6>
+                                    <small class="text-muted">11:15 - 12:15 PM</small>
+                                </div>
+                                <p>Prof. Joshi | Room 301</p>
+                                <span class="badge bg-success">Attended</span>
+                            </div>
+                        </div>
+                        <div class="timeline-item">
+                            <div class="timeline-marker bg-success"></div>
+                            <div class="timeline-content">
+                                <div class="d-flex justify-content-between">
+                                    <h6 class="timeline-title">OS Lab</h6>
+                                    <small class="text-muted">1:00 - 3:00 PM</small>
+                                </div>
+                                <p>Prof. Mehta | Lab 2</p>
+                                <span class="badge bg-success">Attended</span>
+                            </div>
+                        </div>
+                        <div class="timeline-item">
+                            <div class="timeline-marker bg-warning"></div>
+                            <div class="timeline-content">
+                                <div class="d-flex justify-content-between">
+                                    <h6 class="timeline-title">Web Development</h6>
+                                    <small class="text-muted">3:15 - 4:15 PM</small>
+                                </div>
+                                <p>Prof. Kumar | Room 303</p>
+                                <span class="badge bg-warning">Upcoming</span>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
         
         <div class="col-md-6">
-            <div class="card shadow mb-4">
+            <div class="card shadow mb-4 dashboard-card">
                 <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
-                    <h6 class="m-0 font-weight-bold text-primary">Subject-wise Attendance</h6>
+                    <h6 class="m-0 font-weight-bold">Subject-wise Attendance</h6>
+                    <div class="dropdown no-arrow">
+                        <a class="dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            <i class="fas fa-ellipsis-v fa-sm fa-fw text-gray-400"></i>
+                        </a>
+                        <div class="dropdown-menu dropdown-menu-right shadow animated--fade-in" aria-labelledby="dropdownMenuLink">
+                            <a class="dropdown-item" href="{% url 'student_portal:attendance' %}">View Detailed Attendance</a>
+                            <div class="dropdown-divider"></div>
+                            <a class="dropdown-item" href="#">Download Report</a>
+                        </div>
+                    </div>
                 </div>
                 <div class="card-body">
-                    <div class="table-responsive">
-                        <table class="table table-bordered">
-                            <thead>
-                                <tr>
-                                    <th>Subject</th>
-                                    <th>Attendance</th>
-                                    <th>Status</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td>Operating Systems</td>
-                                    <td>
-                                        <div class="progress">
-                                            <div class="progress-bar bg-success" role="progressbar" style="width: 85%" aria-valuenow="85" aria-valuemin="0" aria-valuemax="100">85%</div>
-                                        </div>
-                                    </td>
-                                    <td><span class="badge bg-success">Good</span></td>
-                                </tr>
-                                <tr>
-                                    <td>Computer Networks</td>
-                                    <td>
-                                        <div class="progress">
-                                            <div class="progress-bar bg-success" role="progressbar" style="width: 88%" aria-valuenow="88" aria-valuemin="0" aria-valuemax="100">88%</div>
-                                        </div>
-                                    </td>
-                                    <td><span class="badge bg-success">Good</span></td>
-                                </tr>
-                                <tr>
-                                    <td>Database Systems</td>
-                                    <td>
-                                        <div class="progress">
-                                            <div class="progress-bar bg-warning" role="progressbar" style="width: 72%" aria-valuenow="72" aria-valuemin="0" aria-valuemax="100">72%</div>
-                                        </div>
-                                    </td>
-                                    <td><span class="badge bg-warning">Warning</span></td>
-                                </tr>
-                                <tr>
-                                    <td>Software Engineering</td>
-                                    <td>
-                                        <div class="progress">
-                                            <div class="progress-bar bg-success" role="progressbar" style="width: 90%" aria-valuenow="90" aria-valuemin="0" aria-valuemax="100">90%</div>
-                                        </div>
-                                    </td>
-                                    <td><span class="badge bg-success">Good</span></td>
-                                </tr>
-                                <tr>
-                                    <td>Web Development</td>
-                                    <td>
-                                        <div class="progress">
-                                            <div class="progress-bar bg-success" role="progressbar" style="width: 83%" aria-valuenow="83" aria-valuemin="0" aria-valuemax="100">83%</div>
-                                        </div>
-                                    </td>
-                                    <td><span class="badge bg-success">Good</span></td>
-                                </tr>
-                            </tbody>
-                        </table>
+                    <div class="mb-4">
+                        <h6 class="small font-weight-bold">Operating Systems <span class="float-end">85%</span></h6>
+                        <div class="progress">
+                            <div class="progress-bar bg-success" role="progressbar" style="width: 85%" aria-valuenow="85" aria-valuemin="0" aria-valuemax="100"></div>
+                        </div>
+                    </div>
+                    <div class="mb-4">
+                        <h6 class="small font-weight-bold">Computer Networks <span class="float-end">74%</span></h6>
+                        <div class="progress">
+                            <div class="progress-bar bg-warning" role="progressbar" style="width: 74%" aria-valuenow="74" aria-valuemin="0" aria-valuemax="100"></div>
+                        </div>
+                    </div>
+                    <div class="mb-4">
+                        <h6 class="small font-weight-bold">Database Systems <span class="float-end">72%</span></h6>
+                        <div class="progress">
+                            <div class="progress-bar bg-warning" role="progressbar" style="width: 72%" aria-valuenow="72" aria-valuemin="0" aria-valuemax="100"></div>
+                        </div>
+                    </div>
+                    <div class="mb-4">
+                        <h6 class="small font-weight-bold">Software Engineering <span class="float-end">90%</span></h6>
+                        <div class="progress">
+                            <div class="progress-bar bg-success" role="progressbar" style="width: 90%" aria-valuenow="90" aria-valuemin="0" aria-valuemax="100"></div>
+                        </div>
+                    </div>
+                    <div class="mb-4">
+                        <h6 class="small font-weight-bold">Web Development <span class="float-end">88%</span></h6>
+                        <div class="progress">
+                            <div class="progress-bar bg-success" role="progressbar" style="width: 88%" aria-valuenow="88" aria-valuemin="0" aria-valuemax="100"></div>
+                        </div>
+                    </div>
+                    <div class="mb-4">
+                        <h6 class="small font-weight-bold">Mobile App Development <span class="float-end">95%</span></h6>
+                        <div class="progress">
+                            <div class="progress-bar bg-success" role="progressbar" style="width: 95%" aria-valuenow="95" aria-valuemin="0" aria-valuemax="100"></div>
+                        </div>
+                    </div>
+                    <div>
+                        <h6 class="small font-weight-bold">Artificial Intelligence <span class="float-end">92%</span></h6>
+                        <div class="progress">
+                            <div class="progress-bar bg-success" role="progressbar" style="width: 92%" aria-valuenow="92" aria-valuemin="0" aria-valuemax="100"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Attendance Chart and Notifications -->
+    <div class="row">
+        <div class="col-md-8">
+            <div class="card shadow mb-4 dashboard-card">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold">Monthly Attendance Trend</h6>
+                </div>
+                <div class="card-body">
+                    <div class="chart-container" style="position: relative; height:320px;">
+                        <canvas id="attendanceChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-4">
+            <div class="card shadow mb-4 dashboard-card">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold">Notifications</h6>
+                </div>
+                <div class="card-body">
+                    <div class="notification-list">
+                        <a href="#" class="notification-item unread">
+                            <div class="notification-icon bg-primary">
+                                <i class="fas fa-bell"></i>
+                            </div>
+                            <div class="notification-content">
+                                <h6>Database Systems attendance is low</h6>
+                                <p class="small text-muted">You need to attend at least 3 more classes to reach 75%</p>
+                                <span class="notification-time">2 hours ago</span>
+                            </div>
+                        </a>
+                        <a href="#" class="notification-item">
+                            <div class="notification-icon bg-success">
+                                <i class="fas fa-check-circle"></i>
+                            </div>
+                            <div class="notification-content">
+                                <h6>Leave application approved</h6>
+                                <p class="small text-muted">Your leave for March 15-17 has been approved</p>
+                                <span class="notification-time">Yesterday</span>
+                            </div>
+                        </a>
+                        <a href="#" class="notification-item">
+                            <div class="notification-icon bg-info">
+                                <i class="fas fa-info-circle"></i>
+                            </div>
+                            <div class="notification-content">
+                                <h6>Timetable updated</h6>
+                                <p class="small text-muted">Web Development class rescheduled for tomorrow</p>
+                                <span class="notification-time">3 days ago</span>
+                            </div>
+                        </a>
+                        <a href="#" class="notification-item">
+                            <div class="notification-icon bg-warning">
+                                <i class="fas fa-exclamation-triangle"></i>
+                            </div>
+                            <div class="notification-content">
+                                <h6>Computer Networks attendance warning</h6>
+                                <p class="small text-muted">Your attendance is below threshold at 74%</p>
+                                <span class="notification-time">1 week ago</span>
+                            </div>
+                        </a>
+                    </div>
+                    <div class="text-center mt-3">
+                        <a href="#" class="btn btn-sm btn-outline-primary">View All Notifications</a>
                     </div>
                 </div>
             </div>
@@ -235,26 +341,210 @@
 </div>
 {% endblock %}
 
-{% block extra_css %}
+{% block student_custom_css %}
 <style>
-    .border-left-primary {
-        border-left: 0.25rem solid #007bff;
+    /* Timeline styling */
+    .timeline {
+        position: relative;
+        padding: 0;
+        list-style: none;
     }
-    .border-left-success {
-        border-left: 0.25rem solid #28a745;
+    
+    .timeline-item {
+        position: relative;
+        padding-left: 30px;
+        margin-bottom: 20px;
     }
-    .border-left-info {
-        border-left: 0.25rem solid #17a2b8;
+    
+    .timeline-marker {
+        position: absolute;
+        left: 0;
+        width: 15px;
+        height: 15px;
+        border-radius: 50%;
+        top: 5px;
     }
-    .border-left-warning {
-        border-left: 0.25rem solid #ffc107;
+    
+    .timeline-content {
+        padding-bottom: 15px;
+        border-bottom: 1px solid #e3e6f0;
     }
-    .progress {
-        height: 20px;
+    
+    .timeline-content p {
+        margin-bottom: 0.5rem;
+        color: #5a5c69;
     }
-    .progress-bar {
-        line-height: 20px;
-        font-size: 14px;
+    
+    .timeline-title {
+        margin-bottom: 0.25rem;
+        font-weight: 600;
+        color: #4e73df;
+    }
+    
+    /* Notification list */
+    .notification-list {
+        max-height: 320px;
+        overflow-y: auto;
+    }
+    
+    .notification-item {
+        display: flex;
+        padding: 10px 0;
+        border-bottom: 1px solid #e3e6f0;
+        color: inherit;
+        text-decoration: none;
+    }
+    
+    .notification-item:hover {
+        background-color: #f8f9fc;
+    }
+    
+    .notification-item.unread {
+        background-color: rgba(78, 115, 223, 0.05);
+    }
+    
+    .notification-icon {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        margin-right: 15px;
+        color: white;
+    }
+    
+    .notification-content {
+        flex: 1;
+    }
+    
+    .notification-content h6 {
+        margin-bottom: 3px;
+        font-size: 0.9rem;
+    }
+    
+    .notification-time {
+        display: block;
+        font-size: 0.75rem;
+        color: #858796;
+        margin-top: 5px;
     }
 </style>
+{% endblock %}
+
+{% block student_custom_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Initialize attendance chart
+        const attendanceChartCtx = document.getElementById('attendanceChart').getContext('2d');
+        
+        const months = ['January', 'February', 'March', 'April', 'May', 'June'];
+        const subjectsData = {
+            'Operating Systems': [82, 85, 88, 84, 87, 85],
+            'Computer Networks': [75, 78, 73, 70, 72, 74],
+            'Database Systems': [78, 75, 73, 70, 68, 72],
+            'Software Engineering': [88, 85, 90, 92, 88, 90],
+            'Web Development': [85, 82, 88, 90, 92, 88],
+            'Mobile App Development': [90, 92, 95, 93, 96, 95],
+            'Artificial Intelligence': [88, 90, 95, 93, 91, 92]
+        };
+        
+        // Define colors for each subject
+        const colors = [
+            '#4e73df', // Primary
+            '#1cc88a', // Success
+            '#36b9cc', // Info
+            '#f6c23e', // Warning
+            '#e74a3b', // Danger
+            '#6f42c1', // Purple
+            '#fd7e14'  // Orange
+        ];
+        
+        // Prepare datasets
+        const datasets = Object.entries(subjectsData).map(([subject, data], index) => ({
+            label: subject,
+            data: data,
+            backgroundColor: 'transparent',
+            borderColor: colors[index % colors.length],
+            borderWidth: 2,
+            pointBackgroundColor: colors[index % colors.length],
+            tension: 0.4
+        }));
+        
+        // Create chart
+        const attendanceChart = new Chart(attendanceChartCtx, {
+            type: 'line',
+            data: {
+                labels: months,
+                datasets: datasets
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        beginAtZero: false,
+                        min: 50,
+                        max: 100,
+                        ticks: {
+                            stepSize: 10
+                        },
+                        title: {
+                            display: true,
+                            text: 'Attendance %'
+                        }
+                    }
+                },
+                plugins: {
+                    legend: {
+                        position: 'top',
+                        labels: {
+                            boxWidth: 10,
+                            usePointStyle: true
+                        }
+                    },
+                    tooltip: {
+                        mode: 'index',
+                        intersect: false,
+                        callbacks: {
+                            label: function(context) {
+                                return context.dataset.label + ': ' + context.raw + '%';
+                            }
+                        }
+                    }
+                },
+                interaction: {
+                    mode: 'nearest',
+                    axis: 'x',
+                    intersect: false
+                }
+            }
+        });
+        
+        // Handle refresh button
+        document.getElementById('refreshDashboard').addEventListener('click', function() {
+            // Add a loading spinner to button
+            this.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Refreshing...';
+            this.disabled = true;
+            
+            // Simulate refresh (would be an AJAX call in production)
+            setTimeout(() => {
+                // Reset button
+                this.innerHTML = '<i class="fas fa-sync-alt mr-1"></i> Refresh';
+                this.disabled = false;
+                
+                // Show success message using SweetAlert2
+                Swal.fire({
+                    title: 'Dashboard Refreshed!',
+                    text: 'Latest attendance data has been loaded.',
+                    icon: 'success',
+                    confirmButtonColor: '#4e73df',
+                    timer: 2000,
+                    timerProgressBar: true,
+                    showConfirmButton: false
+                });
+            }, 1500);
+        });
+    });
+</script>
 {% endblock %}
