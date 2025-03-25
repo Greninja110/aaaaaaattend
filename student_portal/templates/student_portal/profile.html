@@ -25,47 +25,59 @@
             <div class="card shadow mb-4 dashboard-card">
                 <div class="card-body text-center position-relative">
                     <div class="profile-image-container">
-                        <img src="{% static 'img/profile-placeholder.jpg' %}" alt="Profile Photo" class="profile-image">
+                        {% if student.profile_photo %}
+                            <img src="{{ student.profile_photo.url }}" alt="Profile Photo" class="profile-image">
+                        {% else %}
+                            <img src="{% static 'img/profile-placeholder.jpg' %}" alt="Profile Photo" class="profile-image">
+                        {% endif %}
                         <button class="change-photo-btn" data-bs-toggle="modal" data-bs-target="#changePhotoModal">
                             <i class="fas fa-camera"></i>
                         </button>
                     </div>
-                    <h4 class="mt-3 mb-1">John Doe</h4>
-                    <p class="text-muted mb-2">Computer Engineering - CE2</p>
-                    <p class="enrollment-number">MBIT-CE-2022-001</p>
+                    <h4 class="mt-3 mb-1">{{ user.full_name }}</h4>
+                    <p class="text-muted mb-2">{{ student.department.department_name }} - {{ student.class_section.section_name }}</p>
+                    <p class="enrollment-number">{{ student.enrollment_number }}</p>
                     <hr>
                     <div class="profile-meta">
                         <div class="meta-item">
                             <i class="fas fa-envelope text-primary"></i>
-                            <span>johndoe@mbit.edu.in</span>
+                            <span>{{ user.email }}</span>
                         </div>
                         <div class="meta-item">
                             <i class="fas fa-phone text-success"></i>
-                            <span>+91 98765 43210</span>
+                            <span>{{ student.contact_number|default:"+91 Not Provided" }}</span>
                         </div>
                         <div class="meta-item">
                             <i class="fas fa-calendar-alt text-info"></i>
-                            <span>DOB: June 15, 2003</span>
+                            <span>DOB: {{ student.dob|date:"F j, Y" }}</span>
                         </div>
                         <div class="meta-item">
                             <i class="fas fa-map-marker-alt text-danger"></i>
-                            <span>Ahmedabad, Gujarat</span>
+                            <span>{{ student.address|default:"Address not provided" }}</span>
                         </div>
                     </div>
                     <hr>
                     <div class="social-links">
-                        <a href="#" class="social-link" title="LinkedIn">
+                        {% if student.linkedin_profile %}
+                        <a href="{{ student.linkedin_profile }}" class="social-link" title="LinkedIn" target="_blank">
                             <i class="fab fa-linkedin-in"></i>
                         </a>
-                        <a href="#" class="social-link" title="GitHub">
+                        {% endif %}
+                        {% if student.github_profile %}
+                        <a href="{{ student.github_profile }}" class="social-link" title="GitHub" target="_blank">
                             <i class="fab fa-github"></i>
                         </a>
-                        <a href="#" class="social-link" title="Twitter">
+                        {% endif %}
+                        {% if student.twitter_profile %}
+                        <a href="{{ student.twitter_profile }}" class="social-link" title="Twitter" target="_blank">
                             <i class="fab fa-twitter"></i>
                         </a>
-                        <a href="#" class="social-link" title="Instagram">
+                        {% endif %}
+                        {% if student.instagram_profile %}
+                        <a href="{{ student.instagram_profile }}" class="social-link" title="Instagram" target="_blank">
                             <i class="fab fa-instagram"></i>
                         </a>
+                        {% endif %}
                     </div>
                 </div>
             </div>
@@ -80,12 +92,13 @@
                 </div>
                 <div class="card-body">
                     <div class="skill-tags">
-                        <span class="skill-tag">Java</span>
-                        <span class="skill-tag">Python</span>
-                        <span class="skill-tag">Web Development</span>
-                        <span class="skill-tag">SQL</span>
-                        <span class="skill-tag">Data Structures</span>
-                        <span class="skill-tag">Machine Learning</span>
+                        {% if student.skills %}
+                            {% for skill in student.skills %}
+                                <span class="skill-tag">{{ skill }}</span>
+                            {% endfor %}
+                        {% else %}
+                            <p class="text-muted">No skills added yet. Click the edit button to add your skills.</p>
+                        {% endif %}
                     </div>
                 </div>
             </div>
@@ -132,35 +145,35 @@
                     <table class="table academic-info-table">
                         <tr>
                             <th width="200">Roll Number</th>
-                            <td>CE2022001</td>
+                            <td>{{ student.roll_number }}</td>
                         </tr>
                         <tr>
                             <th>Department</th>
-                            <td>Computer Engineering</td>
+                            <td>{{ student.department.department_name }}</td>
                         </tr>
                         <tr>
                             <th>Batch</th>
-                            <td>2022-26</td>
+                            <td>{{ student.admission_year }}-{{ student.admission_year|add:4 }}</td>
                         </tr>
                         <tr>
                             <th>Current Semester</th>
-                            <td>Semester 4</td>
+                            <td>Semester {{ student.current_semester }}</td>
                         </tr>
                         <tr>
                             <th>Class & Section</th>
-                            <td>CE2</td>
+                            <td>{{ student.class_section.section_name }}</td>
                         </tr>
                         <tr>
                             <th>Lab Batch</th>
-                            <td>Batch B</td>
+                            <td>Batch {{ student.batch.batch_name }}</td>
                         </tr>
                         <tr>
                             <th>Academic Year</th>
-                            <td>2024-25</td>
+                            <td>{{ current_academic_year }}</td>
                         </tr>
                         <tr>
                             <th>Admission Year</th>
-                            <td>2022</td>
+                            <td>{{ student.admission_year }}</td>
                         </tr>
                     </table>
                 </div>
@@ -175,31 +188,31 @@
                     <table class="table personal-info-table">
                         <tr>
                             <th width="200">Full Name</th>
-                            <td>John Doe</td>
+                            <td>{{ user.full_name }}</td>
                         </tr>
                         <tr>
                             <th>Email</th>
-                            <td>johndoe@mbit.edu.in</td>
+                            <td>{{ user.email }}</td>
                         </tr>
                         <tr>
                             <th>Contact Number</th>
-                            <td>+91 98765 43210</td>
+                            <td>{{ student.contact_number|default:"Not provided" }}</td>
                         </tr>
                         <tr>
                             <th>Date of Birth</th>
-                            <td>June 15, 2003</td>
+                            <td>{{ student.dob|date:"F j, Y" }}</td>
                         </tr>
                         <tr>
                             <th>Gender</th>
-                            <td>Male</td>
+                            <td>{{ student.gender|title }}</td>
                         </tr>
                         <tr>
                             <th>Blood Group</th>
-                            <td>B+</td>
+                            <td>{{ student.blood_group|default:"Not provided" }}</td>
                         </tr>
                         <tr>
                             <th>Address</th>
-                            <td>123 Main Street, Satellite, Ahmedabad, Gujarat, 380015</td>
+                            <td>{{ student.address|default:"Not provided" }}</td>
                         </tr>
                     </table>
                 </div>
@@ -214,31 +227,31 @@
                     <table class="table guardian-info-table">
                         <tr>
                             <th width="200">Father's Name</th>
-                            <td>Robert Doe</td>
+                            <td>{{ student.father_name|default:"Not provided" }}</td>
                         </tr>
                         <tr>
                             <th>Father's Occupation</th>
-                            <td>Software Engineer</td>
+                            <td>{{ student.father_occupation|default:"Not provided" }}</td>
                         </tr>
                         <tr>
                             <th>Father's Contact</th>
-                            <td>+91 98765 43211</td>
+                            <td>{{ student.father_contact|default:"Not provided" }}</td>
                         </tr>
                         <tr>
                             <th>Mother's Name</th>
-                            <td>Jennifer Doe</td>
+                            <td>{{ student.mother_name|default:"Not provided" }}</td>
                         </tr>
                         <tr>
                             <th>Mother's Occupation</th>
-                            <td>Teacher</td>
+                            <td>{{ student.mother_occupation|default:"Not provided" }}</td>
                         </tr>
                         <tr>
                             <th>Mother's Contact</th>
-                            <td>+91 98765 43212</td>
+                            <td>{{ student.mother_contact|default:"Not provided" }}</td>
                         </tr>
                         <tr>
                             <th>Emergency Contact</th>
-                            <td>+91 98765 43211 (Father)</td>
+                            <td>{{ student.emergency_contact|default:"Not provided" }} ({{ student.emergency_contact_relation|default:"Not specified" }})</td>
                         </tr>
                     </table>
                 </div>
@@ -250,48 +263,52 @@
                     <h6 class="m-0 font-weight-bold">Interface Preferences</h6>
                 </div>
                 <div class="card-body">
-                    <div class="row">
-                        <div class="col-md-6">
-                            <div class="form-group mb-3">
-                                <label class="form-label">Theme</label>
-                                <div class="d-flex theme-selector">
-                                    <div class="theme-option active" data-theme="light">
-                                        <div class="theme-preview light-theme"></div>
-                                        <span>Light</span>
-                                    </div>
-                                    <div class="theme-option" data-theme="dark">
-                                        <div class="theme-preview dark-theme"></div>
-                                        <span>Dark</span>
-                                    </div>
-                                    <div class="theme-option" data-theme="blue">
-                                        <div class="theme-preview blue-theme"></div>
-                                        <span>Blue</span>
+                    <form id="preferencesForm" method="POST" action="{% url 'student_portal:save_preferences' %}">
+                        {% csrf_token %}
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group mb-3">
+                                    <label class="form-label">Theme</label>
+                                    <div class="d-flex theme-selector">
+                                        <div class="theme-option {% if preferences.theme == 'light' %}active{% endif %}" data-theme="light">
+                                            <div class="theme-preview light-theme"></div>
+                                            <span>Light</span>
+                                        </div>
+                                        <div class="theme-option {% if preferences.theme == 'dark' %}active{% endif %}" data-theme="dark">
+                                            <div class="theme-preview dark-theme"></div>
+                                            <span>Dark</span>
+                                        </div>
+                                        <div class="theme-option {% if preferences.theme == 'blue' %}active{% endif %}" data-theme="blue">
+                                            <div class="theme-preview blue-theme"></div>
+                                            <span>Blue</span>
+                                        </div>
+                                        <input type="hidden" name="theme" id="themeInput" value="{{ preferences.theme|default:'light' }}">
                                     </div>
                                 </div>
                             </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="form-group mb-3">
-                                <label class="form-label">Default View</label>
-                                <select class="form-select" id="defaultView">
-                                    <option value="dashboard">Dashboard</option>
-                                    <option value="attendance">Attendance</option>
-                                    <option value="timetable">Timetable</option>
-                                </select>
+                            <div class="col-md-6">
+                                <div class="form-group mb-3">
+                                    <label class="form-label">Default View</label>
+                                    <select class="form-select" id="defaultView" name="default_view">
+                                        <option value="dashboard" {% if preferences.default_view == 'dashboard' %}selected{% endif %}>Dashboard</option>
+                                        <option value="attendance" {% if preferences.default_view == 'attendance' %}selected{% endif %}>Attendance</option>
+                                        <option value="timetable" {% if preferences.default_view == 'timetable' %}selected{% endif %}>Timetable</option>
+                                    </select>
+                                </div>
+                                <div class="form-check mb-3">
+                                    <input class="form-check-input" type="checkbox" id="enableNotifications" name="enable_notifications" {% if preferences.enable_notifications %}checked{% endif %}>
+                                    <label class="form-check-label" for="enableNotifications">
+                                        Enable Email Notifications
+                                    </label>
+                                </div>
                             </div>
-                            <div class="form-check mb-3">
-                                <input class="form-check-input" type="checkbox" id="enableNotifications" checked>
-                                <label class="form-check-label" for="enableNotifications">
-                                    Enable Email Notifications
-                                </label>
-                            </div>
                         </div>
-                    </div>
-                    <div class="d-grid mt-3">
-                        <button class="btn btn-primary" id="savePreferences">
-                            <i class="fas fa-save me-1"></i> Save Preferences
-                        </button>
-                    </div>
+                        <div class="d-grid mt-3">
+                            <button type="submit" class="btn btn-primary" id="savePreferences">
+                                <i class="fas fa-save me-1"></i> Save Preferences
+                            </button>
+                        </div>
+                    </form>
                 </div>
             </div>
         </div>
@@ -310,36 +327,38 @@
                         <i class="fas fa-info-circle me-2"></i> Note: Some information cannot be edited as they are maintained by the administration. Please contact the admin office for any changes in those fields.
                     </div>
                     
-                    <form id="editProfileForm">
+                    <form id="editProfileForm" method="POST" action="{% url 'student_portal:edit_profile' %}">
+                        {% csrf_token %}
                         <div class="mb-3">
                             <label for="contactNumber" class="form-label">Contact Number</label>
-                            <input type="tel" class="form-control" id="contactNumber" value="+91 98765 43210" pattern="[+][0-9]{2} [0-9]{5} [0-9]{5}" placeholder="+91 XXXXX XXXXX">
+                            <input type="tel" class="form-control" id="contactNumber" name="contact_number" value="{{ student.contact_number|default:'' }}" pattern="[+][0-9]{2} [0-9]{5} [0-9]{5}" placeholder="+91 XXXXX XXXXX">
                             <div class="form-text">Format: +91 XXXXX XXXXX</div>
                         </div>
                         
                         <div class="mb-3">
                             <label for="address" class="form-label">Address</label>
-                            <textarea class="form-control" id="address" rows="3">123 Main Street, Satellite, Ahmedabad, Gujarat, 380015</textarea>
+                            <textarea class="form-control" id="address" name="address" rows="3">{{ student.address|default:'' }}</textarea>
                         </div>
                         
                         <div class="row mb-3">
                             <div class="col-md-6">
                                 <label for="bloodGroup" class="form-label">Blood Group</label>
-                                <select class="form-select" id="bloodGroup">
-                                    <option>A+</option>
-                                    <option>A-</option>
-                                    <option>B+</option>
-                                    <option>B-</option>
-                                    <option>AB+</option>
-                                    <option>AB-</option>
-                                    <option>O+</option>
-                                    <option>O-</option>
+                                <select class="form-select" id="bloodGroup" name="blood_group">
+                                    <option value="">Select Blood Group</option>
+                                    {% for bg in blood_groups %}
+                                    <option value="{{ bg }}" {% if student.blood_group == bg %}selected{% endif %}>{{ bg }}</option>
+                                    {% endfor %}
                                 </select>
                             </div>
                             <div class="col-md-6">
                                 <label for="emergencyContact" class="form-label">Emergency Contact</label>
-                                <input type="tel" class="form-control" id="emergencyContact" value="+91 98765 43211" pattern="[+][0-9]{2} [0-9]{5} [0-9]{5}" placeholder="+91 XXXXX XXXXX">
+                                <input type="tel" class="form-control" id="emergencyContact" name="emergency_contact" value="{{ student.emergency_contact|default:'' }}" pattern="[+][0-9]{2} [0-9]{5} [0-9]{5}" placeholder="+91 XXXXX XXXXX">
                             </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="emergencyContactRelation" class="form-label">Relation with Emergency Contact</label>
+                            <input type="text" class="form-control" id="emergencyContactRelation" name="emergency_contact_relation" value="{{ student.emergency_contact_relation|default:'' }}">
                         </div>
                         
                         <h5 class="mt-4 mb-3">Social Media Links</h5>
@@ -348,28 +367,28 @@
                                 <label for="linkedinProfile" class="form-label">LinkedIn Profile</label>
                                 <div class="input-group">
                                     <span class="input-group-text"><i class="fab fa-linkedin-in"></i></span>
-                                    <input type="url" class="form-control" id="linkedinProfile" placeholder="https://linkedin.com/in/your-profile">
+                                    <input type="url" class="form-control" id="linkedinProfile" name="linkedin_profile" value="{{ student.linkedin_profile|default:'' }}" placeholder="https://linkedin.com/in/your-profile">
                                 </div>
                             </div>
                             <div class="col-md-6">
                                 <label for="githubProfile" class="form-label">GitHub Profile</label>
                                 <div class="input-group">
                                     <span class="input-group-text"><i class="fab fa-github"></i></span>
-                                    <input type="url" class="form-control" id="githubProfile" placeholder="https://github.com/your-username">
+                                    <input type="url" class="form-control" id="githubProfile" name="github_profile" value="{{ student.github_profile|default:'' }}" placeholder="https://github.com/your-username">
                                 </div>
                             </div>
                             <div class="col-md-6">
                                 <label for="twitterProfile" class="form-label">Twitter Profile</label>
                                 <div class="input-group">
                                     <span class="input-group-text"><i class="fab fa-twitter"></i></span>
-                                    <input type="url" class="form-control" id="twitterProfile" placeholder="https://twitter.com/your-username">
+                                    <input type="url" class="form-control" id="twitterProfile" name="twitter_profile" value="{{ student.twitter_profile|default:'' }}" placeholder="https://twitter.com/your-username">
                                 </div>
                             </div>
                             <div class="col-md-6">
                                 <label for="instagramProfile" class="form-label">Instagram Profile</label>
                                 <div class="input-group">
                                     <span class="input-group-text"><i class="fab fa-instagram"></i></span>
-                                    <input type="url" class="form-control" id="instagramProfile" placeholder="https://instagram.com/your-username">
+                                    <input type="url" class="form-control" id="instagramProfile" name="instagram_profile" value="{{ student.instagram_profile|default:'' }}" placeholder="https://instagram.com/your-username">
                                 </div>
                             </div>
                         </div>
@@ -392,14 +411,15 @@
                     <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <form id="changePasswordForm">
+                    <form id="changePasswordForm" method="POST" action="{% url 'student_portal:change_password' %}">
+                        {% csrf_token %}
                         <div class="mb-3">
                             <label for="currentPassword" class="form-label">Current Password</label>
-                            <input type="password" class="form-control" id="currentPassword" required>
+                            <input type="password" class="form-control" id="currentPassword" name="current_password" required>
                         </div>
                         <div class="mb-3">
                             <label for="newPassword" class="form-label">New Password</label>
-                            <input type="password" class="form-control" id="newPassword" required>
+                            <input type="password" class="form-control" id="newPassword" name="new_password" required>
                             <div class="password-strength mt-2">
                                 <div class="progress" style="height: 5px;">
                                     <div class="progress-bar bg-danger" role="progressbar" style="width: 0%;" id="passwordStrengthBar"></div>
@@ -409,7 +429,7 @@
                         </div>
                         <div class="mb-3">
                             <label for="confirmPassword" class="form-label">Confirm New Password</label>
-                            <input type="password" class="form-control" id="confirmPassword" required>
+                            <input type="password" class="form-control" id="confirmPassword" name="confirm_password" required>
                             <div class="invalid-feedback" id="passwordMatchFeedback">
                                 Passwords do not match.
                             </div>
@@ -433,16 +453,19 @@
                     <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <div class="mb-3">
-                        <label for="profilePhoto" class="form-label">Upload Photo</label>
-                        <input class="form-control" type="file" id="profilePhoto" accept="image/*">
-                        <div class="form-text">Recommended size: 500x500 pixels. Maximum file size: 2MB.</div>
-                    </div>
-                    
-                    <div class="photo-preview-container text-center mt-4" id="photoPreviewContainer" style="display: none;">
-                        <h6 class="mb-3">Preview</h6>
-                        <img src="" alt="Profile Photo Preview" id="photoPreview" class="photo-preview">
-                    </div>
+                    <form id="photoUploadForm" method="POST" action="{% url 'student_portal:upload_profile_photo' %}" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        <div class="mb-3">
+                            <label for="profilePhoto" class="form-label">Upload Photo</label>
+                            <input class="form-control" type="file" id="profilePhoto" name="profile_photo" accept="image/*">
+                            <div class="form-text">Recommended size: 500x500 pixels. Maximum file size: 2MB.</div>
+                        </div>
+                        
+                        <div class="photo-preview-container text-center mt-4" id="photoPreviewContainer" style="display: none;">
+                            <h6 class="mb-3">Preview</h6>
+                            <img src="" alt="Profile Photo Preview" id="photoPreview" class="photo-preview">
+                        </div>
+                    </form>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
@@ -461,22 +484,27 @@
                     <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <div class="mb-3">
-                        <label for="skillsInput" class="form-label">Add Skills (comma separated)</label>
-                        <input type="text" class="form-control" id="skillsInput" placeholder="e.g. Java, Python, Web Development">
-                    </div>
-                    
-                    <div class="current-skills mt-4">
-                        <h6>Current Skills</h6>
-                        <div class="selected-skills" id="selectedSkills">
-                            <span class="skill-tag">Java <button class="remove-skill" data-skill="Java"><i class="fas fa-times"></i></button></span>
-                            <span class="skill-tag">Python <button class="remove-skill" data-skill="Python"><i class="fas fa-times"></i></button></span>
-                            <span class="skill-tag">Web Development <button class="remove-skill" data-skill="Web Development"><i class="fas fa-times"></i></button></span>
-                            <span class="skill-tag">SQL <button class="remove-skill" data-skill="SQL"><i class="fas fa-times"></i></button></span>
-                            <span class="skill-tag">Data Structures <button class="remove-skill" data-skill="Data Structures"><i class="fas fa-times"></i></button></span>
-                            <span class="skill-tag">Machine Learning <button class="remove-skill" data-skill="Machine Learning"><i class="fas fa-times"></i></button></span>
+                    <form id="skillsForm" method="POST" action="{% url 'student_portal:update_skills' %}">
+                        {% csrf_token %}
+                        <div class="mb-3">
+                            <label for="skillsInput" class="form-label">Add Skills (comma separated)</label>
+                            <input type="text" class="form-control" id="skillsInput" placeholder="e.g. Java, Python, Web Development">
                         </div>
-                    </div>
+                        
+                        <div class="current-skills mt-4">
+                            <h6>Current Skills</h6>
+                            <div class="selected-skills" id="selectedSkills">
+                                {% if student.skills %}
+                                    {% for skill in student.skills %}
+                                    <span class="skill-tag">{{ skill }} <button type="button" class="remove-skill" data-skill="{{ skill }}"><i class="fas fa-times"></i></button></span>
+                                    {% endfor %}
+                                {% else %}
+                                    <p class="text-muted">No skills added yet.</p>
+                                {% endif %}
+                            </div>
+                            <input type="hidden" name="skills" id="skillsListInput" value="{{ student.skills|join:',' }}">
+                        </div>
+                    </form>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
@@ -778,14 +806,17 @@
             if (newPasswordInput.value !== confirmPasswordInput.value) {
                 confirmPasswordInput.classList.add('is-invalid');
                 passwordMatchFeedback.style.display = 'block';
+                document.getElementById('changePasswordButton').disabled = true;
             } else {
                 confirmPasswordInput.classList.remove('is-invalid');
                 passwordMatchFeedback.style.display = 'none';
+                document.getElementById('changePasswordButton').disabled = false;
             }
         }
         
         // Change password form submission
         document.getElementById('changePasswordButton').addEventListener('click', function() {
+            const form = document.getElementById('changePasswordForm');
             const currentPassword = document.getElementById('currentPassword').value;
             const newPassword = newPasswordInput.value;
             const confirmPassword = confirmPasswordInput.value;
@@ -812,30 +843,8 @@
                 return;
             }
             
-            // Simulate password change request
-            Swal.fire({
-                title: 'Changing Password',
-                html: 'Please wait...',
-                timer: 2000,
-                timerProgressBar: true,
-                didOpen: () => {
-                    Swal.showLoading();
-                }
-            }).then(() => {
-                Swal.fire({
-                    title: 'Password Changed',
-                    text: 'Your password has been changed successfully',
-                    icon: 'success',
-                    confirmButtonColor: '#4e73df'
-                }).then(() => {
-                    // Close modal and reset form
-                    $('#changePasswordModal').modal('hide');
-                    document.getElementById('changePasswordForm').reset();
-                    passwordStrengthBar.style.width = '0%';
-                    passwordStrengthBar.className = 'progress-bar bg-danger';
-                    passwordStrengthText.textContent = 'Password must be at least 8 characters long with a mix of letters, numbers, and special characters.';
-                });
-            });
+            // Submit form
+            form.submit();
         });
         
         // Profile photo change preview
@@ -870,147 +879,8 @@
                 return;
             }
             
-            // Simulate upload
-            Swal.fire({
-                title: 'Uploading Photo',
-                html: 'Please wait while we upload your photo...',
-                timer: 2000,
-                timerProgressBar: true,
-                didOpen: () => {
-                    Swal.showLoading();
-                }
-            }).then(() => {
-                // Update profile image
-                const profileImage = document.querySelector('.profile-image');
-                profileImage.src = document.getElementById('photoPreview').src;
-                
-                Swal.fire({
-                    title: 'Photo Updated',
-                    text: 'Your profile photo has been updated successfully',
-                    icon: 'success',
-                    confirmButtonColor: '#4e73df'
-                }).then(() => {
-                    // Close modal and reset form
-                    $('#changePhotoModal').modal('hide');
-                    document.getElementById('photoPreviewContainer').style.display = 'none';
-                });
-            });
-        });
-        
-        // Skills management
-        document.getElementById('skillsInput').addEventListener('keypress', function(e) {
-            if (e.key === 'Enter') {
-                e.preventDefault();
-                addSkills();
-            }
-        });
-        
-        document.getElementById('saveSkillsButton').addEventListener('click', function() {
-            addSkills();
-            
-            // Simulate saving
-            Swal.fire({
-                title: 'Saving Skills',
-                html: 'Please wait...',
-                timer: 1500,
-                timerProgressBar: true,
-                didOpen: () => {
-                    Swal.showLoading();
-                }
-            }).then(() => {
-                // Update skills in the main view
-                const mainSkillTags = document.querySelector('.skill-tags');
-                mainSkillTags.innerHTML = '';
-                
-                const selectedSkills = document.querySelectorAll('#selectedSkills .skill-tag');
-                selectedSkills.forEach(skillTag => {
-                    const skillName = skillTag.textContent.replace(' ×', '');
-                    const skillElement = document.createElement('span');
-                    skillElement.className = 'skill-tag';
-                    skillElement.textContent = skillName;
-                    mainSkillTags.appendChild(skillElement);
-                });
-                
-                Swal.fire({
-                    title: 'Skills Saved',
-                    text: 'Your skills have been updated successfully',
-                    icon: 'success',
-                    confirmButtonColor: '#4e73df'
-                }).then(() => {
-                    // Close modal
-                    $('#editSkillsModal').modal('hide');
-                });
-            });
-        });
-        
-        function addSkills() {
-            const skillsInput = document.getElementById('skillsInput');
-            const skills = skillsInput.value.split(',').map(skill => skill.trim()).filter(skill => skill);
-            
-            if (skills.length === 0) return;
-            
-            const selectedSkills = document.getElementById('selectedSkills');
-            
-            skills.forEach(skill => {
-                // Check if skill already exists
-                const existingSkills = Array.from(selectedSkills.querySelectorAll('.skill-tag')).map(tag => 
-                    tag.textContent.replace(' ×', '')
-                );
-                
-                if (!existingSkills.includes(skill)) {
-                    const skillTag = document.createElement('span');
-                    skillTag.className = 'skill-tag';
-                    skillTag.innerHTML = `${skill} <button class="remove-skill" data-skill="${skill}"><i class="fas fa-times"></i></button>`;
-                    selectedSkills.appendChild(skillTag);
-                }
-            });
-            
-            // Clear input
-            skillsInput.value = '';
-        }
-        
-        // Remove skill
-        document.addEventListener('click', function(e) {
-            if (e.target.closest('.remove-skill')) {
-                const skillTag = e.target.closest('.skill-tag');
-                skillTag.remove();
-            }
-        });
-        
-        // Save profile changes
-        document.getElementById('saveProfileChanges').addEventListener('click', function() {
-            // Simulate saving
-            Swal.fire({
-                title: 'Saving Changes',
-                html: 'Please wait while we update your profile...',
-                timer: 2000,
-                timerProgressBar: true,
-                didOpen: () => {
-                    Swal.showLoading();
-                }
-            }).then(() => {
-                // Update visible contact number
-                const contactNumber = document.getElementById('contactNumber').value;
-                const metaItems = document.querySelectorAll('.meta-item');
-                metaItems[1].querySelector('span').textContent = contactNumber;
-                
-                // Update personal info table
-                const personalInfoTable = document.querySelector('.personal-info-table');
-                const rows = personalInfoTable.querySelectorAll('tr');
-                rows[2].querySelector('td').textContent = contactNumber; // Contact number
-                rows[6].querySelector('td').textContent = document.getElementById('address').value; // Address
-                rows[5].querySelector('td').textContent = document.getElementById('bloodGroup').value; // Blood Group
-                
-                Swal.fire({
-                    title: 'Profile Updated',
-                    text: 'Your profile has been updated successfully',
-                    icon: 'success',
-                    confirmButtonColor: '#4e73df'
-                }).then(() => {
-                    // Close modal
-                    $('#editProfileModal').modal('hide');
-                });
-            });
+            // Submit form
+            document.getElementById('photoUploadForm').submit();
         });
         
         // Theme selection
@@ -1023,32 +893,141 @@
                 
                 // Add active class to clicked option
                 this.classList.add('active');
+                
+                // Update hidden input value
+                document.getElementById('themeInput').value = this.dataset.theme;
             });
         });
         
-        // Save preferences
-        document.getElementById('savePreferences').addEventListener('click', function() {
-            // Get selected theme
-            const selectedTheme = document.querySelector('.theme-option.active').dataset.theme;
-            const defaultView = document.getElementById('defaultView').value;
-            const enableNotifications = document.getElementById('enableNotifications').checked;
+        // Skills management
+        document.getElementById('skillsInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                addSkills();
+            }
+        });
+        
+        document.getElementById('saveSkillsButton').addEventListener('click', function() {
+            // Update the hidden input with the skills list
+            const skills = [];
+            document.querySelectorAll('#selectedSkills .skill-tag').forEach(tag => {
+                skills.push(tag.textContent.trim().replace(' ×', ''));
+            });
             
-            // Simulate saving
-            Swal.fire({
-                title: 'Saving Preferences',
-                html: 'Please wait...',
-                timer: 1500,
-                timerProgressBar: true,
-                didOpen: () => {
-                    Swal.showLoading();
+            document.getElementById('skillsListInput').value = skills.join(',');
+            
+            // Submit the form
+            document.getElementById('skillsForm').submit();
+        });
+        
+        function addSkills() {
+            const skillsInput = document.getElementById('skillsInput');
+            const skills = skillsInput.value.split(',').map(skill => skill.trim()).filter(skill => skill);
+            
+            if (skills.length === 0) return;
+            
+            const selectedSkills = document.getElementById('selectedSkills');
+            
+            // Clear existing message if present
+            const existingMessage = selectedSkills.querySelector('p.text-muted');
+            if (existingMessage) {
+                existingMessage.remove();
+            }
+            
+            skills.forEach(skill => {
+                // Check if skill already exists
+                const existingSkills = Array.from(selectedSkills.querySelectorAll('.skill-tag')).map(tag => 
+                    tag.textContent.replace(' ×', '').trim()
+                );
+                
+                if (!existingSkills.includes(skill)) {
+                    const skillTag = document.createElement('span');
+                    skillTag.className = 'skill-tag';
+                    skillTag.innerHTML = `${skill} <button type="button" class="remove-skill" data-skill="${skill}"><i class="fas fa-times"></i></button>`;
+                    selectedSkills.appendChild(skillTag);
                 }
-            }).then(() => {
-                Swal.fire({
-                    title: 'Preferences Saved',
-                    text: 'Your interface preferences have been saved successfully',
-                    icon: 'success',
-                    confirmButtonColor: '#4e73df'
-                });
+            });
+            
+            // Clear input
+            skillsInput.value = '';
+        }
+        
+        // Remove skill
+        document.addEventListener('click', function(e) {
+            const removeButton = e.target.closest('.remove-skill');
+            if (removeButton) {
+                const skillTag = removeButton.closest('.skill-tag');
+                skillTag.remove();
+                
+                // Check if all skills are removed
+                const selectedSkills = document.getElementById('selectedSkills');
+                if (selectedSkills.querySelectorAll('.skill-tag').length === 0) {
+                    selectedSkills.innerHTML = '<p class="text-muted">No skills added yet.</p>';
+                }
+            }
+        });
+        
+        // Save profile changes
+        document.getElementById('saveProfileChanges').addEventListener('click', function() {
+            document.getElementById('editProfileForm').submit();
+        });
+        
+        // Save preferences form
+        document.getElementById('preferencesForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const formData = new FormData(this);
+            
+            // Submit with AJAX
+            $.ajax({
+                url: this.action,
+                method: this.method,
+                data: formData,
+                processData: false,
+                contentType: false,
+                beforeSend: function() {
+                    // Disable button and show loading
+                    document.getElementById('savePreferences').disabled = true;
+                    document.getElementById('savePreferences').innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Saving...';
+                },
+                success: function(response) {
+                    if (response.success) {
+                        Swal.fire({
+                            title: 'Preferences Saved',
+                            text: 'Your interface preferences have been saved successfully.',
+                            icon: 'success',
+                            confirmButtonColor: '#4e73df'
+                        });
+                        
+                        // Apply theme change if needed
+                        if (response.theme_changed) {
+                            setTimeout(() => {
+                                window.location.reload();
+                            }, 1500);
+                        }
+                    } else {
+                        Swal.fire({
+                            title: 'Error',
+                            text: response.message || 'There was an error saving your preferences.',
+                            icon: 'error',
+                            confirmButtonColor: '#4e73df'
+                        });
+                    }
+                },
+                error: function(xhr, status, error) {
+                    Swal.fire({
+                        title: 'Error',
+                        text: 'There was an error saving your preferences.',
+                        icon: 'error',
+                        confirmButtonColor: '#4e73df'
+                    });
+                    console.error("Error saving preferences:", error);
+                },
+                complete: function() {
+                    // Reset button
+                    document.getElementById('savePreferences').disabled = false;
+                    document.getElementById('savePreferences').innerHTML = '<i class="fas fa-save me-1"></i> Save Preferences';
+                }
             });
         });
     });

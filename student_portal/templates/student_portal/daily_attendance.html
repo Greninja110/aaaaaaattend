@@ -24,87 +24,95 @@
     <!-- Filter Options -->
     <div class="card shadow mb-4 dashboard-card">
         <div class="card-body">
-            <div class="row g-3">
-                <div class="col-md-3">
-                    <label for="subjectFilter" class="form-label">Subject</label>
-                    <select class="form-select" id="subjectFilter">
-                        <option value="">All Subjects</option>
-                        <option value="CS401" selected>CS401 - Operating Systems</option>
-                        <option value="CS402">CS402 - Computer Networks</option>
-                        <option value="CS403">CS403 - Database Systems</option>
-                        <option value="CS404">CS404 - Software Engineering</option>
-                        <option value="CS405">CS405 - Web Development</option>
-                        <option value="CS406">CS406 - Mobile App Development</option>
-                        <option value="CS407">CS407 - Artificial Intelligence</option>
-                    </select>
+            <form id="filterForm" method="GET">
+                <div class="row g-3">
+                    <div class="col-md-3">
+                        <label for="subjectFilter" class="form-label">Subject</label>
+                        <select class="form-select" id="subjectFilter" name="subject">
+                            <option value="">All Subjects</option>
+                            {% for subject in subjects %}
+                            <option value="{{ subject.id }}" {% if selected_subject == subject.id %}selected{% endif %}>
+                                {{ subject.code }} - {{ subject.name }}
+                            </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <label for="monthFilter" class="form-label">Month</label>
+                        <select class="form-select" id="monthFilter" name="month">
+                            <option value="">All Months</option>
+                            {% for month in months %}
+                            <option value="{{ month.number }}" {% if selected_month == month.number %}selected{% endif %}>
+                                {{ month.name }}
+                            </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <label for="statusFilter" class="form-label">Status</label>
+                        <select class="form-select" id="statusFilter" name="status">
+                            <option value="">All Status</option>
+                            <option value="present" {% if selected_status == 'present' %}selected{% endif %}>Present</option>
+                            <option value="absent" {% if selected_status == 'absent' %}selected{% endif %}>Absent</option>
+                            <option value="leave" {% if selected_status == 'leave' %}selected{% endif %}>On Leave</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3 d-flex align-items-end">
+                        <button type="submit" class="btn btn-primary w-100" id="applyFilters">
+                            <i class="fas fa-filter mr-1"></i> Apply Filters
+                        </button>
+                    </div>
                 </div>
-                <div class="col-md-3">
-                    <label for="monthFilter" class="form-label">Month</label>
-                    <select class="form-select" id="monthFilter">
-                        <option value="">All Months</option>
-                        <option value="1">January</option>
-                        <option value="2">February</option>
-                        <option value="3">March</option>
-                        <option value="4" selected>April</option>
-                        <option value="5">May</option>
-                        <option value="6">June</option>
-                    </select>
-                </div>
-                <div class="col-md-3">
-                    <label for="statusFilter" class="form-label">Status</label>
-                    <select class="form-select" id="statusFilter">
-                        <option value="">All Status</option>
-                        <option value="present">Present</option>
-                        <option value="absent">Absent</option>
-                        <option value="leave">On Leave</option>
-                    </select>
-                </div>
-                <div class="col-md-3 d-flex align-items-end">
-                    <button type="button" class="btn btn-primary w-100" id="applyFilters">
-                        <i class="fas fa-filter mr-1"></i> Apply Filters
-                    </button>
-                </div>
-            </div>
+            </form>
         </div>
     </div>
     
     <!-- Subject Info Banner -->
+    {% if subject_info %}
     <div class="card shadow mb-4 dashboard-card subject-info-banner">
         <div class="card-body p-4">
             <div class="row align-items-center">
                 <div class="col-md-2 text-center">
                     <div class="subject-icon">
-                        <i class="fas fa-laptop-code"></i>
+                        <i class="{{ subject_info.icon }}"></i>
                     </div>
                 </div>
                 <div class="col-md-6">
-                    <h4 class="mb-0">Operating Systems</h4>
-                    <p class="text-muted mb-2">CS401 | Prof. Mehta</p>
+                    <h4 class="mb-0">{{ subject_info.name }}</h4>
+                    <p class="text-muted mb-2">{{ subject_info.code }} | {{ subject_info.faculty }}</p>
                     <div class="subject-meta">
-                        <span class="badge bg-info me-2">Theory + Lab</span>
-                        <span class="badge bg-secondary me-2">Semester 4</span>
-                        <span class="badge bg-primary">4 Credits</span>
+                        <span class="badge bg-info me-2">{{ subject_info.type }}</span>
+                        <span class="badge bg-secondary me-2">Semester {{ subject_info.semester }}</span>
+                        <span class="badge bg-primary">{{ subject_info.credits }} Credits</span>
                     </div>
                 </div>
                 <div class="col-md-4 text-end">
                     <div class="attendance-summary">
-                        <div class="attendance-percent">85%</div>
+                        <div class="attendance-percent">{{ subject_info.attendance_percentage }}%</div>
                         <div class="attendance-progress">
                             <div class="progress" style="height: 8px;">
-                                <div class="progress-bar bg-success" role="progressbar" style="width: 85%" aria-valuenow="85" aria-valuemin="0" aria-valuemax="100"></div>
+                                <div class="progress-bar 
+                                    {% if subject_info.attendance_percentage >= 85 %}bg-success
+                                    {% elif subject_info.attendance_percentage >= 75 %}bg-warning
+                                    {% else %}bg-danger{% endif %}" 
+                                    role="progressbar" 
+                                    style="width: {{ subject_info.attendance_percentage }}%" 
+                                    aria-valuenow="{{ subject_info.attendance_percentage }}" 
+                                    aria-valuemin="0" 
+                                    aria-valuemax="100"></div>
                             </div>
                         </div>
                         <div class="attendance-stats">
                             <div class="stat-item">
-                                <div class="stat-value">20</div>
+                                <div class="stat-value">{{ subject_info.total_classes }}</div>
                                 <div class="stat-label">Total Classes</div>
                             </div>
                             <div class="stat-item">
-                                <div class="stat-value">17</div>
+                                <div class="stat-value">{{ subject_info.attended_classes }}</div>
                                 <div class="stat-label">Present</div>
                             </div>
                             <div class="stat-item">
-                                <div class="stat-value">3</div>
+                                <div class="stat-value">{{ subject_info.absent_classes }}</div>
                                 <div class="stat-label">Absent</div>
                             </div>
                         </div>
@@ -113,6 +121,7 @@
             </div>
         </div>
     </div>
+    {% endif %}
     
     <!-- Calendar View -->
     <div class="card shadow mb-4 dashboard-card">
@@ -123,23 +132,23 @@
                     <i class="fas fa-ellipsis-v fa-sm fa-fw text-gray-400"></i>
                 </a>
                 <div class="dropdown-menu dropdown-menu-right shadow animated--fade-in" aria-labelledby="dropdownMenuLink">
-                    <a class="dropdown-item" href="#"><i class="fas fa-calendar-alt mr-2"></i>Month View</a>
-                    <a class="dropdown-item" href="#"><i class="fas fa-calendar-day mr-2"></i>Day View</a>
+                    <a class="dropdown-item" href="#" data-view="month"><i class="fas fa-calendar-alt mr-2"></i>Month View</a>
+                    <a class="dropdown-item" href="#" data-view="day"><i class="fas fa-calendar-day mr-2"></i>Day View</a>
                     <div class="dropdown-divider"></div>
-                    <a class="dropdown-item" href="#"><i class="fas fa-sync-alt mr-2"></i>Refresh Calendar</a>
+                    <a class="dropdown-item" href="#" id="refreshCalendar"><i class="fas fa-sync-alt mr-2"></i>Refresh Calendar</a>
                 </div>
             </div>
         </div>
         <div class="card-body">
             <div class="mb-3 text-center">
                 <div class="btn-group">
-                    <button type="button" class="btn btn-outline-primary" id="prevMonth">
+                    <button type="button" class="btn btn-outline-primary" id="prevMonth" data-month="{{ prev_month.number }}" data-year="{{ prev_month.year }}">
                         <i class="fas fa-chevron-left"></i>
                     </button>
                     <button type="button" class="btn btn-outline-primary" id="currentMonth">
-                        April 2025
+                        {{ current_month.name }} {{ current_month.year }}
                     </button>
-                    <button type="button" class="btn btn-outline-primary" id="nextMonth">
+                    <button type="button" class="btn btn-outline-primary" id="nextMonth" data-month="{{ next_month.number }}" data-year="{{ next_month.year }}">
                         <i class="fas fa-chevron-right"></i>
                     </button>
                 </div>
@@ -156,200 +165,20 @@
                     <div>Sat</div>
                 </div>
                 <div class="calendar-body">
-                    <!-- Week 1 -->
-                    <div class="calendar-day empty"></div>
-                    <div class="calendar-day">
-                        <div class="day-number">1</div>
-                        <div class="day-status present">
-                            <i class="fas fa-check-circle"></i>
-                        </div>
-                    </div>
-                    <div class="calendar-day">
-                        <div class="day-number">2</div>
-                        <div class="day-status present">
-                            <i class="fas fa-check-circle"></i>
-                        </div>
-                    </div>
-                    <div class="calendar-day">
-                        <div class="day-number">3</div>
-                        <div class="day-status absent">
-                            <i class="fas fa-times-circle"></i>
-                        </div>
-                    </div>
-                    <div class="calendar-day">
-                        <div class="day-number">4</div>
-                        <div class="day-status present">
-                            <i class="fas fa-check-circle"></i>
-                        </div>
-                    </div>
-                    <div class="calendar-day">
-                        <div class="day-number">5</div>
-                        <div class="day-status">
-                            <i class="fas fa-minus-circle"></i>
-                        </div>
-                    </div>
-                    <div class="calendar-day">
-                        <div class="day-number">6</div>
-                        <div class="day-status">
-                            <i class="fas fa-minus-circle"></i>
-                        </div>
-                    </div>
-                    
-                    <!-- Week 2 -->
-                    <div class="calendar-day">
-                        <div class="day-number">7</div>
-                        <div class="day-status">
-                            <i class="fas fa-minus-circle"></i>
-                        </div>
-                    </div>
-                    <div class="calendar-day">
-                        <div class="day-number">8</div>
-                        <div class="day-status present">
-                            <i class="fas fa-check-circle"></i>
-                        </div>
-                    </div>
-                    <div class="calendar-day">
-                        <div class="day-number">9</div>
-                        <div class="day-status present">
-                            <i class="fas fa-check-circle"></i>
-                        </div>
-                    </div>
-                    <div class="calendar-day">
-                        <div class="day-number">10</div>
-                        <div class="day-status present">
-                            <i class="fas fa-check-circle"></i>
-                        </div>
-                    </div>
-                    <div class="calendar-day">
-                        <div class="day-number">11</div>
-                        <div class="day-status present">
-                            <i class="fas fa-check-circle"></i>
-                        </div>
-                    </div>
-                    <div class="calendar-day">
-                        <div class="day-number">12</div>
-                        <div class="day-status leave">
-                            <i class="fas fa-calendar-check"></i>
-                        </div>
-                    </div>
-                    <div class="calendar-day">
-                        <div class="day-number">13</div>
-                        <div class="day-status">
-                            <i class="fas fa-minus-circle"></i>
-                        </div>
-                    </div>
-                    
-                    <!-- Week 3 -->
-                    <div class="calendar-day">
-                        <div class="day-number">14</div>
-                        <div class="day-status">
-                            <i class="fas fa-minus-circle"></i>
-                        </div>
-                    </div>
-                    <div class="calendar-day">
-                        <div class="day-number">15</div>
-                        <div class="day-status present">
-                            <i class="fas fa-check-circle"></i>
-                        </div>
-                    </div>
-                    <div class="calendar-day">
-                        <div class="day-number">16</div>
-                        <div class="day-status present">
-                            <i class="fas fa-check-circle"></i>
-                        </div>
-                    </div>
-                    <div class="calendar-day">
-                        <div class="day-number">17</div>
-                        <div class="day-status present">
-                            <i class="fas fa-check-circle"></i>
-                        </div>
-                    </div>
-                    <div class="calendar-day">
-                        <div class="day-number">18</div>
-                        <div class="day-status present">
-                            <i class="fas fa-check-circle"></i>
-                        </div>
-                    </div>
-                    <div class="calendar-day current-day">
-                        <div class="day-number">19</div>
-                        <div class="day-status present">
-                            <i class="fas fa-check-circle"></i>
-                        </div>
-                    </div>
-                    <div class="calendar-day">
-                        <div class="day-number">20</div>
-                        <div class="day-status">
-                            <i class="fas fa-minus-circle"></i>
-                        </div>
-                    </div>
-                    
-                    <!-- Week 4 -->
-                    <div class="calendar-day">
-                        <div class="day-number">21</div>
-                        <div class="day-status">
-                            <i class="fas fa-minus-circle"></i>
-                        </div>
-                    </div>
-                    <div class="calendar-day">
-                        <div class="day-number">22</div>
-                        <div class="day-status present">
-                            <i class="fas fa-check-circle"></i>
-                        </div>
-                    </div>
-                    <div class="calendar-day">
-                        <div class="day-number">23</div>
-                        <div class="day-status present">
-                            <i class="fas fa-check-circle"></i>
-                        </div>
-                    </div>
-                    <div class="calendar-day">
-                        <div class="day-number">24</div>
-                        <div class="day-status absent">
-                            <i class="fas fa-times-circle"></i>
-                        </div>
-                    </div>
-                    <div class="calendar-day">
-                        <div class="day-number">25</div>
-                        <div class="day-status absent">
-                            <i class="fas fa-times-circle"></i>
-                        </div>
-                    </div>
-                    <div class="calendar-day">
-                        <div class="day-number">26</div>
-                        <div class="day-status">
-                            <i class="fas fa-minus-circle"></i>
-                        </div>
-                    </div>
-                    <div class="calendar-day">
-                        <div class="day-number">27</div>
-                        <div class="day-status">
-                            <i class="fas fa-minus-circle"></i>
-                        </div>
-                    </div>
-                    
-                    <!-- Week 5 -->
-                    <div class="calendar-day">
-                        <div class="day-number">28</div>
-                        <div class="day-status">
-                            <i class="fas fa-minus-circle"></i>
-                        </div>
-                    </div>
-                    <div class="calendar-day">
-                        <div class="day-number">29</div>
-                        <div class="day-status present">
-                            <i class="fas fa-check-circle"></i>
-                        </div>
-                    </div>
-                    <div class="calendar-day">
-                        <div class="day-number">30</div>
-                        <div class="day-status present">
-                            <i class="fas fa-check-circle"></i>
-                        </div>
-                    </div>
-                    <div class="calendar-day empty"></div>
-                    <div class="calendar-day empty"></div>
-                    <div class="calendar-day empty"></div>
-                    <div class="calendar-day empty"></div>
+                    {% for week in calendar_weeks %}
+                        {% for day in week %}
+                            {% if day.is_empty %}
+                                <div class="calendar-day empty"></div>
+                            {% else %}
+                                <div class="calendar-day {% if day.is_today %}current-day{% endif %}" data-date="{{ day.date|date:'Y-m-d' }}">
+                                    <div class="day-number">{{ day.day }}</div>
+                                    <div class="day-status {% if day.status == 'present' %}present{% elif day.status == 'absent' %}absent{% elif day.status == 'leave' %}leave{% endif %}">
+                                        <i class="fas {% if day.status == 'present' %}fa-check-circle{% elif day.status == 'absent' %}fa-times-circle{% elif day.status == 'leave' %}fa-calendar-check{% else %}fa-minus-circle{% endif %}"></i>
+                                    </div>
+                                </div>
+                            {% endif %}
+                        {% endfor %}
+                    {% endfor %}
                 </div>
             </div>
             
@@ -399,126 +228,30 @@
                         </tr>
                     </thead>
                     <tbody>
+                        {% for record in attendance_records %}
                         <tr>
-                            <td>Apr 18, 2025</td>
-                            <td>Friday</td>
-                            <td>9:00 - 10:00 AM</td>
-                            <td><span class="badge bg-secondary">Theory</span></td>
-                            <td>Memory Management</td>
-                            <td>Prof. Mehta</td>
-                            <td><span class="badge bg-success">Present</span></td>
-                            <td>-</td>
+                            <td>{{ record.date|date:"M d, Y" }}</td>
+                            <td>{{ record.day }}</td>
+                            <td>{{ record.start_time }} - {{ record.end_time }}</td>
+                            <td><span class="badge {% if record.is_lab %}bg-primary{% else %}bg-secondary{% endif %}">{{ record.type }}</span></td>
+                            <td>{{ record.topic }}</td>
+                            <td>{{ record.faculty }}</td>
+                            <td>
+                                <span class="badge 
+                                      {% if record.status == 'present' %}bg-success
+                                      {% elif record.status == 'absent' %}bg-danger
+                                      {% elif record.status == 'leave' %}bg-secondary
+                                      {% endif %}">
+                                    {{ record.status|title }}
+                                </span>
+                            </td>
+                            <td>{{ record.remarks|default:"-" }}</td>
                         </tr>
+                        {% empty %}
                         <tr>
-                            <td>Apr 17, 2025</td>
-                            <td>Thursday</td>
-                            <td>9:00 - 10:00 AM</td>
-                            <td><span class="badge bg-secondary">Theory</span></td>
-                            <td>Virtual Memory</td>
-                            <td>Prof. Mehta</td>
-                            <td><span class="badge bg-success">Present</span></td>
-                            <td>-</td>
+                            <td colspan="8" class="text-center">No attendance records found for the selected filters.</td>
                         </tr>
-                        <tr>
-                            <td>Apr 15, 2025</td>
-                            <td>Tuesday</td>
-                            <td>9:00 - 10:00 AM</td>
-                            <td><span class="badge bg-secondary">Theory</span></td>
-                            <td>Segmentation</td>
-                            <td>Prof. Mehta</td>
-                            <td><span class="badge bg-success">Present</span></td>
-                            <td>-</td>
-                        </tr>
-                        <tr>
-                            <td>Apr 14, 2025</td>
-                            <td>Monday</td>
-                            <td>1:00 - 3:00 PM</td>
-                            <td><span class="badge bg-primary">Lab</span></td>
-                            <td>Process Management</td>
-                            <td>Prof. Mehta</td>
-                            <td><span class="badge bg-success">Present</span></td>
-                            <td>-</td>
-                        </tr>
-                        <tr>
-                            <td>Apr 12, 2025</td>
-                            <td>Friday</td>
-                            <td>9:00 - 10:00 AM</td>
-                            <td><span class="badge bg-secondary">Theory</span></td>
-                            <td>Paging</td>
-                            <td>Prof. Mehta</td>
-                            <td><span class="badge bg-secondary">On Leave</span></td>
-                            <td>Medical leave</td>
-                        </tr>
-                        <tr>
-                            <td>Apr 11, 2025</td>
-                            <td>Thursday</td>
-                            <td>9:00 - 10:00 AM</td>
-                            <td><span class="badge bg-secondary">Theory</span></td>
-                            <td>Memory Allocation</td>
-                            <td>Prof. Mehta</td>
-                            <td><span class="badge bg-success">Present</span></td>
-                            <td>-</td>
-                        </tr>
-                        <tr>
-                            <td>Apr 10, 2025</td>
-                            <td>Wednesday</td>
-                            <td>1:00 - 3:00 PM</td>
-                            <td><span class="badge bg-primary">Lab</span></td>
-                            <td>Deadlock Prevention</td>
-                            <td>Prof. Mehta</td>
-                            <td><span class="badge bg-success">Present</span></td>
-                            <td>-</td>
-                        </tr>
-                        <tr>
-                            <td>Apr 08, 2025</td>
-                            <td>Monday</td>
-                            <td>9:00 - 10:00 AM</td>
-                            <td><span class="badge bg-secondary">Theory</span></td>
-                            <td>Process Synchronization</td>
-                            <td>Prof. Mehta</td>
-                            <td><span class="badge bg-success">Present</span></td>
-                            <td>-</td>
-                        </tr>
-                        <tr>
-                            <td>Apr 04, 2025</td>
-                            <td>Thursday</td>
-                            <td>9:00 - 10:00 AM</td>
-                            <td><span class="badge bg-secondary">Theory</span></td>
-                            <td>Deadlocks</td>
-                            <td>Prof. Mehta</td>
-                            <td><span class="badge bg-success">Present</span></td>
-                            <td>-</td>
-                        </tr>
-                        <tr>
-                            <td>Apr 03, 2025</td>
-                            <td>Wednesday</td>
-                            <td>9:00 - 10:00 AM</td>
-                            <td><span class="badge bg-secondary">Theory</span></td>
-                            <td>Scheduling Algorithms</td>
-                            <td>Prof. Mehta</td>
-                            <td><span class="badge bg-danger">Absent</span></td>
-                            <td>Unmarked</td>
-                        </tr>
-                        <tr>
-                            <td>Apr 02, 2025</td>
-                            <td>Tuesday</td>
-                            <td>9:00 - 10:00 AM</td>
-                            <td><span class="badge bg-secondary">Theory</span></td>
-                            <td>CPU Scheduling</td>
-                            <td>Prof. Mehta</td>
-                            <td><span class="badge bg-success">Present</span></td>
-                            <td>-</td>
-                        </tr>
-                        <tr>
-                            <td>Apr 01, 2025</td>
-                            <td>Monday</td>
-                            <td>9:00 - 10:00 AM</td>
-                            <td><span class="badge bg-secondary">Theory</span></td>
-                            <td>Process Management</td>
-                            <td>Prof. Mehta</td>
-                            <td><span class="badge bg-success">Present</span></td>
-                            <td>-</td>
-                        </tr>
+                        {% endfor %}
                     </tbody>
                 </table>
             </div>
@@ -543,48 +276,17 @@
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="dayDetailModalLabel">Attendance for April 15, 2025</h5>
+                <h5 class="modal-title" id="dayDetailModalLabel">Attendance for <span id="modalDate"></span></h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <div class="day-detail-status present">
-                    <i class="fas fa-check-circle me-2"></i> Present
-                </div>
-                
-                <div class="day-detail-info">
-                    <h6>Class Details</h6>
-                    <table class="table table-sm">
-                        <tr>
-                            <th width="120">Subject</th>
-                            <td>Operating Systems</td>
-                        </tr>
-                        <tr>
-                            <th>Topic</th>
-                            <td>Segmentation</td>
-                        </tr>
-                        <tr>
-                            <th>Type</th>
-                            <td>Theory</td>
-                        </tr>
-                        <tr>
-                            <th>Time</th>
-                            <td>9:00 - 10:00 AM</td>
-                        </tr>
-                        <tr>
-                            <th>Faculty</th>
-                            <td>Prof. Mehta</td>
-                        </tr>
-                        <tr>
-                            <th>Room</th>
-                            <td>Room 301</td>
-                        </tr>
-                    </table>
-                </div>
-                
-                <div class="attendance-evidence">
-                    <h6>Attendance Evidence</h6>
-                    <p class="mb-2">Attendance recorded by: Prof. Mehta</p>
-                    <p class="mb-0">Recorded time: 10:05 AM</p>
+                <div id="dayDetailContent">
+                    <div class="text-center py-5">
+                        <div class="spinner-border text-primary" role="status">
+                            <span class="visually-hidden">Loading...</span>
+                        </div>
+                        <p class="mt-3">Loading attendance details...</p>
+                    </div>
                 </div>
             </div>
             <div class="modal-footer">
@@ -606,22 +308,24 @@
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <form id="correctionRequestForm">
+                <form id="correctionRequestForm" method="POST" action="{% url 'student_portal:request_attendance_correction' %}" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <input type="hidden" id="attendanceId" name="attendance_id">
                     <div class="mb-3">
                         <label for="correctionDate" class="form-label">Date</label>
-                        <input type="text" class="form-control" id="correctionDate" value="April 15, 2025" readonly>
+                        <input type="text" class="form-control" id="correctionDate" name="date" readonly>
                     </div>
                     <div class="mb-3">
                         <label for="correctionSubject" class="form-label">Subject</label>
-                        <input type="text" class="form-control" id="correctionSubject" value="Operating Systems" readonly>
+                        <input type="text" class="form-control" id="correctionSubject" name="subject" readonly>
                     </div>
                     <div class="mb-3">
                         <label for="correctionCurrentStatus" class="form-label">Current Status</label>
-                        <input type="text" class="form-control" id="correctionCurrentStatus" value="Present" readonly>
+                        <input type="text" class="form-control" id="correctionCurrentStatus" name="current_status" readonly>
                     </div>
                     <div class="mb-3">
                         <label for="correctionRequestedStatus" class="form-label">Requested Status</label>
-                        <select class="form-select" id="correctionRequestedStatus" required>
+                        <select class="form-select" id="correctionRequestedStatus" name="requested_status" required>
                             <option value="">Select Status</option>
                             <option value="present">Present</option>
                             <option value="absent">Absent</option>
@@ -630,11 +334,11 @@
                     </div>
                     <div class="mb-3">
                         <label for="correctionReason" class="form-label">Reason for Correction</label>
-                        <textarea class="form-control" id="correctionReason" rows="3" required></textarea>
+                        <textarea class="form-control" id="correctionReason" name="reason" rows="3" required></textarea>
                     </div>
                     <div class="mb-3">
                         <label for="correctionEvidence" class="form-label">Supporting Evidence (if any)</label>
-                        <input class="form-control" type="file" id="correctionEvidence">
+                        <input class="form-control" type="file" id="correctionEvidence" name="evidence">
                         <div class="form-text">Upload any supporting documents (e.g., medical certificate). Max size: 2MB.</div>
                     </div>
                 </form>
@@ -737,10 +441,23 @@
         display: flex;
         flex-direction: column;
         position: relative;
+        cursor: pointer;
+    }
+    
+    .calendar-day:hover {
+        box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+        transform: translateY(-2px);
+        transition: all 0.2s ease-in-out;
     }
     
     .calendar-day.empty {
         background-color: transparent;
+        box-shadow: none;
+        cursor: default;
+    }
+    
+    .calendar-day.empty:hover {
+        transform: none;
         box-shadow: none;
     }
     
@@ -876,7 +593,7 @@
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         // Initialize DataTable
-        $('#attendanceDetailsTable').DataTable({
+        const attendanceTable = $('#attendanceDetailsTable').DataTable({
             ordering: true,
             pageLength: 10,
             lengthMenu: [5, 10, 25, 50],
@@ -888,13 +605,18 @@
         
         // Initialize Attendance Trend Chart
         const trendCtx = document.getElementById('attendanceTrendChart').getContext('2d');
+        
+        // Get attendance data from Django context
+        const months = [{% for month in trend_data.months %}"{{ month }}"{% if not forloop.last %}, {% endif %}{% endfor %}];
+        const attendance = [{% for value in trend_data.attendance %}{{ value }}{% if not forloop.last %}, {% endif %}{% endfor %}];
+        
         const attendanceTrendChart = new Chart(trendCtx, {
             type: 'line',
             data: {
-                labels: ['January', 'February', 'March', 'April'],
+                labels: months,
                 datasets: [{
                     label: 'Monthly Attendance %',
-                    data: [88, 82, 79, 85],
+                    data: attendance,
                     fill: {
                         target: 'origin',
                         above: 'rgba(78, 115, 223, 0.1)'
@@ -910,7 +632,7 @@
                     tension: 0.4
                 }, {
                     label: 'Required Threshold',
-                    data: [75, 75, 75, 75],
+                    data: Array(months.length).fill(75),
                     borderColor: '#e74a3b',
                     borderWidth: 2,
                     borderDash: [5, 5],
@@ -972,47 +694,114 @@
         
         // Month navigation
         document.getElementById('prevMonth').addEventListener('click', function() {
-            // In a real app, this would update the calendar to show the previous month
-            document.getElementById('currentMonth').textContent = 'March 2025';
+            const month = this.dataset.month;
+            const year = this.dataset.year;
             
-            Swal.fire({
-                title: 'Month Changed',
-                text: 'Showing attendance for March 2025',
-                icon: 'info',
-                confirmButtonColor: '#4e73df',
-                timer: 1500,
-                timerProgressBar: true,
-                showConfirmButton: false
-            });
+            // Update form and submit
+            const form = document.getElementById('filterForm');
+            let monthInput = form.querySelector('input[name="nav_month"]');
+            let yearInput = form.querySelector('input[name="nav_year"]');
+            
+            if (!monthInput) {
+                monthInput = document.createElement('input');
+                monthInput.type = 'hidden';
+                monthInput.name = 'nav_month';
+                form.appendChild(monthInput);
+            }
+            
+            if (!yearInput) {
+                yearInput = document.createElement('input');
+                yearInput.type = 'hidden';
+                yearInput.name = 'nav_year';
+                form.appendChild(yearInput);
+            }
+            
+            monthInput.value = month;
+            yearInput.value = year;
+            
+            form.submit();
         });
         
         document.getElementById('nextMonth').addEventListener('click', function() {
-            // In a real app, this would update the calendar to show the next month
-            document.getElementById('currentMonth').textContent = 'May 2025';
+            const month = this.dataset.month;
+            const year = this.dataset.year;
             
-            Swal.fire({
-                title: 'Month Changed',
-                text: 'Showing attendance for May 2025',
-                icon: 'info',
-                confirmButtonColor: '#4e73df',
-                timer: 1500,
-                timerProgressBar: true,
-                showConfirmButton: false
-            });
+            // Update form and submit
+            const form = document.getElementById('filterForm');
+            let monthInput = form.querySelector('input[name="nav_month"]');
+            let yearInput = form.querySelector('input[name="nav_year"]');
+            
+            if (!monthInput) {
+                monthInput = document.createElement('input');
+                monthInput.type = 'hidden';
+                monthInput.name = 'nav_month';
+                form.appendChild(monthInput);
+            }
+            
+            if (!yearInput) {
+                yearInput = document.createElement('input');
+                yearInput.type = 'hidden';
+                yearInput.name = 'nav_year';
+                form.appendChild(yearInput);
+            }
+            
+            monthInput.value = month;
+            yearInput.value = year;
+            
+            form.submit();
         });
         
         // Show day detail modal when clicking on a calendar day
         document.querySelectorAll('.calendar-day:not(.empty)').forEach(day => {
             day.addEventListener('click', function() {
-                // Get day number
-                const dayNumber = this.querySelector('.day-number').textContent;
-                const monthName = document.getElementById('currentMonth').textContent;
+                // Get date from the day element
+                const date = this.dataset.date;
+                if (!date) return;
+                
+                // Format date for display
+                const dateObj = new Date(date);
+                const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+                const formattedDate = dateObj.toLocaleDateString('en-US', options);
                 
                 // Update modal title
-                document.getElementById('dayDetailModalLabel').textContent = `Attendance for ${monthName} ${dayNumber}, 2025`;
+                document.getElementById('modalDate').textContent = formattedDate;
                 
                 // Show modal
                 $('#dayDetailModal').modal('show');
+                
+                // Fetch day details with AJAX
+                $.ajax({
+                    url: "{% url 'student_portal:get_day_attendance' %}",
+                    method: "GET",
+                    data: {
+                        date: date,
+                        subject: document.getElementById('subjectFilter').value || ''
+                    },
+                    success: function(response) {
+                        // Update modal content
+                        document.getElementById('dayDetailContent').innerHTML = response.html;
+                        
+                        // Update form fields for correction request
+                        if (response.attendance_id) {
+                            document.getElementById('attendanceId').value = response.attendance_id;
+                            document.getElementById('correctionDate').value = formattedDate;
+                            document.getElementById('correctionSubject').value = response.subject_name;
+                            document.getElementById('correctionCurrentStatus').value = response.status;
+                            
+                            // Enable or disable correction button based on correction eligibility
+                            document.getElementById('requestCorrectionBtn').disabled = !response.can_request_correction;
+                        }
+                    },
+                    error: function(xhr, status, error) {
+                        document.getElementById('dayDetailContent').innerHTML = `
+                            <div class="alert alert-danger">
+                                <i class="fas fa-exclamation-circle me-2"></i>
+                                Failed to load attendance details. Please try again.
+                            </div>
+                        `;
+                        console.error("Error fetching day details:", error);
+                    }
+                });
             });
         });
         
@@ -1042,73 +831,43 @@
                 return;
             }
             
-            // Simulate form submission
-            Swal.fire({
-                title: 'Submitting Request',
-                html: 'Please wait...',
-                timer: 2000,
-                timerProgressBar: true,
-                didOpen: () => {
-                    Swal.showLoading();
-                }
-            }).then(() => {
-                // Hide modal
-                $('#requestCorrectionModal').modal('hide');
-                
-                // Show success message
-                Swal.fire({
-                    title: 'Request Submitted',
-                    text: 'Your attendance correction request has been submitted successfully. You will be notified once it is reviewed by the faculty.',
-                    icon: 'success',
-                    confirmButtonColor: '#4e73df'
-                });
-            });
-        });
-        
-        // Handle filter button
-        document.getElementById('applyFilters').addEventListener('click', function() {
-            // Get filter values
-            const subject = document.getElementById('subjectFilter').value;
-            const month = document.getElementById('monthFilter').value;
-            const status = document.getElementById('statusFilter').value;
-            
-            // Simulate filter application
-            Swal.fire({
-                title: 'Applying Filters',
-                html: 'Loading attendance data...',
-                timer: 1500,
-                timerProgressBar: true,
-                didOpen: () => {
-                    Swal.showLoading();
-                }
-            }).then(() => {
-                // Show filter applied message
-                let filterText = [];
-                if (subject) filterText.push(`Subject: ${document.getElementById('subjectFilter').options[document.getElementById('subjectFilter').selectedIndex].text}`);
-                if (month) filterText.push(`Month: ${document.getElementById('monthFilter').options[document.getElementById('monthFilter').selectedIndex].text}`);
-                if (status) filterText.push(`Status: ${status.charAt(0).toUpperCase() + status.slice(1)}`);
-                
-                if (filterText.length > 0) {
-                    Swal.fire({
-                        title: 'Filters Applied',
-                        html: `Showing results for:<br>${filterText.join('<br>')}`,
-                        icon: 'success',
-                        confirmButtonColor: '#4e73df'
-                    });
-                } else {
-                    Swal.fire({
-                        title: 'All Filters Cleared',
-                        text: 'Showing all attendance records',
-                        icon: 'info',
-                        confirmButtonColor: '#4e73df'
-                    });
-                }
-            });
+            // Submit form
+            form.submit();
         });
         
         // Handle print attendance button
         document.getElementById('printAttendance').addEventListener('click', function() {
             window.print();
+        });
+        
+        // Handle refresh calendar
+        document.getElementById('refreshCalendar').addEventListener('click', function() {
+            // Reload the page with current filters
+            document.getElementById('filterForm').submit();
+        });
+        
+        // Handle view change
+        document.querySelectorAll('[data-view]').forEach(button => {
+            button.addEventListener('click', function(e) {
+                e.preventDefault();
+                
+                const view = this.dataset.view;
+                
+                // Update form and submit
+                const form = document.getElementById('filterForm');
+                let viewInput = form.querySelector('input[name="view"]');
+                
+                if (!viewInput) {
+                    viewInput = document.createElement('input');
+                    viewInput.type = 'hidden';
+                    viewInput.name = 'view';
+                    form.appendChild(viewInput);
+                }
+                
+                viewInput.value = view;
+                
+                form.submit();
+            });
         });
     });
 </script>

@@ -102,3 +102,19 @@ def change_password(request):
 def edit_profile(request):
 
     return render(request, 'student_portal/profile.html')
+
+#logs
+@login_required
+def log_view(request):
+
+    return render(request, 'student_portal/proflog_viewile.html')
+
+
+@login_required
+def export_attendance_history(request):
+
+    return render(request, 'student_portal/index.html')
+@login_required
+def log_view(request):
+
+    return render(request, 'student_portal/proflog_viewile.html')
