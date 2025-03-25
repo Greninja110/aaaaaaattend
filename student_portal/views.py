@@ -11,7 +11,7 @@ from django.core.files.storage import FileSystemStorage
 from authentication.models import User, Role
 from core.models import Student, Department, Faculty, AcademicYear, ClassSection, Batch
 # Update any imports of Attendance, LeaveApplication to import from core
-from core.models import Attendance, LeaveApplication, FacultySubject, Subject
+from core.models import Attendance, LeaveApplication, FacultySubject, Subject , Timetable
 from .models import Attendance, LeaveApplication, Notification, StudentProfile, UserPreference, NotificationSetting, AttendanceCorrectionRequest
 import json
 import logging

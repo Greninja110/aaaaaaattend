@@ -1,10 +1,17 @@
 from django import forms
 from django.core.validators import MinValueValidator, MaxValueValidator
 from django.utils import timezone
-from .models import LeaveApplication, AttendanceException, LabIssue, ScheduledReport
-# Update imports of Subject, FacultySubject, ElectiveSubject
-from core.models import Subject, FacultySubject, ElectiveSubject
-from core.models import Attendance, LeaveApplication
+
+# Import ONLY the models you define in lab_assistant_portal
+from .models import AttendanceException, LabIssue, ScheduledReport
+
+# Import core models explicitly - remove any duplicates
+from core.models import (
+    Subject, FacultySubject, ElectiveSubject, 
+    Attendance, LeaveApplication
+)
+
+
 class DateInput(forms.DateInput):
     input_type = 'date'
 

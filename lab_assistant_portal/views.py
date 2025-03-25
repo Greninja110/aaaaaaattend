@@ -14,14 +14,17 @@ import logging
 import os
 import io
 import tempfile
-from .models import LabAssistant, LeaveApplication, AttendanceException, LabIssue, ScheduledReport, Attendance
 from .forms import (
     LeaveApplicationApprovalForm, AttendanceExceptionForm, AttendanceExceptionApprovalForm, 
     LabIssueForm, LabIssueResolutionForm, ScheduledReportForm, ProfileUpdateForm, 
     PasswordChangeForm, NotificationSettingsForm, LeaveFilterForm, AttendanceExceptionFilterForm,
     LowAttendanceFilterForm, ReportGenerationForm
 )
-from core.models import Department, Student, Faculty, Subject, ClassSection, Batch, AcademicYear, SystemLog, FacultySubject, Attendance, LeaveApplication
+from core.models import (
+    Department, Student, Faculty, Subject, ClassSection, Batch, 
+    AcademicYear, SystemLog, FacultySubject, Attendance, LeaveApplication
+)
+from .models import LabAssistant, AttendanceException, LabIssue, ScheduledReport
 from authentication.models import User
 from django.contrib.auth.hashers import check_password, make_password
 
@@ -211,8 +214,9 @@ def profile(request):
     lab_assistant = get_lab_assistant(user)
     
     if not lab_assistant:
-        messages.error(request, "Lab Assistant profile not found. Please contact the administrator.")
-        return redirect('/')
+        return render(request, 'lab_assistant_portal/setup_required.html', {
+            'error_title': 'Profile Not Found',
+            'error_message': 'Your lab assistant profile is not set up yet. Please contact the administrator.'})
     
     # Get department info
     department = lab_assistant.department

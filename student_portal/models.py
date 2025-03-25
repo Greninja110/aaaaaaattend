@@ -1,7 +1,6 @@
 from django.db import models
 from authentication.models import User
-from core.models import Student, Faculty , Attendance , FacultySubject
-from core.models import Subject, FacultySubject, Attendance, LeaveApplication
+from core.models import Student, Faculty, Subject, FacultySubject, Attendance, LeaveApplication
 # Create your models here.
 # Create models needed for views
 

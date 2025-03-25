@@ -1,14 +1,12 @@
 from django.db import models
 from django.utils import timezone
 from authentication.models import User
-from core.models import Student, Faculty, Department, SystemLog, AcademicYear, Batch, ClassSection , FacultySubject , Attendance, LeaveApplication
-from .models import Student, Faculty, Department, SystemLog, AcademicYear, Batch, ClassSection
 
 class LabAssistant(models.Model):
     """Lab Assistant model for storing lab assistant information"""
     assistant_id = models.AutoField(primary_key=True)
     user = models.OneToOneField(User, on_delete=models.CASCADE, null=True)
-    department = models.ForeignKey(Department, on_delete=models.CASCADE, null=True)
+    department = models.ForeignKey('core.Department', on_delete=models.CASCADE, null=True)
     dob = models.DateField(null=True, blank=True)
     joining_year = models.IntegerField(null=False, default=2023)
     status = models.CharField(max_length=20, default='active', 
@@ -25,8 +23,8 @@ class LabAssistant(models.Model):
 class AttendanceException(models.Model):
     """Attendance Exception model for managing attendance corrections"""
     exception_id = models.AutoField(primary_key=True)
-    attendance = models.ForeignKey('Attendance', on_delete=models.CASCADE)
-    requested_by = models.ForeignKey(Faculty, on_delete=models.CASCADE, related_name='exception_requests')
+    attendance = models.ForeignKey('core.Attendance', on_delete=models.CASCADE)
+    requested_by = models.ForeignKey('core.Faculty', on_delete=models.CASCADE, related_name='exception_requests')
     reason = models.TextField()
     previous_status = models.CharField(max_length=20)
     requested_status = models.CharField(max_length=20, choices=[('present', 'Present'), ('absent', 'Absent'), ('dont_care', 'Don\'t Care')])
@@ -71,6 +69,7 @@ class LabIssue(models.Model):
     
     def __str__(self):
         return f"{self.lab_name} - {self.issue_type} ({self.status})"
+
 
 class ScheduledReport(models.Model):
     """Model for scheduled reports"""

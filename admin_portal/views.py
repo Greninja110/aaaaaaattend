@@ -32,7 +32,7 @@ from django.http import HttpResponse
 from authentication.models import User, Role
 from core.models import Department, AcademicYear, SystemLog
 from .models import AdminSetting, BulkImportLog
-from core.models import FacultySubject, ElectiveSubject, Subject
+from core.models import FacultySubject, ElectiveSubject, Subject, Attendance
 from .forms import AcademicYearForm, DepartmentForm, AdminSettingsForm ,ElectiveSubjectForm ,SubjectForm ,StudentDetailsForm ,FacultyDetailsForm ,FacultySubjectForm
 
 from authentication.models import User, Role
