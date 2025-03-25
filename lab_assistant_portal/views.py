@@ -21,7 +21,7 @@ from .forms import (
     PasswordChangeForm, NotificationSettingsForm, LeaveFilterForm, AttendanceExceptionFilterForm,
     LowAttendanceFilterForm, ReportGenerationForm
 )
-from core.models import Department, Student, Faculty, ClassSection, Batch, AcademicYear, SystemLog ,FacultySubject , Subject
+from core.models import Department, Student, Faculty, Subject, ClassSection, Batch, AcademicYear, SystemLog, FacultySubject, Attendance, LeaveApplication
 from authentication.models import User
 from django.contrib.auth.hashers import check_password, make_password
 

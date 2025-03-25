@@ -3,18 +3,17 @@ from core.models import Department, AcademicYear, ClassSection
 from authentication.models import User, Role
 from django.contrib.auth.password_validation import validate_password
 from django.core.exceptions import ValidationError
-
-from .models import  FacultySubject , ElectiveSubject ,Subject
-
+from core.models import FacultySubject, ElectiveSubject, Subject ,Attendance, LeaveApplication
+from .models import AdminSetting, BulkImportLog  # Keep any other models still in admin_portal
 from django import forms
 from django.core.exceptions import ValidationError
 from django.db.models import Q
 
 from core.models import Department, AcademicYear, ClassSection, Batch
 from authentication.models import User, Role
-from .models import AdminSetting, BulkImportLog, FacultySubject, Timetable
-
-from .models import Timetable, FacultySubject
+from .models import AdminSetting, BulkImportLog
+from core.models import FacultySubject, Timetable# Update imports of Subject, FacultySubject, ElectiveSubject
+from core.models import Subject, FacultySubject, ElectiveSubject ,Timetable, FacultySubject
 # Then use Timetable directly without models. prefix
 
 class AcademicYearForm(forms.ModelForm):

@@ -45,12 +45,11 @@ from .forms import (
 )
 from .utils import log_admin_action, get_current_academic_year, handle_uploaded_csv
 
-from .models import Timetable, FacultySubject
 # Then use Timetable directly without models. prefix
 
 from authentication.models import User, Role
-from core.models import Department, AcademicYear, SystemLog, ClassSection, Batch
-from .models import AdminSetting, BulkImportLog, FacultySubject, Timetable
+from core.models import Department, AcademicYear, SystemLog, ClassSection, Batch ,Timetable, FacultySubject 
+from .models import AdminSetting, BulkImportLog, FacultySubject
 from .forms import TimetableForm
 
 from .utils import log_admin_action, get_current_academic_year

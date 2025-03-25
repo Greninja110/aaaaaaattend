@@ -2,7 +2,9 @@ from django import forms
 from django.core.validators import MinValueValidator, MaxValueValidator
 from django.utils import timezone
 from .models import LeaveApplication, AttendanceException, LabIssue, ScheduledReport
-
+# Update imports of Subject, FacultySubject, ElectiveSubject
+from core.models import Subject, FacultySubject, ElectiveSubject
+from core.models import Attendance, LeaveApplication
 class DateInput(forms.DateInput):
     input_type = 'date'
 

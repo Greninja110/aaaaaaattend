@@ -10,7 +10,8 @@ from django.conf import settings
 from django.core.files.storage import FileSystemStorage
 from authentication.models import User, Role
 from core.models import Student, Department, Faculty, AcademicYear, ClassSection, Batch
-from admin_portal.models import Subject, FacultySubject, Timetable
+# Update any imports of Attendance, LeaveApplication to import from core
+from core.models import Attendance, LeaveApplication, FacultySubject, Subject
 from .models import Attendance, LeaveApplication, Notification, StudentProfile, UserPreference, NotificationSetting, AttendanceCorrectionRequest
 import json
 import logging
