@@ -35,6 +35,23 @@ urlpatterns = [
 
     path('log/', views.log_view, name='log'),
     
+    # Add these to your existing urlpatterns list
+
+# Profile-related URLs
+path('profile/update-skills/', views.update_skills, name='update_skills'),
+path('profile/save-preferences/', views.save_preferences, name='save_preferences'),
+path('profile/upload-photo/', views.upload_profile_photo, name='upload_profile_photo'),
+
+# Attendance-related URLs
+path('attendance/export-history/', views.export_attendance_history, name='export_attendance_history'),
+path('attendance/get-day/', views.get_day_attendance, name='get_day_attendance'),
+path('attendance/request-correction/', views.request_attendance_correction, name='request_attendance_correction'),
+
+# Notification-related URLs
+path('notifications/get-details/', views.get_notification_details, name='get_notification_details'),
+path('notifications/mark-read/', views.mark_notification_read, name='mark_notification_read'),
+path('notifications/update-settings/', views.update_notification_settings, name='update_notification_settings'),
+
     # AJAX endpoints
     # path('api/attendance-data/', views.get_attendance_data, name='get_attendance_data'),
     # path('api/timetable-data/', views.get_timetable_data, name='get_timetable_data'),
