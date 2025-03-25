@@ -1,0 +1,1309 @@
+{% extends 'lab_assistant_portal/base_lab_assistant.html' %}
+{% load static %}
+
+{% block lab_assistant_title %}My Profile{% endblock %}
+
+{% block lab_assistant_content %}
+<div class="container-fluid py-4">
+    <!-- Page Header -->
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+        <div>
+            <h2 class="h3 mb-0">My Profile</h2>
+            <p class="text-muted mb-0">View and manage your profile information</p>
+        </div>
+        <div>
+            <button type="button" class="btn btn-outline-primary me-2" id="editProfileBtn">
+                <i class="fas fa-edit me-1"></i> Edit Profile
+            </button>
+            <button type="button" class="btn btn-primary" id="changePasswordBtn" data-bs-toggle="modal" data-bs-target="#changePasswordModal">
+                <i class="fas fa-key me-1"></i> Change Password
+            </button>
+        </div>
+    </div>
+    
+    {% if messages %}
+    <div class="row mb-4">
+        <div class="col-md-12">
+            {% for message in messages %}
+                <div class="alert {{ message.tags }} alert-dismissible fade show" role="alert">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+    
+    <div class="row">
+        <!-- Profile Information Card -->
+        <div class="col-md-4 mb-4">
+            <div class="card shadow h-100">
+                <div class="card-header py-3 bg-gradient-primary text-white">
+                    <h6 class="m-0 font-weight-bold">Profile Information</h6>
+                </div>
+                <div class="card-body text-center">
+                    <div class="profile-image-container mb-4">
+                        {% if lab_assistant.profile_photo %}
+                            <img src="{{ lab_assistant.profile_photo.url }}" alt="Profile Photo" class="img-profile rounded-circle img-thumbnail">
+                        {% else %}
+                            <div class="profile-placeholder rounded-circle">
+                                <i class="fas fa-user fa-4x"></i>
+                            </div>
+                        {% endif %}
+                        <div class="profile-image-overlay">
+                            <button class="btn btn-sm btn-light rounded-circle" id="changePhotoBtn" data-bs-toggle="modal" data-bs-target="#changePhotoModal">
+                                <i class="fas fa-camera"></i>
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <h4 class="mb-1">{{ user.full_name }}</h4>
+                    <p class="text-muted mb-3">{{ lab_assistant.employee_id }}</p>
+                    
+                    <div class="profile-stats d-flex justify-content-center mb-3">
+                        <div class="stat-item px-3">
+                            <h6>{{ leave_approved_count }}</h6>
+                            <p class="small text-muted mb-0">Leaves Approved</p>
+                        </div>
+                        <div class="stat-item px-3 border-start border-end">
+                            <h6>{{ exceptions_count }}</h6>
+                            <p class="small text-muted mb-0">Exceptions</p>
+                        </div>
+                        <div class="stat-item px-3">
+                            <h6>{{ dept_count }}</h6>
+                            <p class="small text-muted mb-0">Departments</p>
+                        </div>
+                    </div>
+                    
+                    <div class="activity-info text-start">
+                        <div class="d-flex align-items-center mb-2">
+                            <div class="activity-icon bg-primary text-white">
+                                <i class="fas fa-envelope"></i>
+                            </div>
+                            <div class="ms-3">
+                                <p class="mb-0 small text-muted">Email</p>
+                                <p class="mb-0">{{ user.email }}</p>
+                            </div>
+                        </div>
+                        <div class="d-flex align-items-center mb-2">
+                            <div class="activity-icon bg-success text-white">
+                                <i class="fas fa-building"></i>
+                            </div>
+                            <div class="ms-3">
+                                <p class="mb-0 small text-muted">Department</p>
+                                <p class="mb-0">{{ lab_assistant.department.department_name }}</p>
+                            </div>
+                        </div>
+                        <div class="d-flex align-items-center mb-2">
+                            <div class="activity-icon bg-info text-white">
+                                <i class="fas fa-calendar-alt"></i>
+                            </div>
+                            <div class="ms-3">
+                                <p class="mb-0 small text-muted">Joined On</p>
+                                <p class="mb-0">{{ lab_assistant.joining_year }}</p>
+                            </div>
+                        </div>
+                        <div class="d-flex align-items-center">
+                            <div class="activity-icon bg-warning text-white">
+                                <i class="fas fa-sign-in-alt"></i>
+                            </div>
+                            <div class="ms-3">
+                                <p class="mb-0 small text-muted">Last Login</p>
+                                <p class="mb-0">{{ user.last_login|date:"F j, Y, g:i a" }}</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Personal Information Card -->
+        <div class="col-md-8 mb-4">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3 bg-gradient-primary text-white">
+                    <h6 class="m-0 font-weight-bold">Personal Information</h6>
+                </div>
+                <div class="card-body">
+                    <div id="viewProfileInfo">
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <div class="detail-item">
+                                    <h6 class="detail-label">Full Name</h6>
+                                    <p class="detail-value">{{ user.full_name }}</p>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="detail-item">
+                                    <h6 class="detail-label">Username</h6>
+                                    <p class="detail-value">{{ user.username }}</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <div class="detail-item">
+                                    <h6 class="detail-label">Email Address</h6>
+                                    <p class="detail-value">{{ user.email }}</p>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="detail-item">
+                                    <h6 class="detail-label">Contact Number</h6>
+                                    <p class="detail-value">{{ lab_assistant.contact_number|default:"Not provided" }}</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <div class="detail-item">
+                                    <h6 class="detail-label">Date of Birth</h6>
+                                    <p class="detail-value">{{ lab_assistant.dob|date:"F j, Y" }}</p>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="detail-item">
+                                    <h6 class="detail-label">Employee ID</h6>
+                                    <p class="detail-value">{{ lab_assistant.employee_id }}</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <div class="detail-item">
+                                    <h6 class="detail-label">Department</h6>
+                                    <p class="detail-value">{{ lab_assistant.department.department_name }}</p>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="detail-item">
+                                    <h6 class="detail-label">Joining Year</h6>
+                                    <p class="detail-value">{{ lab_assistant.joining_year }}</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <div class="detail-item">
+                                    <h6 class="detail-label">Status</h6>
+                                    <p class="detail-value">
+                                        <span class="badge bg-{{ lab_assistant.status|lower }}">{{ lab_assistant.status|title }}</span>
+                                    </p>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="detail-item">
+                                    <h6 class="detail-label">Account Created</h6>
+                                    <p class="detail-value">{{ user.created_at|date:"F j, Y" }}</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div id="editProfileInfo" style="display: none;">
+                        <form id="profileForm">
+                            {% csrf_token %}
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="fullName" class="form-label">Full Name</label>
+                                        <input type="text" class="form-control" id="fullName" name="full_name" value="{{ user.full_name }}" required>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="username" class="form-label">Username</label>
+                                        <input type="text" class="form-control" id="username" name="username" value="{{ user.username }}" readonly>
+                                        <small class="form-text text-muted">Username cannot be changed</small>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="email" class="form-label">Email Address</label>
+                                        <input type="email" class="form-control" id="email" name="email" value="{{ user.email }}" readonly>
+                                        <small class="form-text text-muted">Email cannot be changed</small>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="contactNumber" class="form-label">Contact Number</label>
+                                        <input type="text" class="form-control" id="contactNumber" name="contact_number" value="{{ lab_assistant.contact_number|default:'' }}">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="dob" class="form-label">Date of Birth</label>
+                                        <input type="date" class="form-control" id="dob" name="dob" value="{{ lab_assistant.dob|date:'Y-m-d' }}">
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="employeeId" class="form-label">Employee ID</label>
+                                        <input type="text" class="form-control" id="employeeId" name="employee_id" value="{{ lab_assistant.employee_id }}" readonly>
+                                        <small class="form-text text-muted">Employee ID cannot be changed</small>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row mb-3">
+                                <div class="col-12 text-end">
+                                    <button type="button" class="btn btn-outline-secondary me-2" id="cancelEditBtn">
+                                        <i class="fas fa-times me-1"></i> Cancel
+                                    </button>
+                                    <button type="submit" class="btn btn-primary" id="saveProfileBtn">
+                                        <i class="fas fa-save me-1"></i> Save Changes
+                                    </button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Activity Log Card -->
+            <div class="card shadow">
+                <div class="card-header py-3 bg-gradient-primary text-white">
+                    <h6 class="m-0 font-weight-bold">Recent Activity</h6>
+                </div>
+                <div class="card-body">
+                    <div class="activity-timeline">
+                        {% for activity in recent_activities %}
+                        <div class="activity-item">
+                            <div class="activity-content">
+                                <div class="activity-time">{{ activity.timestamp|date:"F j, Y, g:i a" }}</div>
+                                <div class="activity-text">{{ activity.action }}</div>
+                                {% if activity.details %}
+                                <div class="activity-details">{{ activity.details }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        {% empty %}
+                        <div class="text-center py-4 text-muted">
+                            <i class="fas fa-history fa-3x mb-3"></i>
+                            <p>No recent activities found.</p>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Notification Settings Card -->
+    <div class="row">
+        <div class="col-md-12 mb-4">
+            <div class="card shadow">
+                <div class="card-header py-3 bg-gradient-primary text-white">
+                    <h6 class="m-0 font-weight-bold">Notification Settings</h6>
+                </div>
+                <div class="card-body">
+                    <form id="notificationSettingsForm">
+                        {% csrf_token %}
+                        <div class="row">
+                            <div class="col-md-6">
+                                <h6 class="text-primary">Email Notifications</h6>
+                                <div class="form-check form-switch mb-3">
+                                    <input class="form-check-input" type="checkbox" id="emailLeaveApplications" name="email_leave_applications" {% if notification_settings.email_leave_applications %}checked{% endif %}>
+                                    <label class="form-check-label" for="emailLeaveApplications">Leave Applications</label>
+                                    <small class="form-text text-muted d-block">Receive email notifications for new leave applications</small>
+                                </div>
+                                <div class="form-check form-switch mb-3">
+                                    <input class="form-check-input" type="checkbox" id="emailAttendanceExceptions" name="email_attendance_exceptions" {% if notification_settings.email_attendance_exceptions %}checked{% endif %}>
+                                    <label class="form-check-label" for="emailAttendanceExceptions">Attendance Exceptions</label>
+                                    <small class="form-text text-muted d-block">Receive email notifications for new attendance exceptions</small>
+                                </div>
+                                <div class="form-check form-switch mb-3">
+                                    <input class="form-check-input" type="checkbox" id="emailLowAttendance" name="email_low_attendance" {% if notification_settings.email_low_attendance %}checked{% endif %}>
+                                    <label class="form-check-label" for="emailLowAttendance">Low Attendance Alerts</label>
+                                    <small class="form-text text-muted d-block">Receive email notifications for low attendance alerts</small>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <h6 class="text-primary">Portal Notifications</h6>
+                                <div class="form-check form-switch mb-3">
+                                    <input class="form-check-input" type="checkbox" id="portalLeaveApplications" name="portal_leave_applications" {% if notification_settings.portal_leave_applications %}checked{% endif %}>
+                                    <label class="form-check-label" for="portalLeaveApplications">Leave Applications</label>
+                                    <small class="form-text text-muted d-block">Receive portal notifications for new leave applications</small>
+                                </div>
+                                <div class="form-check form-switch mb-3">
+                                    <input class="form-check-input" type="checkbox" id="portalAttendanceExceptions" name="portal_attendance_exceptions" {% if notification_settings.portal_attendance_exceptions %}checked{% endif %}>
+                                    <label class="form-check-label" for="portalAttendanceExceptions">Attendance Exceptions</label>
+                                    <small class="form-text text-muted d-block">Receive portal notifications for new attendance exceptions</small>
+                                </div>
+                                <div class="form-check form-switch mb-3">
+                                    <input class="form-check-input" type="checkbox" id="portalLowAttendance" name="portal_low_attendance" {% if notification_settings.portal_low_attendance %}checked{% endif %}>
+                                    <label class="form-check-label" for="portalLowAttendance">Low Attendance Alerts</label>
+                                    <small class="form-text text-muted d-block">Receive portal notifications for low attendance alerts</small>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row mt-3">
+                            <div class="col-12 text-end">
+                                <button type="submit" class="btn btn-primary" id="saveNotificationSettingsBtn">
+                                    <i class="fas fa-save me-1"></i> Save Notification Settings
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Change Password Modal -->
+<div class="modal fade" id="changePasswordModal" tabindex="-1" aria-labelledby="changePasswordModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title" id="changePasswordModalLabel">Change Password</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="changePasswordForm">
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        <label for="currentPassword" class="form-label">Current Password</label>
+                        <div class="input-group">
+                            <input type="password" class="form-control" id="currentPassword" name="current_password" required>
+                            <button class="btn btn-outline-secondary toggle-password" type="button" data-target="currentPassword">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="newPassword" class="form-label">New Password</label>
+                        <div class="input-group">
+                            <input type="password" class="form-control" id="newPassword" name="new_password" required>
+                            <button class="btn btn-outline-secondary toggle-password" type="button" data-target="newPassword">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                        </div>
+                        <div class="password-strength mt-2" id="passwordStrength">
+                            <div class="progress" style="height: 5px;">
+                                <div class="progress-bar" role="progressbar" style="width: 0%" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
+                            </div>
+                            <small class="form-text text-muted strength-text">Password strength</small>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="confirmPassword" class="form-label">Confirm New Password</label>
+                        <div class="input-group">
+                            <input type="password" class="form-control" id="confirmPassword" name="confirm_password" required>
+                            <button class="btn btn-outline-secondary toggle-password" type="button" data-target="confirmPassword">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="password-requirements">
+                        <small class="form-text text-muted">Password must:</small>
+                        <ul class="small text-muted">
+                            <li id="length-check">Be at least 8 characters long</li>
+                            <li id="uppercase-check">Include at least one uppercase letter</li>
+                            <li id="lowercase-check">Include at least one lowercase letter</li>
+                            <li id="number-check">Include at least one number</li>
+                            <li id="special-check">Include at least one special character</li>
+                        </ul>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" id="savePasswordBtn">Change Password</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Change Profile Photo Modal -->
+<div class="modal fade" id="changePhotoModal" tabindex="-1" aria-labelledby="changePhotoModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title" id="changePhotoModalLabel">Change Profile Photo</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="changePhotoForm" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <div class="mb-3 text-center">
+                        <div class="photo-preview-container mx-auto mb-3">
+                            {% if lab_assistant.profile_photo %}
+                                <img src="{{ lab_assistant.profile_photo.url }}" id="photoPreview" class="img-fluid rounded-circle photo-preview">
+                            {% else %}
+                                <div class="photo-preview rounded-circle d-flex align-items-center justify-content-center" id="photoPreview">
+                                    <i class="fas fa-user fa-4x text-muted"></i>
+                                </div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="upload-btn-wrapper">
+                            <button class="btn btn-outline-primary btn-upload">
+                                <i class="fas fa-upload me-2"></i>Choose Photo
+                            </button>
+                            <input type="file" name="profile_photo" id="profilePhotoInput" accept="image/*">
+                        </div>
+                        <small class="form-text text-muted d-block mt-2">Upload a square image for best results. Maximum file size: 5MB.</small>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-danger me-2" id="removePhotoBtn">Remove Photo</button>
+                <button type="button" class="btn btn-primary" id="uploadPhotoBtn">Upload Photo</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block lab_assistant_custom_css %}
+<style>
+    /* Profile image styling */
+    .profile-image-container {
+        position: relative;
+        width: 150px;
+        height: 150px;
+        margin: 0 auto 20px;
+    }
+    
+    .img-profile {
+        width: 150px;
+        height: 150px;
+        object-fit: cover;
+    }
+    
+    .profile-placeholder {
+        width: 150px;
+        height: 150px;
+        background-color: #f8f9fc;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #4e73df;
+    }
+    
+    .profile-image-overlay {
+        position: absolute;
+        bottom: 0;
+        right: 10px;
+        opacity: 0;
+        transition: opacity 0.3s ease;
+    }
+    
+    .profile-image-container:hover .profile-image-overlay {
+        opacity: 1;
+    }
+    
+    /* Stats styling */
+    .stat-item h6 {
+        font-size: 1.25rem;
+        font-weight: 700;
+        margin-bottom: 0;
+    }
+    
+    /* Activity info styling */
+    .activity-icon {
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    
+    /* Detail item styling */
+    .detail-item {
+        margin-bottom: 15px;
+    }
+    
+    .detail-label {
+        margin-bottom: 5px;
+        font-size: 0.8rem;
+        color: #6c757d;
+    }
+    
+    .detail-value {
+        margin-bottom: 0;
+        font-weight: 500;
+    }
+    
+    /* Activity timeline styling */
+    .activity-timeline {
+        position: relative;
+        max-height: 300px;
+        overflow-y: auto;
+        padding-left: 20px;
+    }
+    
+    .activity-timeline::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        left: 8px;
+        width: 2px;
+        background-color: #e3e6f0;
+    }
+    
+    .activity-item {
+        position: relative;
+        padding-bottom: 20px;
+    }
+    
+    .activity-item:last-child {
+        padding-bottom: 0;
+    }
+    
+    .activity-item::before {
+        content: '';
+        position: absolute;
+        left: -20px;
+        top: 5px;
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+        background-color: #4e73df;
+        border: 2px solid #fff;
+        box-shadow: 0 0 0 2px #4e73df;
+    }
+    
+    .activity-content {
+        padding-left: 15px;
+    }
+    
+    .activity-time {
+        font-size: 0.8rem;
+        color: #6c757d;
+        margin-bottom: 2px;
+    }
+    
+    .activity-text {
+        font-weight: 500;
+        margin-bottom: 2px;
+    }
+    
+    .activity-details {
+        font-size: 0.9rem;
+        color: #6c757d;
+    }
+    
+    /* Form switch styling */
+    .form-switch .form-check-input {
+        width: 3em;
+    }
+    
+    /* Password strength styling */
+    .password-strength .progress {
+        height: 5px;
+        margin-bottom: 5px;
+    }
+    
+    .password-strength .strength-text {
+        font-size: 0.75rem;
+    }
+    
+    .password-requirements ul {
+        padding-left: 20px;
+        margin-bottom: 0;
+    }
+    
+    .password-requirements li {
+        margin-bottom: 5px;
+    }
+    
+    .password-requirements li.valid {
+        color: #1cc88a;
+    }
+    
+    /* Photo upload styling */
+    .photo-preview-container {
+        width: 150px;
+        height: 150px;
+        overflow: hidden;
+    }
+    
+    .photo-preview {
+        width: 150px;
+        height: 150px;
+        object-fit: cover;
+        background-color: #f8f9fc;
+    }
+    
+    .upload-btn-wrapper {
+        position: relative;
+        overflow: hidden;
+        display: inline-block;
+    }
+    
+    .btn-upload {
+        border: 1px solid #4e73df;
+        color: #4e73df;
+        padding: 8px 16px;
+        border-radius: 5px;
+        font-size: 14px;
+    }
+    
+    .upload-btn-wrapper input[type=file] {
+        position: absolute;
+        left: 0;
+        top: 0;
+        opacity: 0;
+        width: 100%;
+        height: 100%;
+        cursor: pointer;
+    }
+    
+    /* Status badges */
+    .bg-active {
+        background-color: #1cc88a;
+    }
+    
+    .bg-inactive {
+        background-color: #858796;
+    }
+    
+    .bg-on_leave {
+        background-color: #f6c23e;
+    }
+</style>
+{% endblock %}
+
+{% block lab_assistant_custom_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        try {
+            // Log page load
+            logToFile('Profile page loaded');
+            
+            // Edit profile functionality
+            document.getElementById('editProfileBtn').addEventListener('click', function() {
+                document.getElementById('viewProfileInfo').style.display = 'none';
+                document.getElementById('editProfileInfo').style.display = 'block';
+                logToFile('Edit profile mode activated');
+            });
+            
+            // Cancel edit profile
+            document.getElementById('cancelEditBtn').addEventListener('click', function() {
+                document.getElementById('viewProfileInfo').style.display = 'block';
+                document.getElementById('editProfileInfo').style.display = 'none';
+                logToFile('Edit profile mode canceled');
+            });
+            
+            // Profile form submission
+            document.getElementById('profileForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                const formData = new FormData(this);
+                logToFile('Profile update form submitted');
+                
+                // Make AJAX request to update profile
+                $.ajax({
+                    url: "{% url 'lab_assistant_portal:update_profile' %}",
+                    method: "POST",
+                    data: formData,
+                    processData: false,
+                    contentType: false,
+                    beforeSend: function() {
+                        // Disable the save button and show loading indicator
+                        const saveBtn = document.getElementById('saveProfileBtn');
+                        saveBtn.disabled = true;
+                        saveBtn.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Saving...';
+                    },
+                    success: function(response) {
+                        if (response.success) {
+                            logToFile('Profile updated successfully');
+                            
+                            // Show success message using SweetAlert2
+                            Swal.fire({
+                                title: 'Success!',
+                                text: 'Your profile has been updated successfully.',
+                                icon: 'success',
+                                confirmButtonColor: '#4e73df'
+                            }).then(() => {
+                                // Reload the page to reflect changes
+                                window.location.reload();
+                            });
+                        } else {
+                            logToFile(`Profile update failed: ${response.message}`, 'error');
+                            
+                            // Show error message
+                            Swal.fire({
+                                title: 'Error!',
+                                text: response.message || 'Failed to update profile. Please try again.',
+                                icon: 'error',
+                                confirmButtonColor: '#e74a3b'
+                            });
+                            
+                            // Re-enable save button
+                            const saveBtn = document.getElementById('saveProfileBtn');
+                            saveBtn.disabled = false;
+                            saveBtn.innerHTML = '<i class="fas fa-save me-1"></i> Save Changes';
+                        }
+                    },
+                    error: function(xhr, status, error) {
+                        logToFile(`Profile update error: ${error}`, 'error');
+                        
+                        // Show error message
+                        Swal.fire({
+                            title: 'Error!',
+                            text: 'An error occurred while updating your profile. Please try again.',
+                            icon: 'error',
+                            confirmButtonColor: '#e74a3b'
+                        });
+                        
+                        // Re-enable save button
+                        const saveBtn = document.getElementById('saveProfileBtn');
+                        saveBtn.disabled = false;
+                        saveBtn.innerHTML = '<i class="fas fa-save me-1"></i> Save Changes';
+                    }
+                });
+            });
+            
+            // Notification settings form submission
+            document.getElementById('notificationSettingsForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                const formData = new FormData(this);
+                logToFile('Notification settings form submitted');
+                
+                // Make AJAX request to update notification settings
+                $.ajax({
+                    url: "{% url 'lab_assistant_portal:update_notification_settings' %}",
+                    method: "POST",
+                    data: formData,
+                    processData: false,
+                    contentType: false,
+                    beforeSend: function() {
+                        // Disable the save button and show loading indicator
+                        const saveBtn = document.getElementById('saveNotificationSettingsBtn');
+                        saveBtn.disabled = true;
+                        saveBtn.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Saving...';
+                    },
+                    success: function(response) {
+                        if (response.success) {
+                            logToFile('Notification settings updated successfully');
+                            
+                            // Show success message
+                            Swal.fire({
+                                title: 'Success!',
+                                text: 'Notification settings have been updated successfully.',
+                                icon: 'success',
+                                confirmButtonColor: '#4e73df',
+                                timer: 2000,
+                                timerProgressBar: true
+                            });
+                            
+                            // Re-enable save button
+                            const saveBtn = document.getElementById('saveNotificationSettingsBtn');
+                            saveBtn.disabled = false;
+                            saveBtn.innerHTML = '<i class="fas fa-save me-1"></i> Save Notification Settings';
+                        } else {
+                            logToFile(`Notification settings update failed: ${response.message}`, 'error');
+                            
+                            // Show error message
+                            Swal.fire({
+                                title: 'Error!',
+                                text: response.message || 'Failed to update notification settings. Please try again.',
+                                icon: 'error',
+                                confirmButtonColor: '#e74a3b'
+                            });
+                            
+                            // Re-enable save button
+                            const saveBtn = document.getElementById('saveNotificationSettingsBtn');
+                            saveBtn.disabled = false;
+                            saveBtn.innerHTML = '<i class="fas fa-save me-1"></i> Save Notification Settings';
+                        }
+                    },
+                    error: function(xhr, status, error) {
+                        logToFile(`Notification settings update error: ${error}`, 'error');
+                        
+                        // Show error message
+                        Swal.fire({
+                            title: 'Error!',
+                            text: 'An error occurred while updating notification settings. Please try again.',
+                            icon: 'error',
+                            confirmButtonColor: '#e74a3b'
+                        });
+                        
+                        // Re-enable save button
+                        const saveBtn = document.getElementById('saveNotificationSettingsBtn');
+                        saveBtn.disabled = false;
+                        saveBtn.innerHTML = '<i class="fas fa-save me-1"></i> Save Notification Settings';
+                    }
+                });
+            });
+            
+            // Password visibility toggle
+            document.querySelectorAll('.toggle-password').forEach(button => {
+                button.addEventListener('click', function() {
+                    const targetId = this.getAttribute('data-target');
+                    const passwordInput = document.getElementById(targetId);
+                    const icon = this.querySelector('i');
+                    
+                    if (passwordInput.type === 'password') {
+                        passwordInput.type = 'text';
+                        icon.classList.remove('fa-eye');
+                        icon.classList.add('fa-eye-slash');
+                    } else {
+                        passwordInput.type = 'password';
+                        icon.classList.remove('fa-eye-slash');
+                        icon.classList.add('fa-eye');
+                    }
+                });
+            });
+            
+            // Password strength checker
+            document.getElementById('newPassword').addEventListener('input', function() {
+                const password = this.value;
+                const progressBar = document.querySelector('#passwordStrength .progress-bar');
+                const strengthText = document.querySelector('#passwordStrength .strength-text');
+                
+                // Password requirements
+                const lengthCheck = document.getElementById('length-check');
+                const uppercaseCheck = document.getElementById('uppercase-check');
+                const lowercaseCheck = document.getElementById('lowercase-check');
+                const numberCheck = document.getElementById('number-check');
+                const specialCheck = document.getElementById('special-check');
+                
+                // Check length
+                if (password.length >= 8) {
+                    lengthCheck.classList.add('valid');
+                } else {
+                    lengthCheck.classList.remove('valid');
+                }
+                
+                // Check uppercase
+                if (/[A-Z]/.test(password)) {
+                    uppercaseCheck.classList.add('valid');
+                } else {
+                    uppercaseCheck.classList.remove('valid');
+                }
+                
+                // Check lowercase
+                if (/[a-z]/.test(password)) {
+                    lowercaseCheck.classList.add('valid');
+                } else {
+                    lowercaseCheck.classList.remove('valid');
+                }
+                
+                // Check number
+                if (/\d/.test(password)) {
+                    numberCheck.classList.add('valid');
+                } else {
+                    numberCheck.classList.remove('valid');
+                }
+                
+                // Check special character
+                if (/[^A-Za-z0-9]/.test(password)) {
+                    specialCheck.classList.add('valid');
+                } else {
+                    specialCheck.classList.remove('valid');
+                }
+                
+                // Calculate strength
+                let strength = 0;
+                
+                if (password.length >= 8) strength += 20;
+                if (/[A-Z]/.test(password)) strength += 20;
+                if (/[a-z]/.test(password)) strength += 20;
+                if (/\d/.test(password)) strength += 20;
+                if (/[^A-Za-z0-9]/.test(password)) strength += 20;
+                
+                // Update progress bar
+                progressBar.style.width = `${strength}%`;
+                
+                // Update color based on strength
+                if (strength < 40) {
+                    progressBar.className = 'progress-bar bg-danger';
+                    strengthText.textContent = 'Weak password';
+                } else if (strength < 80) {
+                    progressBar.className = 'progress-bar bg-warning';
+                    strengthText.textContent = 'Moderate password';
+                } else {
+                    progressBar.className = 'progress-bar bg-success';
+                    strengthText.textContent = 'Strong password';
+                }
+            });
+            
+            // Check password match
+            document.getElementById('confirmPassword').addEventListener('input', function() {
+                const password = document.getElementById('newPassword').value;
+                const confirmPassword = this.value;
+                
+                if (confirmPassword === password) {
+                    this.classList.remove('is-invalid');
+                    this.classList.add('is-valid');
+                } else {
+                    this.classList.remove('is-valid');
+                    this.classList.add('is-invalid');
+                }
+            });
+            
+            // Change password form submission
+            document.getElementById('savePasswordBtn').addEventListener('click', function() {
+                const form = document.getElementById('changePasswordForm');
+                const password = document.getElementById('newPassword').value;
+                const confirmPassword = document.getElementById('confirmPassword').value;
+                
+                // Check if form is valid
+                if (!form.checkValidity()) {
+                    form.reportValidity();
+                    return;
+                }
+                
+                // Check if passwords match
+                if (password !== confirmPassword) {
+                    Swal.fire({
+                        title: 'Error!',
+                        text: 'The passwords do not match.',
+                        icon: 'error',
+                        confirmButtonColor: '#e74a3b'
+                    });
+                    return;
+                }
+                
+                // Check password strength
+                let validCriteria = 0;
+                if (password.length >= 8) validCriteria++;
+                if (/[A-Z]/.test(password)) validCriteria++;
+                if (/[a-z]/.test(password)) validCriteria++;
+                if (/\d/.test(password)) validCriteria++;
+                if (/[^A-Za-z0-9]/.test(password)) validCriteria++;
+                
+                if (validCriteria < 4) {
+                    Swal.fire({
+                        title: 'Weak Password',
+                        text: 'Your password does not meet the minimum security requirements.',
+                        icon: 'warning',
+                        confirmButtonColor: '#f6c23e'
+                    });
+                    return;
+                }
+                
+                logToFile('Change password form submitted');
+                
+                // Get form data
+                const formData = new FormData(form);
+                
+                // Make AJAX request to change password
+                $.ajax({
+                    url: "{% url 'lab_assistant_portal:change_password' %}",
+                    method: "POST",
+                    data: formData,
+                    processData: false,
+                    contentType: false,
+                    beforeSend: function() {
+                        // Disable the save button and show loading indicator
+                        const saveBtn = document.getElementById('savePasswordBtn');
+                        saveBtn.disabled = true;
+                        saveBtn.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Changing...';
+                    },
+                    success: function(response) {
+                        if (response.success) {
+                            logToFile('Password changed successfully');
+                            
+                            // Close the modal
+                            $('#changePasswordModal').modal('hide');
+                            
+                            // Show success message
+                            Swal.fire({
+                                title: 'Success!',
+                                text: 'Your password has been changed successfully.',
+                                icon: 'success',
+                                confirmButtonColor: '#4e73df'
+                            });
+                            
+                            // Reset form
+                            form.reset();
+                        } else {
+                            logToFile(`Password change failed: ${response.message}`, 'error');
+                            
+                            // Show error message
+                            Swal.fire({
+                                title: 'Error!',
+                                text: response.message || 'Failed to change password. Please try again.',
+                                icon: 'error',
+                                confirmButtonColor: '#e74a3b'
+                            });
+                            
+                            // Re-enable save button
+                            const saveBtn = document.getElementById('savePasswordBtn');
+                            saveBtn.disabled = false;
+                            saveBtn.innerHTML = 'Change Password';
+                        }
+                    },
+                    error: function(xhr, status, error) {
+                        logToFile(`Password change error: ${error}`, 'error');
+                        
+                        // Show error message
+                        Swal.fire({
+                            title: 'Error!',
+                            text: 'An error occurred while changing your password. Please try again.',
+                            icon: 'error',
+                            confirmButtonColor: '#e74a3b'
+                        });
+                        
+                        // Re-enable save button
+                        const saveBtn = document.getElementById('savePasswordBtn');
+                        saveBtn.disabled = false;
+                        saveBtn.innerHTML = 'Change Password';
+                    }
+                });
+            });
+            
+            // Profile photo preview
+            document.getElementById('profilePhotoInput').addEventListener('change', function() {
+                const file = this.files[0];
+                
+                if (file) {
+                    const reader = new FileReader();
+                    
+                    reader.onload = function(e) {
+                        const photoPreview = document.getElementById('photoPreview');
+                        
+                        // If photoPreview is an img element
+                        if (photoPreview.tagName === 'IMG') {
+                            photoPreview.src = e.target.result;
+                        } else {
+                            // If photoPreview is a div (placeholder)
+                            // Replace with img element
+                            const img = document.createElement('img');
+                            img.src = e.target.result;
+                            img.id = 'photoPreview';
+                            img.className = 'img-fluid rounded-circle photo-preview';
+                            
+                            photoPreview.parentNode.replaceChild(img, photoPreview);
+                        }
+                    };
+                    
+                    reader.readAsDataURL(file);
+                }
+            });
+            
+            // Upload profile photo
+            document.getElementById('uploadPhotoBtn').addEventListener('click', function() {
+                const fileInput = document.getElementById('profilePhotoInput');
+                
+                if (!fileInput.files.length) {
+                    Swal.fire({
+                        title: 'No File Selected',
+                        text: 'Please select an image file to upload.',
+                        icon: 'warning',
+                        confirmButtonColor: '#f6c23e'
+                    });
+                    return;
+                }
+                
+                const file = fileInput.files[0];
+                
+                // Check file size (5MB limit)
+                if (file.size > 5 * 1024 * 1024) {
+                    Swal.fire({
+                        title: 'File Too Large',
+                        text: 'The selected file exceeds the maximum size limit of 5MB.',
+                        icon: 'error',
+                        confirmButtonColor: '#e74a3b'
+                    });
+                    return;
+                }
+                
+                // Check file type
+                if (!file.type.match('image.*')) {
+                    Swal.fire({
+                        title: 'Invalid File Type',
+                        text: 'Please select a valid image file.',
+                        icon: 'error',
+                        confirmButtonColor: '#e74a3b'
+                    });
+                    return;
+                }
+                
+                logToFile('Upload profile photo initiated');
+                
+                const formData = new FormData(document.getElementById('changePhotoForm'));
+                
+                // Make AJAX request to upload photo
+                $.ajax({
+                    url: "{% url 'lab_assistant_portal:update_profile_photo' %}",
+                    method: "POST",
+                    data: formData,
+                    processData: false,
+                    contentType: false,
+                    beforeSend: function() {
+                        // Disable the upload button and show loading indicator
+                        const uploadBtn = document.getElementById('uploadPhotoBtn');
+                        uploadBtn.disabled = true;
+                        uploadBtn.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Uploading...';
+                    },
+                    success: function(response) {
+                        if (response.success) {
+                            logToFile('Profile photo uploaded successfully');
+                            
+                            // Close the modal
+                            $('#changePhotoModal').modal('hide');
+                            
+                            // Show success message
+                            Swal.fire({
+                                title: 'Success!',
+                                text: 'Your profile photo has been uploaded successfully.',
+                                icon: 'success',
+                                confirmButtonColor: '#4e73df'
+                            }).then(() => {
+                                // Reload the page to reflect changes
+                                window.location.reload();
+                            });
+                        } else {
+                            logToFile(`Profile photo upload failed: ${response.message}`, 'error');
+                            
+                            // Show error message
+                            Swal.fire({
+                                title: 'Error!',
+                                text: response.message || 'Failed to upload profile photo. Please try again.',
+                                icon: 'error',
+                                confirmButtonColor: '#e74a3b'
+                            });
+                            
+                            // Re-enable upload button
+                            const uploadBtn = document.getElementById('uploadPhotoBtn');
+                            uploadBtn.disabled = false;
+                            uploadBtn.innerHTML = 'Upload Photo';
+                        }
+                    },
+                    error: function(xhr, status, error) {
+                        logToFile(`Profile photo upload error: ${error}`, 'error');
+                        
+                        // Show error message
+                        Swal.fire({
+                            title: 'Error!',
+                            text: 'An error occurred while uploading your profile photo. Please try again.',
+                            icon: 'error',
+                            confirmButtonColor: '#e74a3b'
+                        });
+                        
+                        // Re-enable upload button
+                        const uploadBtn = document.getElementById('uploadPhotoBtn');
+                        uploadBtn.disabled = false;
+                        uploadBtn.innerHTML = 'Upload Photo';
+                    }
+                });
+            });
+            
+            // Remove profile photo
+            document.getElementById('removePhotoBtn').addEventListener('click', function() {
+                logToFile('Remove profile photo initiated');
+                
+                // Confirm removal
+                Swal.fire({
+                    title: 'Remove Profile Photo?',
+                    text: 'Are you sure you want to remove your profile photo?',
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#e74a3b',
+                    cancelButtonColor: '#6c757d',
+                    confirmButtonText: 'Yes, remove it!'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        // Make AJAX request to remove photo
+                        $.ajax({
+                            url: "{% url 'lab_assistant_portal:remove_profile_photo' %}",
+                            method: "POST",
+                            data: {
+                                csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val()
+                            },
+                            beforeSend: function() {
+                                // Disable the remove button and show loading indicator
+                                const removeBtn = document.getElementById('removePhotoBtn');
+                                removeBtn.disabled = true;
+                                removeBtn.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Removing...';
+                            },
+                            success: function(response) {
+                                if (response.success) {
+                                    logToFile('Profile photo removed successfully');
+                                    
+                                    // Close the modal
+                                    $('#changePhotoModal').modal('hide');
+                                    
+                                    // Show success message
+                                    Swal.fire({
+                                        title: 'Removed!',
+                                        text: 'Your profile photo has been removed successfully.',
+                                        icon: 'success',
+                                        confirmButtonColor: '#4e73df'
+                                    }).then(() => {
+                                        // Reload the page to reflect changes
+                                        window.location.reload();
+                                    });
+                                } else {
+                                    logToFile(`Profile photo removal failed: ${response.message}`, 'error');
+                                    
+                                    // Show error message
+                                    Swal.fire({
+                                        title: 'Error!',
+                                        text: response.message || 'Failed to remove profile photo. Please try again.',
+                                        icon: 'error',
+                                        confirmButtonColor: '#e74a3b'
+                                    });
+                                    
+                                    // Re-enable remove button
+                                    const removeBtn = document.getElementById('removePhotoBtn');
+                                    removeBtn.disabled = false;
+                                    removeBtn.innerHTML = 'Remove Photo';
+                                }
+                            },
+                            error: function(xhr, status, error) {
+                                logToFile(`Profile photo removal error: ${error}`, 'error');
+                                
+                                // Show error message
+                                Swal.fire({
+                                    title: 'Error!',
+                                    text: 'An error occurred while removing your profile photo. Please try again.',
+                                    icon: 'error',
+                                    confirmButtonColor: '#e74a3b'
+                                });
+                                
+                                // Re-enable remove button
+                                const removeBtn = document.getElementById('removePhotoBtn');
+                                removeBtn.disabled = false;
+                                removeBtn.innerHTML = 'Remove Photo';
+                            }
+                        });
+                    }
+                });
+            });
+            
+        } catch (error) {
+            logToFile(`Error in profile page: ${error.message}`, 'error');
+            console.error("An error occurred:", error);
+        }
+    });
+    
+    // Logging function (integrated with your existing logging system)
+    function logToFile(message, type = 'info') {
+        console.log(`[PROFILE] ${type.toUpperCase()}: ${message}`);
+        
+        // In a production app, you might want to send this to a server
+        // that writes to a log file
+        
+        // AJAX call to log to server
+        $.ajax({
+            url: "{% url 'lab_assistant_portal:log' %}",
+            type: "POST",
+            data: {
+                message: message,
+                type: type,
+                csrfmiddlewaretoken: '{{ csrf_token }}'
+            },
+            success: function(data) {
+                // Success handling (silent)
+            },
+            error: function(xhr, status, error) {
+                // Error handling (silent)
+                console.error("Failed to log message:", error);
+            }
+        });
+    }
+</script>
+{% endblock %}
