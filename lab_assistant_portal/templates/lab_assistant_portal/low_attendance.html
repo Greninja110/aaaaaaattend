@@ -1,30 +1,9 @@
-{% extends 'base.html' %}
+{% extends 'lab_assistant_portal/base_lab_assistant.html' %}
 {% load static %}
 
-{% block title %}Low Attendance Monitoring - MBIT Attendance System{% endblock %}
+{% block lab_assistant_title %}Low Attendance Monitoring{% endblock %}
 
-{% block nav_items %}
-<li class="nav-item">
-    <a class="nav-link" href="{% url 'lab_assistant_portal:index' %}">Dashboard</a>
-</li>
-<li class="nav-item">
-    <a class="nav-link" href="{% url 'lab_assistant_portal:leave_applications' %}">Leave Applications</a>
-</li>
-<li class="nav-item">
-    <a class="nav-link" href="{% url 'lab_assistant_portal:attendance_exceptions' %}">Attendance Exceptions</a>
-</li>
-<li class="nav-item">
-    <a class="nav-link" href="{% url 'lab_assistant_portal:lab_schedule' %}">Lab Schedule</a>
-</li>
-<li class="nav-item">
-    <a class="nav-link" href="{% url 'lab_assistant_portal:reports' %}">Reports</a>
-</li>
-<li class="nav-item">
-    <a class="nav-link active" href="{% url 'lab_assistant_portal:low_attendance' %}">Low Attendance</a>
-</li>
-{% endblock %}
-
-{% block content %}
+{% block lab_assistant_content %}
 <div class="container-fluid py-4">
     <div class="row mb-4">
         <div class="col-md-12">
@@ -749,7 +728,7 @@ MBIT Administration</textarea>
 </div>
 {% endblock %}
 
-{% block extra_css %}
+{% block lab_assistant_custom_css %}
 <style>
     /* Threshold cards */
     .threshold-card {
@@ -980,7 +959,7 @@ MBIT Administration</textarea>
 </style>
 {% endblock %}
 
-{% block extra_js %}
+{% block lab_assistant_custom_js %}
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
     document.addEventListener('DOMContentLoaded', function() {

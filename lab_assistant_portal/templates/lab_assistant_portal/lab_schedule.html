@@ -1,30 +1,9 @@
-{% extends 'base.html' %}
+{% extends 'lab_assistant_portal/base_lab_assistant.html' %}
 {% load static %}
 
-{% block title %}Lab Schedule - MBIT Attendance System{% endblock %}
+{% block lab_assistant_title %}Lab Schedule{% endblock %}
 
-{% block nav_items %}
-<li class="nav-item">
-    <a class="nav-link" href="{% url 'lab_assistant_portal:index' %}">Dashboard</a>
-</li>
-<li class="nav-item">
-    <a class="nav-link" href="{% url 'lab_assistant_portal:leave_applications' %}">Leave Applications</a>
-</li>
-<li class="nav-item">
-    <a class="nav-link" href="{% url 'lab_assistant_portal:attendance_exceptions' %}">Attendance Exceptions</a>
-</li>
-<li class="nav-item">
-    <a class="nav-link active" href="{% url 'lab_assistant_portal:lab_schedule' %}">Lab Schedule</a>
-</li>
-<li class="nav-item">
-    <a class="nav-link" href="{% url 'lab_assistant_portal:reports' %}">Reports</a>
-</li>
-<li class="nav-item">
-    <a class="nav-link" href="{% url 'lab_assistant_portal:low_attendance' %}">Low Attendance</a>
-</li>
-{% endblock %}
-
-{% block content %}
+{% block lab_assistant_content %}
 <div class="container-fluid py-4">
     <div class="row mb-4">
         <div class="col-md-12">
@@ -480,7 +459,7 @@
 </div>
 {% endblock %}
 
-{% block extra_css %}
+{% block lab_assistant_custom_css %}
 <style>
     /* Timetable styling */
     .timetable-weekly {
@@ -595,7 +574,7 @@
 </style>
 {% endblock %}
 
-{% block extra_js %}
+{% block lab_assistant_custom_js %}
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         // Initialize DataTable for lab sessions list
