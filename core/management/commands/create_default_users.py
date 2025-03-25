@@ -4,6 +4,9 @@ from django.contrib.auth.hashers import make_password
 from authentication.models import Role, User
 from core.models import Department
 import logging
+import random
+from django.utils import timezone
+from core.models import Department, ClassSection, Batch, Student
 
 logger = logging.getLogger(__name__)
 
@@ -107,3 +110,44 @@ class Command(BaseCommand):
             self.stdout.write(self.style.ERROR(f'Error creating default users: {str(e)}'))
             logger.exception('Error in create_default_users command')
             raise
+
+
+        # In core/management/commands/create_default_users.py
+# After creating the student user, add:
+
+        if user_data['role'] == student_role:
+            # Get a department
+            department = Department.objects.first()
+            if not department:
+                department = Department.objects.create(
+                    department_name="Computer Engineering",
+                    department_code="CE"
+                )
+            
+            # Get or create a class section
+            class_section, _ = ClassSection.objects.get_or_create(
+                section_name="CE1", 
+                department=department
+            )
+            
+            # Get or create a batch
+            batch, _ = Batch.objects.get_or_create(batch_name="A")
+            
+            # Create student record
+            Student.objects.get_or_create(
+                user=user,
+                defaults={
+                    'roll_number': f"S{random.randint(10000, 99999)}",
+                    'admission_year': 2023,
+                    'dob': timezone.now().date() - timezone.timedelta(days=365*20),  # ~20 years old
+                    'batch': batch,
+                    'class_section': class_section,
+                    'department': department,
+                    'current_semester': 1,
+                    'status': 'active'
+                }
+            )
+
+    
+
+

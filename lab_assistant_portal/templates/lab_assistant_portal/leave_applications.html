@@ -1,0 +1,1303 @@
+{% extends 'lab_assistant_portal/base_lab_assistant.html' %}
+{% load static %}
+
+{% block lab_assistant_title %}Leave Applications{% endblock %}
+
+{% block lab_assistant_content %}
+<div class="container-fluid py-4">
+    <!-- Page Header -->
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+        <div>
+            <h2 class="h3 mb-0">Leave Applications</h2>
+            <p class="text-muted mb-0">Process and manage student leave requests</p>
+        </div>
+        <div>
+            <button type="button" class="btn btn-outline-primary me-2" id="batchProcessBtn">
+                <i class="fas fa-check-double mr-1"></i> Batch Process
+            </button>
+            <button type="button" class="btn btn-primary" id="exportBtn">
+                <i class="fas fa-download mr-1"></i> Export Report
+            </button>
+        </div>
+    </div>
+    
+    <!-- Leave Applications Statistics Cards -->
+    <div class="row mb-4">
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-warning shadow h-100 py-2 stats-card">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
+                                Pending Applications</div>
+                            <div class="h5 mb-0 font-weight-bold">{{ pending_count }}</div>
+                            <div class="progress mt-2" style="height: 8px;">
+                                <div class="progress-bar bg-warning" role="progressbar" style="width: {{ pending_percentage }}%" 
+                                    aria-valuenow="{{ pending_percentage }}" aria-valuemin="0" aria-valuemax="100"></div>
+                            </div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-hourglass-half fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-success shadow h-100 py-2 stats-card">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
+                                Approved Applications</div>
+                            <div class="h5 mb-0 font-weight-bold">{{ approved_count }}</div>
+                            <div class="progress mt-2" style="height: 8px;">
+                                <div class="progress-bar bg-success" role="progressbar" style="width: {{ approved_percentage }}%" 
+                                    aria-valuenow="{{ approved_percentage }}" aria-valuemin="0" aria-valuemax="100"></div>
+                            </div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-check-circle fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-danger shadow h-100 py-2 stats-card">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-danger text-uppercase mb-1">
+                                Rejected Applications</div>
+                            <div class="h5 mb-0 font-weight-bold">{{ rejected_count }}</div>
+                            <div class="progress mt-2" style="height: 8px;">
+                                <div class="progress-bar bg-danger" role="progressbar" style="width: {{ rejected_percentage }}%" 
+                                    aria-valuenow="{{ rejected_percentage }}" aria-valuemin="0" aria-valuemax="100"></div>
+                            </div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-times-circle fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-info shadow h-100 py-2 stats-card">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-info text-uppercase mb-1">
+                                Processing Time (Avg.)</div>
+                            <div class="h5 mb-0 font-weight-bold">{{ avg_processing_hours }} Hours</div>
+                            <div class="small text-muted mt-2">Last 30 days</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-clock fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Filter Section -->
+    <div class="card shadow mb-4 dashboard-card">
+        <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+            <h6 class="m-0 font-weight-bold">Filters</h6>
+            <button class="btn btn-sm btn-outline-primary" id="resetFilters">Reset Filters</button>
+        </div>
+        <div class="card-body">
+            <form id="filterForm" class="row">
+                <div class="col-md-2 mb-3">
+                    <label for="statusFilter" class="form-label">Status</label>
+                    <select class="form-select" id="statusFilter" name="status">
+                        <option value="">All Status</option>
+                        <option value="pending" {% if selected_status == 'pending' %}selected{% endif %}>Pending</option>
+                        <option value="faculty_approved" {% if selected_status == 'faculty_approved' %}selected{% endif %}>Faculty Approved</option>
+                        <option value="lab_approved" {% if selected_status == 'lab_approved' %}selected{% endif %}>Lab Approved</option>
+                        <option value="rejected" {% if selected_status == 'rejected' %}selected{% endif %}>Rejected</option>
+                    </select>
+                </div>
+                <div class="col-md-2 mb-3">
+                    <label for="departmentFilter" class="form-label">Department</label>
+                    <select class="form-select" id="departmentFilter" name="department">
+                        <option value="">All Departments</option>
+                        {% for department in departments %}
+                        <option value="{{ department.department_id }}" {% if selected_department == department.department_id %}selected{% endif %}>
+                            {{ department.department_name }}
+                        </option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-2 mb-3">
+                    <label for="semesterFilter" class="form-label">Semester</label>
+                    <select class="form-select" id="semesterFilter" name="semester">
+                        <option value="">All Semesters</option>
+                        {% for i in semester_range %}
+                        <option value="{{ i }}" {% if selected_semester == i %}selected{% endif %}>Semester {{ i }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-2 mb-3">
+                    <label for="dateRangeFilter" class="form-label">Date Range</label>
+                    <select class="form-select" id="dateRangeFilter" name="date_range">
+                        <option value="">All Time</option>
+                        <option value="today" {% if selected_date_range == 'today' %}selected{% endif %}>Today</option>
+                        <option value="yesterday" {% if selected_date_range == 'yesterday' %}selected{% endif %}>Yesterday</option>
+                        <option value="this_week" {% if selected_date_range == 'this_week' %}selected{% endif %}>This Week</option>
+                        <option value="last_week" {% if selected_date_range == 'last_week' %}selected{% endif %}>Last Week</option>
+                        <option value="this_month" {% if selected_date_range == 'this_month' %}selected{% endif %}>This Month</option>
+                        <option value="last_month" {% if selected_date_range == 'last_month' %}selected{% endif %}>Last Month</option>
+                        <option value="custom" {% if selected_date_range == 'custom' %}selected{% endif %}>Custom Range</option>
+                    </select>
+                </div>
+                <div class="col-md-3 mb-3" id="customDateContainer" style="{% if selected_date_range != 'custom' %}display: none;{% endif %}">
+                    <div class="row">
+                        <div class="col-6">
+                            <label for="startDate" class="form-label">Start Date</label>
+                            <input type="date" class="form-control" id="startDate" name="start_date" value="{{ custom_start_date }}">
+                        </div>
+                        <div class="col-6">
+                            <label for="endDate" class="form-label">End Date</label>
+                            <input type="date" class="form-control" id="endDate" name="end_date" value="{{ custom_end_date }}">
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-1 d-flex align-items-end mb-3">
+                    <button type="submit" class="btn btn-primary w-100">
+                        <i class="fas fa-filter mr-1"></i> Apply
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <!-- Applications Table -->
+    <div class="card shadow mb-4 dashboard-card">
+        <div class="card-header py-3">
+            <h6 class="m-0 font-weight-bold">Leave Applications</h6>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover" id="leaveApplicationsTable">
+                    <thead class="table-light">
+                        <tr>
+                            <th>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="selectAll">
+                                </div>
+                            </th>
+                            <th>Application ID</th>
+                            <th>Student</th>
+                            <th>Roll Number</th>
+                            <th>Department</th>
+                            <th>Semester</th>
+                            <th>From</th>
+                            <th>To</th>
+                            <th>Duration</th>
+                            <th>Reason</th>
+                            <th>Applied On</th>
+                            <th>Faculty Status</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for application in applications %}
+                        <tr class="{% if application.status == 'pending' %}table-warning{% elif application.status == 'faculty_approved' %}table-info{% elif application.status == 'approved' %}table-success{% elif application.status == 'rejected' %}table-danger{% endif %}">
+                            <td>
+                                <div class="form-check">
+                                    <input class="form-check-input application-checkbox" type="checkbox" value="{{ application.id }}" 
+                                        {% if application.status != 'faculty_approved' %}disabled{% endif %}>
+                                </div>
+                            </td>
+                            <td><a href="#" class="view-application" data-id="{{ application.id }}">#{{ application.application_id }}</a></td>
+                            <td>{{ application.student_name }}</td>
+                            <td>{{ application.roll_number }}</td>
+                            <td>{{ application.department }}</td>
+                            <td>{{ application.semester }}</td>
+                            <td>{{ application.start_date }}</td>
+                            <td>{{ application.end_date }}</td>
+                            <td>{{ application.duration }} day{{ application.duration|pluralize }}</td>
+                            <td>{{ application.reason_type }}</td>
+                            <td>{{ application.applied_date }}</td>
+                            <td>
+                                {% if application.faculty_status == 'approved' %}
+                                    <span class="badge bg-success">Approved</span>
+                                {% elif application.faculty_status == 'rejected' %}
+                                    <span class="badge bg-danger">Rejected</span>
+                                {% elif application.faculty_status == 'pending' %}
+                                    <span class="badge bg-warning">Pending</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if application.status == 'pending' %}
+                                    <span class="badge bg-warning">Pending</span>
+                                {% elif application.status == 'faculty_approved' %}
+                                    <span class="badge bg-info">Faculty Approved</span>
+                                {% elif application.status == 'lab_approved' %}
+                                    <span class="badge bg-success">Approved</span>
+                                {% elif application.status == 'rejected' %}
+                                    <span class="badge bg-danger">Rejected</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if application.status == 'faculty_approved' %}
+                                <div class="btn-group">
+                                    <button type="button" class="btn btn-sm btn-success approve-btn" data-id="{{ application.id }}" data-bs-toggle="tooltip" title="Approve">
+                                        <i class="fas fa-check"></i>
+                                    </button>
+                                    <button type="button" class="btn btn-sm btn-danger reject-btn" data-id="{{ application.id }}" data-bs-toggle="tooltip" title="Reject">
+                                        <i class="fas fa-times"></i>
+                                    </button>
+                                    <button type="button" class="btn btn-sm btn-info view-btn" data-id="{{ application.id }}" data-bs-toggle="tooltip" title="View Details">
+                                        <i class="fas fa-eye"></i>
+                                    </button>
+                                </div>
+                                {% else %}
+                                <button type="button" class="btn btn-sm btn-info view-btn" data-id="{{ application.id }}" data-bs-toggle="tooltip" title="View Details">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="14" class="text-center py-4">
+                                <img src="{% static 'img/illustrations/no-data.svg' %}" alt="No Applications" class="mb-3" style="width: 150px; opacity: 0.7;">
+                                <h5>No Leave Applications Found</h5>
+                                <p class="text-muted">No leave applications match your current filters.</p>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            
+            <!-- Pagination -->
+            {% if applications.has_other_pages %}
+            <div class="d-flex justify-content-center mt-4">
+                <nav aria-label="Page navigation">
+                    <ul class="pagination">
+                        {% if applications.has_previous %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ applications.previous_page_number }}&{{ query_params }}" aria-label="Previous">
+                                <span aria-hidden="true">&laquo;</span>
+                            </a>
+                        </li>
+                        {% else %}
+                        <li class="page-item disabled">
+                            <span class="page-link" aria-hidden="true">&laquo;</span>
+                        </li>
+                        {% endif %}
+                        
+                        {% for i in applications.paginator.page_range %}
+                            {% if applications.number == i %}
+                            <li class="page-item active">
+                                <span class="page-link">{{ i }}</span>
+                            </li>
+                            {% else %}
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ i }}&{{ query_params }}">{{ i }}</a>
+                            </li>
+                            {% endif %}
+                        {% endfor %}
+                        
+                        {% if applications.has_next %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ applications.next_page_number }}&{{ query_params }}" aria-label="Next">
+                                <span aria-hidden="true">&raquo;</span>
+                            </a>
+                        </li>
+                        {% else %}
+                        <li class="page-item disabled">
+                            <span class="page-link" aria-hidden="true">&raquo;</span>
+                        </li>
+                        {% endif %}
+                    </ul>
+                </nav>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+    
+    <!-- Leave Applications Overview -->
+    <div class="row">
+        <div class="col-md-6">
+            <div class="card shadow mb-4 dashboard-card">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold">Leave Applications by Department</h6>
+                </div>
+                <div class="card-body">
+                    <div class="chart-container" style="position: relative; height:300px;">
+                        <canvas id="departmentChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-6">
+            <div class="card shadow mb-4 dashboard-card">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold">Leave Applications by Type</h6>
+                </div>
+                <div class="card-body">
+                    <div class="chart-container" style="position: relative; height:300px;">
+                        <canvas id="reasonChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Application Details Modal -->
+<div class="modal fade" id="applicationDetailsModal" tabindex="-1" aria-labelledby="applicationDetailsModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="applicationDetailsModalLabel">Leave Application Details</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="text-center" id="modalLoading">
+                    <div class="spinner-border text-primary" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
+                    <p class="mt-2">Loading application details...</p>
+                </div>
+                
+                <div id="applicationDetails" style="display: none;">
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <div class="detail-item">
+                                <h6>Application ID</h6>
+                                <p id="detailApplicationId"></p>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="detail-item">
+                                <h6>Status</h6>
+                                <div id="detailStatusContainer"></div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="card mb-4">
+                        <div class="card-header py-3">
+                            <h6 class="m-0 font-weight-bold">Student Information</h6>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="detail-item">
+                                        <h6>Student Name</h6>
+                                        <p id="detailStudentName"></p>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="detail-item">
+                                        <h6>Roll Number</h6>
+                                        <p id="detailRollNumber"></p>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="detail-item">
+                                        <h6>Department</h6>
+                                        <p id="detailDepartment"></p>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="detail-item">
+                                        <h6>Semester</h6>
+                                        <p id="detailSemester"></p>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="detail-item">
+                                        <h6>Contact Number</h6>
+                                        <p id="detailContactNumber"></p>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="detail-item">
+                                        <h6>Email</h6>
+                                        <p id="detailEmail"></p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="card mb-4">
+                        <div class="card-header py-3">
+                            <h6 class="m-0 font-weight-bold">Leave Information</h6>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="detail-item">
+                                        <h6>Leave Type</h6>
+                                        <p id="detailLeaveType"></p>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="detail-item">
+                                        <h6>Duration</h6>
+                                        <p id="detailDuration"></p>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="detail-item">
+                                        <h6>From Date</h6>
+                                        <p id="detailFromDate"></p>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="detail-item">
+                                        <h6>To Date</h6>
+                                        <p id="detailToDate"></p>
+                                    </div>
+                                </div>
+                                <div class="col-md-12">
+                                    <div class="detail-item">
+                                        <h6>Reason</h6>
+                                        <p id="detailReason"></p>
+                                    </div>
+                                </div>
+                                <div class="col-md-12" id="detailDocumentsContainer">
+                                    <div class="detail-item">
+                                        <h6>Supporting Documents</h6>
+                                        <div id="detailDocuments"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="card mb-4">
+                        <div class="card-header py-3">
+                            <h6 class="m-0 font-weight-bold">Affected Classes</h6>
+                        </div>
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="table table-sm table-hover">
+                                    <thead class="table-light">
+                                        <tr>
+                                            <th>Date</th>
+                                            <th>Day</th>
+                                            <th>Subject</th>
+                                            <th>Type</th>
+                                            <th>Faculty</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="detailAffectedClasses">
+                                        <!-- Will be populated by JavaScript -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="card mb-4">
+                        <div class="card-header py-3">
+                            <h6 class="m-0 font-weight-bold">Approvals</h6>
+                        </div>
+                        <div class="card-body">
+                            <div class="timeline" id="approvalTimeline">
+                                <!-- Will be populated by JavaScript -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer" id="modalFooter" style="display: none;">
+                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-outline-primary me-2" id="detailsDownloadBtn">
+                    <i class="fas fa-download me-1"></i> Download
+                </button>
+                <button type="button" class="btn btn-success me-2" id="detailsApproveBtn">
+                    <i class="fas fa-check me-1"></i> Approve
+                </button>
+                <button type="button" class="btn btn-danger" id="detailsRejectBtn">
+                    <i class="fas fa-times me-1"></i> Reject
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Approve/Reject Action Modal -->
+<div class="modal fade" id="actionModal" tabindex="-1" aria-labelledby="actionModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="actionModalLabel">Approve Application</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="actionForm">
+                    {% csrf_token %}
+                    <input type="hidden" id="actionApplicationId" name="application_id">
+                    <input type="hidden" id="actionType" name="action_type">
+                    
+                    <div class="mb-3">
+                        <label for="actionComment" class="form-label">Comment</label>
+                        <textarea class="form-control" id="actionComment" name="comment" rows="3" placeholder="Add a comment (optional)"></textarea>
+                    </div>
+                    
+                    <div class="mb-3" id="rejectReasonContainer" style="display: none;">
+                        <label for="rejectReason" class="form-label">Reason for Rejection</label>
+                        <select class="form-select" id="rejectReason" name="reject_reason">
+                            <option value="">Select a reason</option>
+                            <option value="insufficient_documentation">Insufficient Documentation</option>
+                            <option value="fake_documentation">Suspected Fake Documentation</option>
+                            <option value="past_records">Poor Attendance Record</option>
+                            <option value="important_sessions">Important Lab Sessions During Period</option>
+                            <option value="over_limit">Over Leave Limit</option>
+                            <option value="other">Other (Please specify in comment)</option>
+                        </select>
+                    </div>
+                    
+                    <div class="mb-3 form-check">
+                        <input type="checkbox" class="form-check-input" id="notifyStudent" name="notify_student" checked>
+                        <label class="form-check-label" for="notifyStudent">Notify student via email</label>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-success" id="submitAction">Submit</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Batch Process Modal -->
+<div class="modal fade" id="batchProcessModal" tabindex="-1" aria-labelledby="batchProcessModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="batchProcessModalLabel">Batch Process Applications</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="alert alert-info">
+                    <i class="fas fa-info-circle me-2"></i> You are about to process multiple applications at once. This action cannot be undone.
+                </div>
+                
+                <form id="batchProcessForm">
+                    {% csrf_token %}
+                    <input type="hidden" id="batchApplicationIds" name="application_ids">
+                    
+                    <div class="mb-3">
+                        <label for="batchAction" class="form-label">Action</label>
+                        <select class="form-select" id="batchAction" name="action" required>
+                            <option value="">Select Action</option>
+                            <option value="approve">Approve All</option>
+                            <option value="reject">Reject All</option>
+                        </select>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="batchComment" class="form-label">Comment</label>
+                        <textarea class="form-control" id="batchComment" name="comment" rows="3" placeholder="Add a comment (optional)"></textarea>
+                    </div>
+                    
+                    <div class="mb-3 form-check">
+                        <input type="checkbox" class="form-check-input" id="batchNotifyStudents" name="notify_students" checked>
+                        <label class="form-check-label" for="batchNotifyStudents">Notify students via email</label>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" id="submitBatchProcess">Process</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block lab_assistant_custom_css %}
+<style>
+    /* Detail items styling */
+    .detail-item {
+        margin-bottom: 15px;
+    }
+    
+    .detail-item h6 {
+        margin-bottom: 5px;
+        font-size: 0.85rem;
+        color: #6c757d;
+    }
+    
+    .detail-item p {
+        margin-bottom: 0;
+        font-weight: 500;
+    }
+    
+    /* Timeline styling */
+    .timeline {
+        position: relative;
+        padding-left: 30px;
+    }
+    
+    .timeline::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        left: 10px;
+        width: 2px;
+        background-color: #e3e6f0;
+    }
+    
+    .timeline-item {
+        position: relative;
+        margin-bottom: 20px;
+    }
+    
+    .timeline-item:last-child {
+        margin-bottom: 0;
+    }
+    
+    .timeline-marker {
+        position: absolute;
+        left: -30px;
+        top: 0;
+        width: 20px;
+        height: 20px;
+        border-radius: 50%;
+        text-align: center;
+        line-height: 20px;
+        color: white;
+        font-size: 10px;
+    }
+    
+    .timeline-marker.success {
+        background-color: #1cc88a;
+    }
+    
+    .timeline-marker.warning {
+        background-color: #f6c23e;
+    }
+    
+    .timeline-marker.danger {
+        background-color: #e74a3b;
+    }
+    
+    .timeline-marker.info {
+        background-color: #36b9cc;
+    }
+    
+    .timeline-content {
+        padding-bottom: 10px;
+    }
+    
+    .timeline-title {
+        margin-bottom: 5px;
+        font-weight: 600;
+    }
+    
+    .timeline-date {
+        font-size: 0.8rem;
+        color: #6c757d;
+        margin-bottom: 5px;
+    }
+    
+    .timeline-comment {
+        font-size: 0.9rem;
+        color: #5a5c69;
+    }
+    
+    /* Document link styling */
+    .document-link {
+        display: inline-flex;
+        align-items: center;
+        padding: 8px 12px;
+        background-color: #f8f9fc;
+        border-radius: 5px;
+        margin-right: 10px;
+        margin-bottom: 10px;
+        color: #4e73df;
+        text-decoration: none;
+        transition: all 0.2s ease;
+    }
+    
+    .document-link:hover {
+        background-color: #eaecf4;
+        color: #2e59d9;
+    }
+    
+    .document-link i {
+        margin-right: 5px;
+    }
+    
+    /* Table hover effect */
+    #leaveApplicationsTable tbody tr:hover {
+        cursor: pointer;
+    }
+</style>
+{% endblock %}
+
+{% block lab_assistant_custom_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        try {
+            // Log page load
+            logToFile('Leave applications page loaded');
+            
+            // Initialize tooltips
+            var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+            var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+                return new bootstrap.Tooltip(tooltipTriggerEl)
+            });
+            
+            // Initialize DataTable
+            const applicationsTable = $('#leaveApplicationsTable').DataTable({
+                paging: false,
+                searching: true,
+                info: false,
+                ordering: true,
+                columnDefs: [
+                    { orderable: false, targets: [0, 13] },
+                ],
+                language: {
+                    search: "_INPUT_",
+                    searchPlaceholder: "Search applications..."
+                }
+            });
+            
+            // Initialize department chart
+            const departmentChartCtx = document.getElementById('departmentChart').getContext('2d');
+            const departmentChart = new Chart(departmentChartCtx, {
+                type: 'bar',
+                data: {
+                    labels: [{% for dept in dept_chart_data %}"{{ dept.department_name }}"{% if not forloop.last %}, {% endif %}{% endfor %}],
+                    datasets: [{
+                        label: 'Total Applications',
+                        data: [{% for dept in dept_chart_data %}{{ dept.total_count }}{% if not forloop.last %}, {% endif %}{% endfor %}],
+                        backgroundColor: '#4e73df',
+                        borderColor: '#4e73df',
+                        borderWidth: 1
+                    }, {
+                        label: 'Approved',
+                        data: [{% for dept in dept_chart_data %}{{ dept.approved_count }}{% if not forloop.last %}, {% endif %}{% endfor %}],
+                        backgroundColor: '#1cc88a',
+                        borderColor: '#1cc88a',
+                        borderWidth: 1
+                    }, {
+                        label: 'Rejected',
+                        data: [{% for dept in dept_chart_data %}{{ dept.rejected_count }}{% if not forloop.last %}, {% endif %}{% endfor %}],
+                        backgroundColor: '#e74a3b',
+                        borderColor: '#e74a3b',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: 'Number of Applications'
+                            }
+                        },
+                        x: {
+                            grid: {
+                                display: false
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                        }
+                    }
+                }
+            });
+            
+            // Initialize reason type chart
+            const reasonChartCtx = document.getElementById('reasonChart').getContext('2d');
+            const reasonChart = new Chart(reasonChartCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: [{% for reason in reason_chart_data %}"{{ reason.reason_type }}"{% if not forloop.last %}, {% endif %}{% endfor %}],
+                    datasets: [{
+                        data: [{% for reason in reason_chart_data %}{{ reason.count }}{% if not forloop.last %}, {% endif %}{% endfor %}],
+                        backgroundColor: ['#4e73df', '#1cc88a', '#36b9cc', '#f6c23e', '#e74a3b', '#6f42c1'],
+                        hoverBackgroundColor: ['#2e59d9', '#17a673', '#2c9faf', '#dda20a', '#be2617', '#5a36a0'],
+                        hoverBorderColor: "rgba(234, 236, 244, 1)",
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'right',
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    const label = context.label || '';
+                                    const value = context.raw;
+                                    const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                                    const percentage = Math.round((value / total) * 100);
+                                    return `${label}: ${value} (${percentage}%)`;
+                                }
+                            }
+                        }
+                    },
+                    cutout: '60%'
+                }
+            });
+            
+            // Date range filter functionality
+            document.getElementById('dateRangeFilter').addEventListener('change', function() {
+                const customDateContainer = document.getElementById('customDateContainer');
+                if (this.value === 'custom') {
+                    customDateContainer.style.display = 'block';
+                } else {
+                    customDateContainer.style.display = 'none';
+                }
+            });
+            
+            // Reset filters button
+            document.getElementById('resetFilters').addEventListener('click', function() {
+                document.getElementById('statusFilter').value = '';
+                document.getElementById('departmentFilter').value = '';
+                document.getElementById('semesterFilter').value = '';
+                document.getElementById('dateRangeFilter').value = '';
+                document.getElementById('customDateContainer').style.display = 'none';
+                document.getElementById('startDate').value = '';
+                document.getElementById('endDate').value = '';
+                
+                // Submit the form
+                document.getElementById('filterForm').submit();
+            });
+            
+            // Select all checkboxes
+            document.getElementById('selectAll').addEventListener('change', function() {
+                document.querySelectorAll('.application-checkbox:not([disabled])').forEach(checkbox => {
+                    checkbox.checked = this.checked;
+                });
+            });
+            
+            // View application details
+            function openApplicationDetails(applicationId) {
+                logToFile(`Opening application details for ID: ${applicationId}`);
+                
+                // Show loading indicator
+                document.getElementById('modalLoading').style.display = 'block';
+                document.getElementById('applicationDetails').style.display = 'none';
+                document.getElementById('modalFooter').style.display = 'none';
+                
+                // Show modal
+                $('#applicationDetailsModal').modal('show');
+                
+                // Fetch application details (simulated)
+                setTimeout(() => {
+                    // In a real app, you'd make an AJAX call to get the details
+                    // Simulating data for demonstration purposes
+                    
+                    // Student info
+                    document.getElementById('detailApplicationId').textContent = `#LA${applicationId}`;
+                    document.getElementById('detailStudentName').textContent = 'John Doe';
+                    document.getElementById('detailRollNumber').textContent = 'CE21037';
+                    document.getElementById('detailDepartment').textContent = 'Computer Engineering';
+                    document.getElementById('detailSemester').textContent = 'Semester 4';
+                    document.getElementById('detailContactNumber').textContent = '+91 98765 43210';
+                    document.getElementById('detailEmail').textContent = 'john.doe@mbit.edu.in';
+                    
+                    // Leave info
+                    document.getElementById('detailLeaveType').textContent = 'Medical Leave';
+                    document.getElementById('detailDuration').textContent = '3 days';
+                    document.getElementById('detailFromDate').textContent = 'March 15, 2025';
+                    document.getElementById('detailToDate').textContent = 'March 17, 2025';
+                    document.getElementById('detailReason').textContent = 'I am suffering from viral fever and the doctor has advised bed rest for 3 days. Medical certificate is attached.';
+                    
+                    // Status
+                    const statusContainer = document.getElementById('detailStatusContainer');
+                    statusContainer.innerHTML = '<span class="badge bg-info">Faculty Approved</span>';
+                    
+                    // Documents
+                    const documentsContainer = document.getElementById('detailDocuments');
+                    documentsContainer.innerHTML = `
+                        <a href="#" class="document-link">
+                            <i class="fas fa-file-pdf"></i> Medical_Certificate.pdf
+                        </a>
+                        <a href="#" class="document-link">
+                            <i class="fas fa-file-image"></i> Doctor_Prescription.jpg
+                        </a>
+                    `;
+                    
+                    // Affected classes
+                    const affectedClassesTable = document.getElementById('detailAffectedClasses');
+                    affectedClassesTable.innerHTML = `
+                        <tr>
+                            <td>March 15, 2025</td>
+                            <td>Monday</td>
+                            <td>Operating Systems</td>
+                            <td>Theory</td>
+                            <td>Prof. Sharma</td>
+                        </tr>
+                        <tr>
+                            <td>March 15, 2025</td>
+                            <td>Monday</td>
+                            <td>Database Systems Lab</td>
+                            <td>Practical</td>
+                            <td>Prof. Patel</td>
+                        </tr>
+                        <tr>
+                            <td>March 16, 2025</td>
+                            <td>Tuesday</td>
+                            <td>Computer Networks</td>
+                            <td>Theory</td>
+                            <td>Prof. Joshi</td>
+                        </tr>
+                        <tr>
+                            <td>March 17, 2025</td>
+                            <td>Wednesday</td>
+                            <td>Software Engineering</td>
+                            <td>Theory</td>
+                            <td>Prof. Kumar</td>
+                        </tr>
+                    `;
+                    
+                    // Approval timeline
+                    const approvalTimeline = document.getElementById('approvalTimeline');
+                    approvalTimeline.innerHTML = `
+                        <div class="timeline-item">
+                            <div class="timeline-marker info">
+                                <i class="fas fa-paper-plane"></i>
+                            </div>
+                            <div class="timeline-content">
+                                <div class="timeline-title">Application Submitted</div>
+                                <div class="timeline-date">March 14, 2025 | 10:30 AM</div>
+                            </div>
+                        </div>
+                        <div class="timeline-item">
+                            <div class="timeline-marker success">
+                                <i class="fas fa-check"></i>
+                            </div>
+                            <div class="timeline-content">
+                                <div class="timeline-title">Faculty Approved</div>
+                                <div class="timeline-date">March 14, 2025 | 02:45 PM</div>
+                                <div class="timeline-comment">Approved based on medical certificate. -Prof. Joshi</div>
+                            </div>
+                        </div>
+                        <div class="timeline-item">
+                            <div class="timeline-marker warning">
+                                <i class="fas fa-clock"></i>
+                            </div>
+                            <div class="timeline-content">
+                                <div class="timeline-title">Pending Lab Assistant Approval</div>
+                                <div class="timeline-date">Current Status</div>
+                            </div>
+                        </div>
+                    `;
+                    
+                    // Show application details
+                    document.getElementById('modalLoading').style.display = 'none';
+                    document.getElementById('applicationDetails').style.display = 'block';
+                    document.getElementById('modalFooter').style.display = 'flex';
+                    
+                    // Set action buttons
+                    const detailsApproveBtn = document.getElementById('detailsApproveBtn');
+                    const detailsRejectBtn = document.getElementById('detailsRejectBtn');
+                    
+                    // In a real app, you'd check if the application is in a state where it can be approved/rejected
+                    detailsApproveBtn.style.display = 'block';
+                    detailsRejectBtn.style.display = 'block';
+                    
+                    // Add event listeners for action buttons
+                    detailsApproveBtn.onclick = () => {
+                        $('#applicationDetailsModal').modal('hide');
+                        showActionModal('approve', applicationId);
+                    };
+                    
+                    detailsRejectBtn.onclick = () => {
+                        $('#applicationDetailsModal').modal('hide');
+                        showActionModal('reject', applicationId);
+                    };
+                    
+                }, 1000);
+            }
+            
+            // Show approve/reject modal
+            function showActionModal(action, applicationId) {
+                logToFile(`Showing ${action} modal for application ID: ${applicationId}`);
+                
+                // Set modal title and button text
+                document.getElementById('actionModalLabel').textContent = 
+                    action === 'approve' ? 'Approve Application' : 'Reject Application';
+                
+                const submitButton = document.getElementById('submitAction');
+                submitButton.className = action === 'approve' ? 'btn btn-success' : 'btn btn-danger';
+                submitButton.textContent = action === 'approve' ? 'Approve' : 'Reject';
+                
+                // Set form values
+                document.getElementById('actionApplicationId').value = applicationId;
+                document.getElementById('actionType').value = action;
+                document.getElementById('actionComment').value = '';
+                
+                // Show/hide reject reason container
+                document.getElementById('rejectReasonContainer').style.display = 
+                    action === 'reject' ? 'block' : 'none';
+                
+                // Show modal
+                $('#actionModal').modal('show');
+            }
+            
+            // Handle view application click
+            document.querySelectorAll('.view-application, .view-btn').forEach(button => {
+                button.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    
+                    const applicationId = this.dataset.id;
+                    openApplicationDetails(applicationId);
+                });
+            });
+            
+            // Row click to view details
+            document.querySelectorAll('#leaveApplicationsTable tbody tr').forEach(row => {
+                row.addEventListener('click', function(e) {
+                    // Check if click is on a button or checkbox
+                    if (e.target.closest('button') || e.target.closest('input[type="checkbox"]')) {
+                        return;
+                    }
+                    
+                    const viewButton = this.querySelector('.view-btn');
+                    if (viewButton) {
+                        const applicationId = viewButton.dataset.id;
+                        openApplicationDetails(applicationId);
+                    }
+                });
+            });
+            
+            // Handle approve button click
+            document.querySelectorAll('.approve-btn').forEach(button => {
+                button.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    
+                    const applicationId = this.dataset.id;
+                    showActionModal('approve', applicationId);
+                });
+            });
+            
+            // Handle reject button click
+            document.querySelectorAll('.reject-btn').forEach(button => {
+                button.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    
+                    const applicationId = this.dataset.id;
+                    showActionModal('reject', applicationId);
+                });
+            });
+            
+            // Handle submit action
+            document.getElementById('submitAction').addEventListener('click', function() {
+                const applicationId = document.getElementById('actionApplicationId').value;
+                const action = document.getElementById('actionType').value;
+                const comment = document.getElementById('actionComment').value;
+                const notifyStudent = document.getElementById('notifyStudent').checked;
+                
+                // Additional validation for reject reason
+                if (action === 'reject') {
+                    const rejectReason = document.getElementById('rejectReason').value;
+                    if (!rejectReason) {
+                        Swal.fire({
+                            title: 'Error',
+                            text: 'Please select a reason for rejection',
+                            icon: 'error',
+                            confirmButtonColor: '#4e73df'
+                        });
+                        return;
+                    }
+                }
+                
+                logToFile(`Submitting ${action} for application ID: ${applicationId}`);
+                
+                // In a real app, you'd submit the form via AJAX
+                
+                Swal.fire({
+                    title: 'Processing',
+                    html: `${action === 'approve' ? 'Approving' : 'Rejecting'} application...`,
+                    timer: 1500,
+                    timerProgressBar: true,
+                    didOpen: () => {
+                        Swal.showLoading();
+                    }
+                }).then(() => {
+                    // Close modal
+                    $('#actionModal').modal('hide');
+                    
+                    Swal.fire({
+                        title: 'Success',
+                        text: `Application has been ${action === 'approve' ? 'approved' : 'rejected'} successfully.`,
+                        icon: 'success',
+                        confirmButtonColor: '#4e73df'
+                    }).then(() => {
+                        // Reload page to reflect changes
+                        window.location.reload();
+                    });
+                });
+            });
+            
+            // Handle batch process button
+            document.getElementById('batchProcessBtn').addEventListener('click', function() {
+                const checkedApplications = document.querySelectorAll('.application-checkbox:checked');
+                
+                if (checkedApplications.length === 0) {
+                    Swal.fire({
+                        title: 'No Applications Selected',
+                        text: 'Please select at least one application to process.',
+                        icon: 'warning',
+                        confirmButtonColor: '#4e73df'
+                    });
+                    return;
+                }
+                
+                logToFile(`Batch process initiated for ${checkedApplications.length} applications`);
+                
+                // Get array of application IDs
+                const applicationIds = Array.from(checkedApplications).map(checkbox => checkbox.value);
+                
+                // Set form value
+                document.getElementById('batchApplicationIds').value = applicationIds.join(',');
+                
+                // Reset form fields
+                document.getElementById('batchAction').value = '';
+                document.getElementById('batchComment').value = '';
+                document.getElementById('batchNotifyStudents').checked = true;
+                
+                // Show modal
+                $('#batchProcessModal').modal('show');
+            });
+            
+            // Handle submit batch process
+            document.getElementById('submitBatchProcess').addEventListener('click', function() {
+                const applicationIds = document.getElementById('batchApplicationIds').value;
+                const action = document.getElementById('batchAction').value;
+                
+                if (!action) {
+                    Swal.fire({
+                        title: 'Error',
+                        text: 'Please select an action',
+                        icon: 'error',
+                        confirmButtonColor: '#4e73df'
+                    });
+                    return;
+                }
+                
+                logToFile(`Submitting batch ${action} for applications: ${applicationIds}`);
+                
+                // In a real app, you'd submit the form via AJAX
+                
+                Swal.fire({
+                    title: 'Processing',
+                    html: 'Processing applications...',
+                    timer: 2000,
+                    timerProgressBar: true,
+                    didOpen: () => {
+                        Swal.showLoading();
+                    }
+                }).then(() => {
+                    // Close modal
+                    $('#batchProcessModal').modal('hide');
+                    
+                    Swal.fire({
+                        title: 'Success',
+                        text: `Selected applications have been ${action === 'approve' ? 'approved' : 'rejected'} successfully.`,
+                        icon: 'success',
+                        confirmButtonColor: '#4e73df'
+                    }).then(() => {
+                        // Reload page to reflect changes
+                        window.location.reload();
+                    });
+                });
+            });
+            
+            // Handle download details button
+            document.getElementById('detailsDownloadBtn').addEventListener('click', function() {
+                const applicationId = document.getElementById('detailApplicationId').textContent;
+                
+                logToFile(`Downloading details for application: ${applicationId}`);
+                
+                Swal.fire({
+                    title: 'Downloading',
+                    html: 'Preparing PDF...',
+                    timer: 2000,
+                    timerProgressBar: true,
+                    didOpen: () => {
+                        Swal.showLoading();
+                    }
+                }).then(() => {
+                    Swal.fire({
+                        title: 'Download Complete',
+                        text: 'Application details have been downloaded as PDF.',
+                        icon: 'success',
+                        confirmButtonColor: '#4e73df'
+                    });
+                });
+            });
+            
+            // Handle export report button
+            document.getElementById('exportBtn').addEventListener('click', function() {
+                logToFile('Exporting leave applications report');
+                
+                Swal.fire({
+                    title: 'Export Report',
+                    text: 'Choose your preferred format:',
+                    icon: 'question',
+                    showCancelButton: true,
+                    confirmButtonText: 'PDF',
+                    cancelButtonText: 'Excel',
+                    showCloseButton: true,
+                    confirmButtonColor: '#4e73df',
+                    cancelButtonColor: '#1cc88a'
+                }).then((result) => {
+                    if (result.isConfirmed || result.dismiss === Swal.DismissReason.cancel) {
+                        const format = result.isConfirmed ? 'PDF' : 'Excel';
+                        
+                        // In a real app, you'd make an AJAX call to generate the file
+                        
+                        Swal.fire({
+                            title: 'Generating Report',
+                            html: `Preparing ${format} file...`,
+                            timer: 2000,
+                            timerProgressBar: true,
+                            didOpen: () => {
+                                Swal.showLoading();
+                            }
+                        }).then(() => {
+                            Swal.fire({
+                                title: 'Export Complete',
+                                text: `Your ${format} report has been generated successfully.`,
+                                icon: 'success',
+                                confirmButtonColor: '#4e73df'
+                            });
+                        });
+                    }
+                });
+            });
+            
+        } catch (error) {
+            logToFile(`Error in leave applications page: ${error.message}`, 'error');
+            console.error("An error occurred:", error);
+        }
+    });
+</script>
+{% endblock %}
