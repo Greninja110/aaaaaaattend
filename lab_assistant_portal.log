@@ -233,3 +233,26 @@
 2025-03-25 15:16:46,465 - INFO - [CLIENT] Lab Assistant Dashboard page loaded
 2025-03-25 15:16:46,474 - INFO - [CLIENT] Page loaded: /lab-assistant-portal/
 2025-03-25 15:16:46,475 - ERROR - [CLIENT] Error in dashboard: Cannot set properties of undefined (setting '_DT_CellIndex')
+2025-03-25 20:26:12,158 - INFO - User lab accessed the lab assistant dashboard
+2025-03-25 20:26:12,329 - INFO - [CLIENT] Lab Assistant Dashboard page loaded
+2025-03-25 20:26:12,350 - ERROR - [CLIENT] Error in dashboard: Cannot set properties of undefined (setting '_DT_CellIndex')
+2025-03-25 20:26:12,352 - INFO - [CLIENT] Page loaded: /lab-assistant-portal/
+2025-03-25 20:26:12,532 - INFO - User lab accessed the lab assistant dashboard
+2025-03-25 20:26:12,659 - INFO - [CLIENT] Lab Assistant Dashboard page loaded
+2025-03-25 20:26:12,660 - ERROR - [CLIENT] Error in dashboard: Cannot set properties of undefined (setting '_DT_CellIndex')
+2025-03-25 20:26:12,662 - INFO - [CLIENT] Page loaded: /lab-assistant-portal/
+2025-03-25 20:26:12,696 - INFO - User lab accessed the lab assistant dashboard
+2025-03-25 20:26:12,763 - INFO - [CLIENT] Lab Assistant Dashboard page loaded
+2025-03-25 20:26:12,767 - INFO - [CLIENT] Page loaded: /lab-assistant-portal/
+2025-03-25 20:26:12,853 - INFO - User lab accessed the lab assistant dashboard
+2025-03-25 20:26:12,874 - ERROR - [CLIENT] Error in dashboard: Cannot set properties of undefined (setting '_DT_CellIndex')
+2025-03-25 20:26:12,926 - INFO - [CLIENT] Lab Assistant Dashboard page loaded
+2025-03-25 20:26:12,931 - ERROR - [CLIENT] Error in dashboard: Cannot set properties of undefined (setting '_DT_CellIndex')
+2025-03-25 20:26:12,931 - INFO - [CLIENT] Page loaded: /lab-assistant-portal/
+2025-03-25 20:30:01,238 - INFO - User lab accessed their profile
+2025-03-25 20:30:01,354 - INFO - [CLIENT] Profile page loaded
+2025-03-25 20:30:01,355 - INFO - [CLIENT] Page loaded: /lab-assistant-portal/profile/
+2025-03-25 20:30:03,016 - INFO - User lab accessed reports
+2025-03-25 20:30:03,121 - INFO - [CLIENT] Page loaded: /lab-assistant-portal/reports/
+2025-03-25 20:30:05,582 - INFO - User lab accessed low attendance monitoring
+2025-03-25 20:30:05,678 - INFO - [CLIENT] Page loaded: /lab-assistant-portal/low-attendance/
