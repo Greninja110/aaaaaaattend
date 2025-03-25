@@ -1,38 +1,10 @@
 from django.db import models
 from authentication.models import User
-from core.models import Student, Faculty
-from admin_portal.models import FacultySubject
-
+from core.models import Student, Faculty , Attendance , FacultySubject
+from core.models import Subject, FacultySubject, Attendance, LeaveApplication
 # Create your models here.
 # Create models needed for views
-class Attendance(models.Model):
-    attendance_id = models.AutoField(primary_key=True)
-    student = models.ForeignKey(Student, on_delete=models.CASCADE)
-    faculty_subject = models.ForeignKey(FacultySubject, on_delete=models.CASCADE)
-    attendance_date = models.DateField()
-    status = models.CharField(max_length=20)
-    recorded_by = models.ForeignKey(Faculty, on_delete=models.CASCADE)
-    recorded_at = models.DateTimeField(auto_now_add=True)
-    is_substitution = models.BooleanField(default=False)
-    substitution_id = models.IntegerField(null=True, blank=True)
 
-    class Meta:
-        db_table = 'attendance'
-
-class LeaveApplication(models.Model):
-    leave_id = models.AutoField(primary_key=True)
-    student = models.ForeignKey(Student, on_delete=models.CASCADE)
-    start_date = models.DateField()
-    end_date = models.DateField()
-    reason = models.TextField()
-    document_path = models.CharField(max_length=255, null=True, blank=True)
-    status = models.CharField(max_length=20, default='pending')
-    faculty_approval = models.ForeignKey(Faculty, on_delete=models.SET_NULL, null=True, related_name='faculty_approvals')
-    lab_assistant_approval = models.IntegerField(null=True, blank=True)
-    created_at = models.DateTimeField(auto_now_add=True)
-    
-    class Meta:
-        db_table = 'leave_application'
 
 class Notification(models.Model):
     notification_id = models.AutoField(primary_key=True)

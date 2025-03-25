@@ -14,14 +14,14 @@ import logging
 import os
 import io
 import tempfile
-from .models import LabAssistant, LeaveApplication, AttendanceException, LabIssue, ScheduledReport, Attendance, FacultySubject
+from .models import LabAssistant, LeaveApplication, AttendanceException, LabIssue, ScheduledReport, Attendance
 from .forms import (
     LeaveApplicationApprovalForm, AttendanceExceptionForm, AttendanceExceptionApprovalForm, 
     LabIssueForm, LabIssueResolutionForm, ScheduledReportForm, ProfileUpdateForm, 
     PasswordChangeForm, NotificationSettingsForm, LeaveFilterForm, AttendanceExceptionFilterForm,
     LowAttendanceFilterForm, ReportGenerationForm
 )
-from core.models import Department, Student, Faculty, Subject, ClassSection, Batch, AcademicYear, SystemLog
+from core.models import Department, Student, Faculty, ClassSection, Batch, AcademicYear, SystemLog ,FacultySubject , Subject
 from authentication.models import User
 from django.contrib.auth.hashers import check_password, make_password
 
