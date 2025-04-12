@@ -1,0 +1,301 @@
+{% extends 'admin_portal/base_admin.html' %}
+{% load static %}
+
+{% block admin_title %}Create Faculty Assignment{% endblock %}
+
+{% block admin_content %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2"><i class="fas fa-chalkboard-teacher"></i> Assign Faculty to Subject</h1>
+    <div class="btn-toolbar mb-2 mb-md-0">
+        <a href="{% url 'admin_portal:faculty_assignment_list' %}" class="btn btn-sm btn-secondary">
+            <i class="fas fa-arrow-left"></i> Back to Assignments
+        </a>
+    </div>
+</div>
+
+{% if messages %}
+    {% for message in messages %}
+        <div class="alert {{ message.tags }} alert-dismissible fade show" role="alert">
+            {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    {% endfor %}
+{% endif %}
+
+<div class="row">
+    <div class="col-md-8">
+        <div class="card shadow mb-4">
+            <div class="card-header py-3">
+                <h6 class="m-0 font-weight-bold text-primary">Assignment Information</h6>
+            </div>
+            <div class="card-body">
+                <form method="post" class="needs-validation" novalidate>
+                    {% csrf_token %}
+                    
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label for="{{ form.faculty.id_for_label }}" class="form-label">Faculty</label>
+                            {{ form.faculty }}
+                            {% if form.faculty.errors %}
+                            <div class="invalid-feedback d-block">
+                                {{ form.faculty.errors }}
+                            </div>
+                            {% endif %}
+                        </div>
+                        <div class="col-md-6">
+                            <label for="{{ form.academic_year.id_for_label }}" class="form-label">Academic Year</label>
+                            {{ form.academic_year }}
+                            {% if form.academic_year.errors %}
+                            <div class="invalid-feedback d-block">
+                                {{ form.academic_year.errors }}
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label for="department-filter" class="form-label">Department (Filter)</label>
+                            <select id="department-filter" class="form-select">
+                                <option value="">Select Department</option>
+                                {% for department in departments %}
+                                    <option value="{{ department.department_id }}">{{ department.department_name }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="{{ form.subject.id_for_label }}" class="form-label">Subject</label>
+                            {{ form.subject }}
+                            {% if form.subject.errors %}
+                            <div class="invalid-feedback d-block">
+                                {{ form.subject.errors }}
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label for="{{ form.class_section.id_for_label }}" class="form-label">Class Section</label>
+                            {{ form.class_section }}
+                            <div class="form-text">Class section for this assignment</div>
+                            {% if form.class_section.errors %}
+                            <div class="invalid-feedback d-block">
+                                {{ form.class_section.errors }}
+                            </div>
+                            {% endif %}
+                        </div>
+                        <div class="col-md-6">
+                            <label for="{{ form.batch.id_for_label }}" class="form-label">Batch</label>
+                            {{ form.batch }}
+                            <div class="form-text">Required for lab assignments</div>
+                            {% if form.batch.errors %}
+                            <div class="invalid-feedback d-block">
+                                {{ form.batch.errors }}
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    <div class="form-check mb-3">
+                        {{ form.is_lab }}
+                        <label class="form-check-label" for="{{ form.is_lab.id_for_label }}">
+                            Lab Assignment
+                        </label>
+                        <div class="form-text">Check if this is a lab assignment rather than theory</div>
+                        {% if form.is_lab.errors %}
+                        <div class="invalid-feedback d-block">
+                            {{ form.is_lab.errors }}
+                        </div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="mt-4">
+                        <button type="submit" class="btn btn-primary">Create Assignment</button>
+                        <a href="{% url 'admin_portal:faculty_assignment_list' %}" class="btn btn-secondary">Cancel</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4">
+        <div class="card shadow mb-4">
+            <div class="card-header py-3">
+                <h6 class="m-0 font-weight-bold text-primary">Assignment Guidelines</h6>
+            </div>
+            <div class="card-body">
+                <div class="alert alert-info">
+                    <i class="fas fa-info-circle"></i> Faculty assignments link faculty members to subjects for a specific academic year.
+                </div>
+                
+                <p><strong>Guidelines:</strong></p>
+                <ul>
+                    <li>Select the faculty member who will teach the subject</li>
+                    <li>Select the subject to be taught</li>
+                    <li>Choose the appropriate class section</li>
+                    <li>For lab assignments, check the "Lab Assignment" box and select a batch</li>
+                    <li>For theory assignments, leave "Lab Assignment" unchecked</li>
+                </ul>
+                
+                <div class="alert alert-warning mt-3">
+                    <i class="fas fa-exclamation-triangle"></i> Faculty assignments are used to generate timetables and record attendance.
+                </div>
+            </div>
+        </div>
+        
+        <div class="card shadow mb-4">
+            <div class="card-header py-3">
+                <h6 class="m-0 font-weight-bold text-primary">Selected Faculty Workload</h6>
+            </div>
+            <div class="card-body">
+                <div id="faculty-workload">
+                    <div class="text-center text-muted">
+                        <p>Select a faculty to view their current workload.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block admin_custom_js %}
+<script>
+    $(document).ready(function() {
+        // Department filter to load subjects dropdown
+        $('#department-filter').on('change', function() {
+            const departmentId = $(this).val();
+            
+            if (departmentId) {
+                // Disable subject dropdown while loading
+                $('#{{ form.subject.id_for_label }}').empty().append('<option value="">Loading...</option>').prop('disabled', true);
+                
+                // Fetch subjects via AJAX
+                $.ajax({
+                    url: "{% url 'admin_portal:get_subjects_by_department' %}",
+                    data: {
+                        'department_id': departmentId
+                    },
+                    dataType: 'json',
+                    success: function(data) {
+                        $('#{{ form.subject.id_for_label }}').empty().append('<option value="">Select Subject</option>');
+                        
+                        $.each(data, function(index, subject) {
+                            $('#{{ form.subject.id_for_label }}').append(
+                                $('<option></option>').val(subject.subject_id).text(subject.subject_name)
+                            );
+                        });
+                        
+                        $('#{{ form.subject.id_for_label }}').prop('disabled', false);
+                    },
+                    error: function() {
+                        $('#{{ form.subject.id_for_label }}').empty().append('<option value="">Select Subject</option>');
+                        $('#{{ form.subject.id_for_label }}').prop('disabled', false);
+                    }
+                });
+                
+                // Load class sections for the department
+                $('#{{ form.class_section.id_for_label }}').empty().append('<option value="">Loading...</option>').prop('disabled', true);
+                
+                $.ajax({
+                    url: "{% url 'admin_portal:get_class_sections_by_department' %}",
+                    data: {
+                        'department_id': departmentId
+                    },
+                    dataType: 'json',
+                    success: function(data) {
+                        $('#{{ form.class_section.id_for_label }}').empty().append('<option value="">Select Class Section</option>');
+                        
+                        $.each(data, function(index, section) {
+                            $('#{{ form.class_section.id_for_label }}').append(
+                                $('<option></option>').val(section.class_section_id).text(section.section_name)
+                            );
+                        });
+                        
+                        $('#{{ form.class_section.id_for_label }}').prop('disabled', false);
+                    },
+                    error: function() {
+                        $('#{{ form.class_section.id_for_label }}').empty().append('<option value="">Select Class Section</option>');
+                        $('#{{ form.class_section.id_for_label }}').prop('disabled', false);
+                    }
+                });
+            } else {
+                $('#{{ form.subject.id_for_label }}').empty().append('<option value="">Select Subject</option>');
+                $('#{{ form.class_section.id_for_label }}').empty().append('<option value="">Select Class Section</option>');
+            }
+        });
+        
+        // Toggle batch requirement based on lab assignment
+        $('#{{ form.is_lab.id_for_label }}').on('change', function() {
+            if ($(this).is(':checked')) {
+                $('#{{ form.batch.id_for_label }}').prop('required', true);
+                $('#{{ form.batch.id_for_label }}').parent().addClass('required');
+            } else {
+                $('#{{ form.batch.id_for_label }}').prop('required', false);
+                $('#{{ form.batch.id_for_label }}').parent().removeClass('required');
+            }
+        });
+        
+        // Load faculty workload when faculty is selected
+        $('#{{ form.faculty.id_for_label }}').on('change', function() {
+            const facultyId = $(this).val();
+            
+            if (facultyId) {
+                $('#faculty-workload').html(`
+                    <div class="text-center">
+                        <div class="spinner-border spinner-border-sm text-primary" role="status">
+                            <span class="visually-hidden">Loading...</span>
+                        </div>
+                        <p class="mt-2">Loading faculty workload...</p>
+                    </div>
+                `);
+                
+                // This is a placeholder - in a real implementation, you'd fetch this data via AJAX
+                // For simplicity, we're just showing static data
+                setTimeout(function() {
+                    const facultyName = $('#{{ form.faculty.id_for_label }} option:selected').text();
+                    
+                    $('#faculty-workload').html(`
+                        <h5 class="mb-3">${facultyName}</h5>
+                        <div class="d-flex justify-content-between mb-2">
+                            <span>Current Weekly Hours:</span>
+                            <span class="fw-bold">24 / 40</span>
+                        </div>
+                        <div class="progress mb-3">
+                            <div class="progress-bar" role="progressbar" style="width: 60%;" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100">60%</div>
+                        </div>
+                        <div class="small text-muted">
+                            <div class="d-flex justify-content-between">
+                                <span>Assigned Subjects:</span>
+                                <span>5</span>
+                            </div>
+                            <div class="d-flex justify-content-between">
+                                <span>Theory Classes:</span>
+                                <span>3</span>
+                            </div>
+                            <div class="d-flex justify-content-between">
+                                <span>Lab Classes:</span>
+                                <span>2</span>
+                            </div>
+                        </div>
+                        <hr>
+                        <div class="small">
+                            <a href="#" class="text-primary">View Full Schedule</a>
+                        </div>
+                    `);
+                }, 1000);
+            } else {
+                $('#faculty-workload').html(`
+                    <div class="text-center text-muted">
+                        <p>Select a faculty to view their current workload.</p>
+                    </div>
+                `);
+            }
+        });
+        
+        // Initialize "Lab Assignment" state
+        $('#{{ form.is_lab.id_for_label }}').trigger('change');
+    });
+</script>
+{% endblock %}

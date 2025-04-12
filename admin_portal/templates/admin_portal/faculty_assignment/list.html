@@ -1,0 +1,212 @@
+{% extends 'admin_portal/base_admin.html' %}
+{% load static %}
+
+{% block admin_title %}Faculty Assignment{% endblock %}
+
+{% block admin_content %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2"><i class="fas fa-chalkboard-teacher"></i> Faculty Assignment</h1>
+    <div class="btn-toolbar mb-2 mb-md-0">
+        <a href="{% url 'admin_portal:faculty_assignment_create' %}" class="btn btn-sm btn-primary">
+            <i class="fas fa-plus"></i> Assign Faculty
+        </a>
+    </div>
+</div>
+
+{% if messages %}
+    {% for message in messages %}
+        <div class="alert {{ message.tags }} alert-dismissible fade show" role="alert">
+            {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    {% endfor %}
+{% endif %}
+
+<!-- Filters and Search -->
+<div class="card shadow mb-4">
+    <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+        <h6 class="m-0 font-weight-bold text-primary">Filter Assignments</h6>
+        <a class="btn btn-sm btn-outline-secondary" href="{% url 'admin_portal:faculty_assignment_list' %}">
+            <i class="fas fa-sync-alt"></i> Reset
+        </a>
+    </div>
+    <div class="card-body">
+        <form method="get" class="row g-3">
+            <div class="col-md-3">
+                <label for="faculty" class="form-label">Faculty</label>
+                <select name="faculty" id="faculty" class="form-select">
+                    <option value="">All Faculty</option>
+                    {% for faculty in faculties %}
+                        <option value="{{ faculty.faculty_id }}" {% if faculty_filter == faculty.faculty_id|stringformat:"i" %}selected{% endif %}>
+                            {{ faculty.user.full_name }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-3">
+                <label for="department" class="form-label">Department</label>
+                <select name="department" id="department" class="form-select">
+                    <option value="">All Departments</option>
+                    {% for department in departments %}
+                        <option value="{{ department.department_id }}" {% if department_filter == department.department_id|stringformat:"i" %}selected{% endif %}>
+                            {{ department.department_name }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-3">
+                <label for="subject" class="form-label">Subject</label>
+                <select name="subject" id="subject" class="form-select">
+                    <option value="">All Subjects</option>
+                    {% for subject in subjects %}
+                        <option value="{{ subject.subject_id }}" {% if subject_filter == subject.subject_id|stringformat:"i" %}selected{% endif %}>
+                            {{ subject.subject_name }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-3">
+                <label for="academic_year" class="form-label">Academic Year</label>
+                <select name="academic_year" id="academic_year" class="form-select">
+                    <option value="">All Years</option>
+                    {% for year in academic_years %}
+                        <option value="{{ year.academic_year_id }}" {% if year_filter == year.academic_year_id|stringformat:"i" %}selected{% endif %}>
+                            {{ year.year_start }}-{{ year.year_end }}
+                            {% if year.is_current %} (Current){% endif %}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-12 mt-3">
+                <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-filter"></i> Apply Filters
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Faculty Assignments Table -->
+<div class="card shadow mb-4">
+    <div class="card-header py-3">
+        <h6 class="m-0 font-weight-bold text-primary">Faculty Assignments</h6>
+    </div>
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-bordered table-hover" id="assignmentsTable" width="100%" cellspacing="0">
+                <thead>
+                    <tr>
+                        <th>Faculty</th>
+                        <th>Subject</th>
+                        <th>Class Section</th>
+                        <th>Type</th>
+                        <th>Batch</th>
+                        <th>Academic Year</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for assignment in assignments %}
+                    <tr>
+                        <td>{{ assignment.faculty.user.full_name }}</td>
+                        <td>
+                            <span class="fw-bold">{{ assignment.subject.subject_code }}</span><br>
+                            <small>{{ assignment.subject.subject_name }}</small>
+                        </td>
+                        <td>
+                            {% if assignment.class_section %}
+                                {{ assignment.class_section.section_name }}
+                            {% else %}
+                                <span class="badge bg-secondary">N/A</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if assignment.is_lab %}
+                                <span class="badge bg-success">Lab</span>
+                            {% else %}
+                                <span class="badge bg-primary">Theory</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if assignment.batch %}
+                                Batch {{ assignment.batch.batch_name }}
+                            {% else %}
+                                <span class="badge bg-secondary">N/A</span>
+                            {% endif %}
+                        </td>
+                        <td>{{ assignment.academic_year.year_start }}-{{ assignment.academic_year.year_end }}</td>
+                        <td>
+                            <div class="btn-group">
+                                <a href="{% url 'admin_portal:faculty_assignment_edit' assignment.faculty_subject_id %}" class="btn btn-sm btn-primary">
+                                    <i class="fas fa-edit"></i>
+                                </a>
+                                <a href="{% url 'admin_portal:faculty_assignment_delete' assignment.faculty_subject_id %}" class="btn btn-sm btn-danger">
+                                    <i class="fas fa-trash"></i>
+                                </a>
+                            </div>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="7" class="text-center">No faculty assignments found</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block admin_custom_js %}
+<script>
+    $(document).ready(function() {
+        // Initialize DataTable
+        $('#assignmentsTable').DataTable({
+            "paging": true,
+            "searching": false,  // Disable built-in search since we use our form
+            "ordering": true,
+            "info": true,
+            "autoWidth": false,
+            "responsive": true,
+            "lengthMenu": [[10, 25, 50, -1], [10, 25, 50, "All"]]
+        });
+        
+        // Department filter to load subjects dropdown
+        $('#department').on('change', function() {
+            const departmentId = $(this).val();
+            
+            if (departmentId) {
+                // Disable subject dropdown while loading
+                $('#subject').empty().append('<option value="">Loading...</option>').prop('disabled', true);
+                
+                // Fetch subjects via AJAX
+                $.ajax({
+                    url: "{% url 'admin_portal:get_subjects_by_department' %}",
+                    data: {
+                        'department_id': departmentId
+                    },
+                    dataType: 'json',
+                    success: function(data) {
+                        $('#subject').empty().append('<option value="">All Subjects</option>');
+                        
+                        $.each(data, function(index, subject) {
+                            $('#subject').append(
+                                $('<option></option>').val(subject.subject_id).text(subject.subject_name)
+                            );
+                        });
+                        
+                        $('#subject').prop('disabled', false);
+                    },
+                    error: function() {
+                        $('#subject').empty().append('<option value="">All Subjects</option>');
+                        $('#subject').prop('disabled', false);
+                    }
+                });
+            } else {
+                $('#subject').empty().append('<option value="">All Subjects</option>');
+            }
+        });
+    });
+</script>
+{% endblock %}

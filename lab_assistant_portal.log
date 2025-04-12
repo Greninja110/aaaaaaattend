@@ -1,0 +1,258 @@
+2025-03-25 14:19:30,354 - INFO - User lab accessed the lab assistant dashboard
+2025-03-25 14:19:30,525 - INFO - [CLIENT] Lab Assistant Dashboard page loaded
+2025-03-25 14:19:30,529 - ERROR - [CLIENT] Error in dashboard: Cannot set properties of undefined (setting '_DT_CellIndex')
+2025-03-25 14:19:30,531 - INFO - [CLIENT] Page loaded: /lab-assistant-portal/
+2025-03-25 14:19:50,259 - INFO - User lab accessed the lab assistant dashboard
+2025-03-25 14:19:50,334 - INFO - [CLIENT] Lab Assistant Dashboard page loaded
+2025-03-25 14:19:50,339 - ERROR - [CLIENT] Error in dashboard: Cannot set properties of undefined (setting '_DT_CellIndex')
+2025-03-25 14:19:50,340 - INFO - [CLIENT] Page loaded: /lab-assistant-portal/
+2025-03-25 14:19:51,620 - INFO - User lab accessed leave applications
+2025-03-25 14:19:51,757 - INFO - [CLIENT] Leave applications page loaded
+2025-03-25 14:19:51,772 - ERROR - [CLIENT] Error in leave applications page: Cannot set properties of undefined (setting '_DT_CellIndex')
+2025-03-25 14:19:51,773 - INFO - [CLIENT] Page loaded: /lab-assistant-portal/leave-applications/
+2025-03-25 14:19:55,612 - INFO - User lab accessed attendance exceptions
+2025-03-25 14:19:55,727 - INFO - [CLIENT] Attendance exceptions page loaded
+2025-03-25 14:19:55,729 - INFO - [CLIENT] Page loaded: /lab-assistant-portal/attendance-exceptions/
+2025-03-25 14:19:55,729 - ERROR - [CLIENT] Error in attendance exceptions page: Cannot set properties of undefined (setting '_DT_CellIndex')
+2025-03-25 14:19:57,551 - INFO - User lab accessed lab schedule
+2025-03-25 14:20:15,314 - INFO - User lab accessed low attendance monitoring
+2025-03-25 14:20:31,937 - INFO - User lab accessed reports
+2025-03-25 14:20:35,675 - INFO - User lab accessed their profile
+2025-03-25 14:20:35,806 - INFO - [CLIENT] Profile page loaded
+2025-03-25 14:20:35,806 - INFO - [CLIENT] Page loaded: /lab-assistant-portal/profile/
+2025-03-25 14:20:41,228 - INFO - User lab accessed attendance exceptions
+2025-03-25 14:20:41,310 - INFO - [CLIENT] Attendance exceptions page loaded
+2025-03-25 14:20:41,319 - ERROR - [CLIENT] Error in attendance exceptions page: Cannot set properties of undefined (setting '_DT_CellIndex')
+2025-03-25 14:20:41,321 - INFO - [CLIENT] Page loaded: /lab-assistant-portal/attendance-exceptions/
+2025-03-25 14:20:44,867 - INFO - User lab accessed their profile
+2025-03-25 14:20:44,944 - INFO - [CLIENT] Page loaded: /lab-assistant-portal/profile/
+2025-03-25 14:20:44,944 - INFO - [CLIENT] Profile page loaded
+2025-03-25 14:20:46,972 - INFO - User lab accessed leave applications
+2025-03-25 14:20:47,050 - INFO - [CLIENT] Leave applications page loaded
+2025-03-25 14:20:47,055 - INFO - [CLIENT] Page loaded: /lab-assistant-portal/leave-applications/
+2025-03-25 14:20:47,056 - ERROR - [CLIENT] Error in leave applications page: Cannot set properties of undefined (setting '_DT_CellIndex')
+2025-03-25 14:20:49,271 - INFO - User lab accessed the lab assistant dashboard
+2025-03-25 14:20:49,359 - INFO - [CLIENT] Lab Assistant Dashboard page loaded
+2025-03-25 14:20:49,364 - ERROR - [CLIENT] Error in dashboard: Cannot set properties of undefined (setting '_DT_CellIndex')
+2025-03-25 14:20:49,367 - INFO - [CLIENT] Page loaded: /lab-assistant-portal/
+2025-03-25 14:20:50,797 - INFO - User lab accessed leave applications
+2025-03-25 14:20:50,870 - INFO - [CLIENT] Leave applications page loaded
+2025-03-25 14:20:50,879 - ERROR - [CLIENT] Error in leave applications page: Cannot set properties of undefined (setting '_DT_CellIndex')
+2025-03-25 14:20:50,879 - INFO - [CLIENT] Page loaded: /lab-assistant-portal/leave-applications/
+2025-03-25 14:20:52,171 - INFO - User lab accessed attendance exceptions
+2025-03-25 14:20:52,250 - INFO - [CLIENT] Attendance exceptions page loaded
+2025-03-25 14:20:52,254 - INFO - [CLIENT] Page loaded: /lab-assistant-portal/attendance-exceptions/
+2025-03-25 14:20:52,354 - ERROR - [CLIENT] Error in attendance exceptions page: Cannot set properties of undefined (setting '_DT_CellIndex')
+2025-03-25 14:20:54,401 - INFO - User lab accessed their profile
+2025-03-25 14:20:54,483 - INFO - [CLIENT] Page loaded: /lab-assistant-portal/profile/
+2025-03-25 14:20:54,484 - INFO - [CLIENT] Profile page loaded
+2025-03-25 14:20:59,731 - INFO - User lab accessed attendance exceptions
+2025-03-25 14:20:59,813 - INFO - [CLIENT] Attendance exceptions page loaded
+2025-03-25 14:20:59,818 - INFO - [CLIENT] Page loaded: /lab-assistant-portal/attendance-exceptions/
+2025-03-25 14:20:59,818 - ERROR - [CLIENT] Error in attendance exceptions page: Cannot set properties of undefined (setting '_DT_CellIndex')
+2025-03-25 14:21:03,291 - INFO - User lab accessed leave applications
+2025-03-25 14:21:03,356 - INFO - [CLIENT] Leave applications page loaded
+2025-03-25 14:21:03,365 - ERROR - [CLIENT] Error in leave applications page: Cannot set properties of undefined (setting '_DT_CellIndex')
+2025-03-25 14:21:03,367 - INFO - [CLIENT] Page loaded: /lab-assistant-portal/leave-applications/
+2025-03-25 14:21:04,535 - INFO - User lab accessed the lab assistant dashboard
+2025-03-25 14:21:04,614 - ERROR - [CLIENT] Error in dashboard: Cannot set properties of undefined (setting '_DT_CellIndex')
+2025-03-25 14:21:04,618 - INFO - [CLIENT] Page loaded: /lab-assistant-portal/
+2025-03-25 14:21:04,718 - INFO - [CLIENT] Lab Assistant Dashboard page loaded
+2025-03-25 14:22:54,010 - INFO - User lab accessed low attendance monitoring
+2025-03-25 14:41:39,576 - INFO - User lab accessed the lab assistant dashboard
+2025-03-25 14:41:39,707 - INFO - [CLIENT] Lab Assistant Dashboard page loaded
+2025-03-25 14:41:39,709 - ERROR - [CLIENT] Error in dashboard: Cannot set properties of undefined (setting '_DT_CellIndex')
+2025-03-25 14:41:39,710 - INFO - [CLIENT] Page loaded: /lab-assistant-portal/
+2025-03-25 14:41:39,822 - INFO - User lab accessed the lab assistant dashboard
+2025-03-25 14:41:39,901 - INFO - [CLIENT] Page loaded: /lab-assistant-portal/
+2025-03-25 14:41:39,992 - INFO - [CLIENT] Lab Assistant Dashboard page loaded
+2025-03-25 14:41:40,005 - ERROR - [CLIENT] Error in dashboard: Cannot set properties of undefined (setting '_DT_CellIndex')
+2025-03-25 14:41:40,212 - INFO - User lab accessed the lab assistant dashboard
+2025-03-25 14:41:40,280 - INFO - [CLIENT] Lab Assistant Dashboard page loaded
+2025-03-25 14:41:40,283 - ERROR - [CLIENT] Error in dashboard: Cannot set properties of undefined (setting '_DT_CellIndex')
+2025-03-25 14:41:40,284 - INFO - [CLIENT] Page loaded: /lab-assistant-portal/
+2025-03-25 14:41:42,585 - INFO - User lab accessed low attendance monitoring
+2025-03-25 14:41:42,783 - INFO - [CLIENT] Page loaded: /lab-assistant-portal/low-attendance/
+2025-03-25 14:41:45,255 - INFO - User lab accessed lab schedule
+2025-03-25 14:41:45,380 - INFO - [CLIENT] Page loaded: /lab-assistant-portal/lab-schedule/
+2025-03-25 14:42:18,285 - INFO - User lab accessed attendance exceptions
+2025-03-25 14:42:18,364 - INFO - [CLIENT] Attendance exceptions page loaded
+2025-03-25 14:42:18,372 - ERROR - [CLIENT] Error in attendance exceptions page: Cannot set properties of undefined (setting '_DT_CellIndex')
+2025-03-25 14:42:18,375 - INFO - [CLIENT] Page loaded: /lab-assistant-portal/attendance-exceptions/
+2025-03-25 14:42:20,290 - INFO - User lab accessed reports
+2025-03-25 14:42:24,736 - INFO - User lab accessed their profile
+2025-03-25 14:42:24,820 - INFO - [CLIENT] Profile page loaded
+2025-03-25 14:42:24,820 - INFO - [CLIENT] Page loaded: /lab-assistant-portal/profile/
+2025-03-25 14:42:31,106 - INFO - User lab accessed attendance exceptions
+2025-03-25 14:42:31,187 - INFO - [CLIENT] Attendance exceptions page loaded
+2025-03-25 14:42:31,195 - ERROR - [CLIENT] Error in attendance exceptions page: Cannot set properties of undefined (setting '_DT_CellIndex')
+2025-03-25 14:42:31,197 - INFO - [CLIENT] Page loaded: /lab-assistant-portal/attendance-exceptions/
+2025-03-25 14:42:34,210 - INFO - User lab accessed their profile
+2025-03-25 14:42:34,291 - INFO - [CLIENT] Profile page loaded
+2025-03-25 14:42:34,292 - INFO - [CLIENT] Page loaded: /lab-assistant-portal/profile/
+2025-03-25 14:43:05,074 - INFO - User lab accessed their profile
+2025-03-25 14:43:05,150 - INFO - [CLIENT] Profile page loaded
+2025-03-25 14:43:05,150 - INFO - [CLIENT] Page loaded: /lab-assistant-portal/profile/
+2025-03-25 14:43:07,004 - INFO - User lab accessed reports
+2025-03-25 14:43:10,007 - INFO - User lab accessed low attendance monitoring
+2025-03-25 14:43:10,088 - INFO - [CLIENT] Page loaded: /lab-assistant-portal/low-attendance/
+2025-03-25 14:43:11,679 - INFO - User lab accessed their profile
+2025-03-25 14:43:11,759 - INFO - [CLIENT] Page loaded: /lab-assistant-portal/profile/
+2025-03-25 14:43:11,760 - INFO - [CLIENT] Profile page loaded
+2025-03-25 14:43:14,395 - INFO - User lab accessed leave applications
+2025-03-25 14:43:14,471 - INFO - [CLIENT] Leave applications page loaded
+2025-03-25 14:43:14,477 - INFO - [CLIENT] Page loaded: /lab-assistant-portal/leave-applications/
+2025-03-25 14:43:14,477 - ERROR - [CLIENT] Error in leave applications page: Cannot set properties of undefined (setting '_DT_CellIndex')
+2025-03-25 14:43:26,933 - INFO - User lab accessed their profile
+2025-03-25 14:43:27,004 - INFO - [CLIENT] Profile page loaded
+2025-03-25 14:43:27,004 - INFO - [CLIENT] Page loaded: /lab-assistant-portal/profile/
+2025-03-25 14:50:01,039 - INFO - User lab accessed reports
+2025-03-25 14:50:34,769 - INFO - User lab accessed their profile
+2025-03-25 14:50:34,890 - INFO - [CLIENT] Profile page loaded
+2025-03-25 14:50:34,891 - INFO - [CLIENT] Page loaded: /lab-assistant-portal/profile/
+2025-03-25 14:50:36,312 - INFO - User lab accessed reports
+2025-03-25 14:50:39,333 - INFO - User lab accessed low attendance monitoring
+2025-03-25 14:50:39,429 - INFO - [CLIENT] Page loaded: /lab-assistant-portal/low-attendance/
+2025-03-25 14:52:04,574 - INFO - User lab accessed their profile
+2025-03-25 14:52:04,642 - INFO - [CLIENT] Page loaded: /lab-assistant-portal/profile/
+2025-03-25 14:52:04,643 - INFO - [CLIENT] Profile page loaded
+2025-03-25 14:52:16,608 - INFO - User lab accessed lab schedule
+2025-03-25 14:52:16,688 - INFO - [CLIENT] Page loaded: /lab-assistant-portal/lab-schedule/
+2025-03-25 15:02:32,812 - INFO - User lab accessed reports
+2025-03-25 15:02:33,043 - INFO - [CLIENT] Page loaded: /lab-assistant-portal/reports/
+2025-03-25 15:02:36,925 - INFO - User lab accessed their profile
+2025-03-25 15:02:36,996 - INFO - [CLIENT] Profile page loaded
+2025-03-25 15:02:36,997 - INFO - [CLIENT] Page loaded: /lab-assistant-portal/profile/
+2025-03-25 15:03:37,952 - INFO - User lab accessed their profile
+2025-03-25 15:03:38,076 - INFO - [CLIENT] Profile page loaded
+2025-03-25 15:03:38,077 - INFO - [CLIENT] Page loaded: /lab-assistant-portal/profile/
+2025-03-25 15:03:38,213 - INFO - User lab accessed their profile
+2025-03-25 15:03:38,278 - INFO - [CLIENT] Page loaded: /lab-assistant-portal/profile/
+2025-03-25 15:03:38,279 - INFO - [CLIENT] Profile page loaded
+2025-03-25 15:03:38,395 - INFO - User lab accessed their profile
+2025-03-25 15:03:38,463 - INFO - [CLIENT] Profile page loaded
+2025-03-25 15:03:38,464 - INFO - [CLIENT] Page loaded: /lab-assistant-portal/profile/
+2025-03-25 15:03:38,555 - INFO - User lab accessed their profile
+2025-03-25 15:03:38,620 - INFO - [CLIENT] Profile page loaded
+2025-03-25 15:03:38,623 - INFO - [CLIENT] Page loaded: /lab-assistant-portal/profile/
+2025-03-25 15:03:38,777 - INFO - User lab accessed their profile
+2025-03-25 15:03:38,837 - INFO - [CLIENT] Profile page loaded
+2025-03-25 15:03:38,841 - INFO - [CLIENT] Page loaded: /lab-assistant-portal/profile/
+2025-03-25 15:03:40,310 - INFO - User lab accessed their profile
+2025-03-25 15:03:40,389 - INFO - [CLIENT] Profile page loaded
+2025-03-25 15:03:40,389 - INFO - [CLIENT] Page loaded: /lab-assistant-portal/profile/
+2025-03-25 15:03:41,643 - INFO - User lab accessed reports
+2025-03-25 15:03:41,825 - INFO - [CLIENT] Page loaded: /lab-assistant-portal/reports/
+2025-03-25 15:03:43,729 - INFO - User lab accessed low attendance monitoring
+2025-03-25 15:03:43,812 - INFO - [CLIENT] Page loaded: /lab-assistant-portal/low-attendance/
+2025-03-25 15:03:45,341 - INFO - User lab accessed lab schedule
+2025-03-25 15:03:45,420 - INFO - [CLIENT] Page loaded: /lab-assistant-portal/lab-schedule/
+2025-03-25 15:03:46,633 - INFO - User lab accessed attendance exceptions
+2025-03-25 15:03:46,708 - INFO - [CLIENT] Attendance exceptions page loaded
+2025-03-25 15:03:46,712 - ERROR - [CLIENT] Error in attendance exceptions page: Cannot set properties of undefined (setting '_DT_CellIndex')
+2025-03-25 15:03:46,717 - INFO - [CLIENT] Page loaded: /lab-assistant-portal/attendance-exceptions/
+2025-03-25 15:03:47,821 - INFO - User lab accessed leave applications
+2025-03-25 15:03:47,897 - INFO - [CLIENT] Leave applications page loaded
+2025-03-25 15:03:47,897 - ERROR - [CLIENT] Error in leave applications page: Cannot set properties of undefined (setting '_DT_CellIndex')
+2025-03-25 15:03:47,899 - INFO - [CLIENT] Page loaded: /lab-assistant-portal/leave-applications/
+2025-03-25 15:03:49,151 - INFO - User lab accessed the lab assistant dashboard
+2025-03-25 15:03:49,228 - INFO - [CLIENT] Lab Assistant Dashboard page loaded
+2025-03-25 15:03:49,228 - ERROR - [CLIENT] Error in dashboard: Cannot set properties of undefined (setting '_DT_CellIndex')
+2025-03-25 15:03:49,230 - INFO - [CLIENT] Page loaded: /lab-assistant-portal/
+2025-03-25 15:03:50,644 - INFO - User lab accessed their profile
+2025-03-25 15:03:50,709 - INFO - [CLIENT] Profile page loaded
+2025-03-25 15:03:50,711 - INFO - [CLIENT] Page loaded: /lab-assistant-portal/profile/
+2025-03-25 15:05:23,820 - INFO - User lab accessed reports
+2025-03-25 15:05:23,906 - INFO - [CLIENT] Page loaded: /lab-assistant-portal/reports/
+2025-03-25 15:05:25,259 - INFO - User lab accessed low attendance monitoring
+2025-03-25 15:05:25,332 - INFO - [CLIENT] Page loaded: /lab-assistant-portal/low-attendance/
+2025-03-25 15:05:29,919 - INFO - User lab accessed lab schedule
+2025-03-25 15:05:30,087 - INFO - [CLIENT] Page loaded: /lab-assistant-portal/lab-schedule/
+2025-03-25 15:05:32,225 - INFO - User lab accessed low attendance monitoring
+2025-03-25 15:05:32,293 - INFO - [CLIENT] Page loaded: /lab-assistant-portal/low-attendance/
+2025-03-25 15:05:35,890 - INFO - User lab accessed the lab assistant dashboard
+2025-03-25 15:05:35,962 - INFO - [CLIENT] Lab Assistant Dashboard page loaded
+2025-03-25 15:05:35,967 - ERROR - [CLIENT] Error in dashboard: Cannot set properties of undefined (setting '_DT_CellIndex')
+2025-03-25 15:05:35,967 - INFO - [CLIENT] Page loaded: /lab-assistant-portal/
+2025-03-25 15:05:37,860 - INFO - User lab accessed leave applications
+2025-03-25 15:05:37,928 - INFO - [CLIENT] Leave applications page loaded
+2025-03-25 15:05:37,933 - ERROR - [CLIENT] Error in leave applications page: Cannot set properties of undefined (setting '_DT_CellIndex')
+2025-03-25 15:05:38,040 - INFO - [CLIENT] Page loaded: /lab-assistant-portal/leave-applications/
+2025-03-25 15:05:39,416 - INFO - User lab accessed attendance exceptions
+2025-03-25 15:05:39,491 - INFO - [CLIENT] Attendance exceptions page loaded
+2025-03-25 15:05:39,496 - INFO - [CLIENT] Page loaded: /lab-assistant-portal/attendance-exceptions/
+2025-03-25 15:05:39,497 - ERROR - [CLIENT] Error in attendance exceptions page: Cannot set properties of undefined (setting '_DT_CellIndex')
+2025-03-25 15:05:40,731 - INFO - User lab accessed lab schedule
+2025-03-25 15:05:40,795 - INFO - [CLIENT] Page loaded: /lab-assistant-portal/lab-schedule/
+2025-03-25 15:05:42,227 - INFO - User lab accessed low attendance monitoring
+2025-03-25 15:05:42,300 - INFO - [CLIENT] Page loaded: /lab-assistant-portal/low-attendance/
+2025-03-25 15:11:22,491 - INFO - User lab accessed the lab assistant dashboard
+2025-03-25 15:11:22,575 - INFO - [CLIENT] Lab Assistant Dashboard page loaded
+2025-03-25 15:11:22,581 - ERROR - [CLIENT] Error in dashboard: Cannot set properties of undefined (setting '_DT_CellIndex')
+2025-03-25 15:11:22,582 - INFO - [CLIENT] Page loaded: /lab-assistant-portal/
+2025-03-25 15:11:29,243 - INFO - User lab accessed leave applications
+2025-03-25 15:11:29,314 - INFO - [CLIENT] Leave applications page loaded
+2025-03-25 15:11:29,319 - ERROR - [CLIENT] Error in leave applications page: Cannot set properties of undefined (setting '_DT_CellIndex')
+2025-03-25 15:11:29,319 - INFO - [CLIENT] Page loaded: /lab-assistant-portal/leave-applications/
+2025-03-25 15:11:32,589 - INFO - User lab accessed attendance exceptions
+2025-03-25 15:11:32,656 - INFO - [CLIENT] Attendance exceptions page loaded
+2025-03-25 15:11:32,664 - ERROR - [CLIENT] Error in attendance exceptions page: Cannot set properties of undefined (setting '_DT_CellIndex')
+2025-03-25 15:11:32,668 - INFO - [CLIENT] Page loaded: /lab-assistant-portal/attendance-exceptions/
+2025-03-25 15:11:34,221 - INFO - User lab accessed lab schedule
+2025-03-25 15:11:34,285 - INFO - [CLIENT] Page loaded: /lab-assistant-portal/lab-schedule/
+2025-03-25 15:11:36,177 - INFO - User lab accessed low attendance monitoring
+2025-03-25 15:11:36,247 - INFO - [CLIENT] Page loaded: /lab-assistant-portal/low-attendance/
+2025-03-25 15:11:37,760 - INFO - User lab accessed reports
+2025-03-25 15:11:37,826 - INFO - [CLIENT] Page loaded: /lab-assistant-portal/reports/
+2025-03-25 15:11:39,254 - INFO - User lab accessed their profile
+2025-03-25 15:11:39,327 - INFO - [CLIENT] Profile page loaded
+2025-03-25 15:11:39,328 - INFO - [CLIENT] Page loaded: /lab-assistant-portal/profile/
+2025-03-25 15:11:45,299 - INFO - User lab accessed lab schedule
+2025-03-25 15:11:45,376 - INFO - [CLIENT] Page loaded: /lab-assistant-portal/lab-schedule/
+2025-03-25 15:11:46,915 - INFO - User lab accessed attendance exceptions
+2025-03-25 15:11:46,979 - INFO - [CLIENT] Attendance exceptions page loaded
+2025-03-25 15:11:46,986 - ERROR - [CLIENT] Error in attendance exceptions page: Cannot set properties of undefined (setting '_DT_CellIndex')
+2025-03-25 15:11:47,096 - INFO - [CLIENT] Page loaded: /lab-assistant-portal/attendance-exceptions/
+2025-03-25 15:11:48,429 - INFO - User lab accessed leave applications
+2025-03-25 15:11:48,501 - INFO - [CLIENT] Leave applications page loaded
+2025-03-25 15:11:48,503 - ERROR - [CLIENT] Error in leave applications page: Cannot set properties of undefined (setting '_DT_CellIndex')
+2025-03-25 15:11:48,506 - INFO - [CLIENT] Page loaded: /lab-assistant-portal/leave-applications/
+2025-03-25 15:11:49,714 - INFO - User lab accessed the lab assistant dashboard
+2025-03-25 15:11:49,779 - INFO - [CLIENT] Lab Assistant Dashboard page loaded
+2025-03-25 15:11:49,784 - ERROR - [CLIENT] Error in dashboard: Cannot set properties of undefined (setting '_DT_CellIndex')
+2025-03-25 15:11:49,786 - INFO - [CLIENT] Page loaded: /lab-assistant-portal/
+2025-03-25 15:11:52,423 - INFO - User lab accessed reports
+2025-03-25 15:11:52,499 - INFO - [CLIENT] Page loaded: /lab-assistant-portal/reports/
+2025-03-25 15:11:53,978 - INFO - User lab accessed low attendance monitoring
+2025-03-25 15:11:54,069 - INFO - [CLIENT] Page loaded: /lab-assistant-portal/low-attendance/
+2025-03-25 15:12:30,845 - INFO - User lab accessed the lab assistant dashboard
+2025-03-25 15:12:30,917 - INFO - [CLIENT] Lab Assistant Dashboard page loaded
+2025-03-25 15:12:30,928 - INFO - [CLIENT] Page loaded: /lab-assistant-portal/
+2025-03-25 15:12:31,024 - ERROR - [CLIENT] Error in dashboard: Cannot set properties of undefined (setting '_DT_CellIndex')
+2025-03-25 15:16:46,394 - INFO - User lab accessed the lab assistant dashboard
+2025-03-25 15:16:46,465 - INFO - [CLIENT] Lab Assistant Dashboard page loaded
+2025-03-25 15:16:46,474 - INFO - [CLIENT] Page loaded: /lab-assistant-portal/
+2025-03-25 15:16:46,475 - ERROR - [CLIENT] Error in dashboard: Cannot set properties of undefined (setting '_DT_CellIndex')
+2025-03-25 20:26:12,158 - INFO - User lab accessed the lab assistant dashboard
+2025-03-25 20:26:12,329 - INFO - [CLIENT] Lab Assistant Dashboard page loaded
+2025-03-25 20:26:12,350 - ERROR - [CLIENT] Error in dashboard: Cannot set properties of undefined (setting '_DT_CellIndex')
+2025-03-25 20:26:12,352 - INFO - [CLIENT] Page loaded: /lab-assistant-portal/
+2025-03-25 20:26:12,532 - INFO - User lab accessed the lab assistant dashboard
+2025-03-25 20:26:12,659 - INFO - [CLIENT] Lab Assistant Dashboard page loaded
+2025-03-25 20:26:12,660 - ERROR - [CLIENT] Error in dashboard: Cannot set properties of undefined (setting '_DT_CellIndex')
+2025-03-25 20:26:12,662 - INFO - [CLIENT] Page loaded: /lab-assistant-portal/
+2025-03-25 20:26:12,696 - INFO - User lab accessed the lab assistant dashboard
+2025-03-25 20:26:12,763 - INFO - [CLIENT] Lab Assistant Dashboard page loaded
+2025-03-25 20:26:12,767 - INFO - [CLIENT] Page loaded: /lab-assistant-portal/
+2025-03-25 20:26:12,853 - INFO - User lab accessed the lab assistant dashboard
+2025-03-25 20:26:12,874 - ERROR - [CLIENT] Error in dashboard: Cannot set properties of undefined (setting '_DT_CellIndex')
+2025-03-25 20:26:12,926 - INFO - [CLIENT] Lab Assistant Dashboard page loaded
+2025-03-25 20:26:12,931 - ERROR - [CLIENT] Error in dashboard: Cannot set properties of undefined (setting '_DT_CellIndex')
+2025-03-25 20:26:12,931 - INFO - [CLIENT] Page loaded: /lab-assistant-portal/
+2025-03-25 20:30:01,238 - INFO - User lab accessed their profile
+2025-03-25 20:30:01,354 - INFO - [CLIENT] Profile page loaded
+2025-03-25 20:30:01,355 - INFO - [CLIENT] Page loaded: /lab-assistant-portal/profile/
+2025-03-25 20:30:03,016 - INFO - User lab accessed reports
+2025-03-25 20:30:03,121 - INFO - [CLIENT] Page loaded: /lab-assistant-portal/reports/
+2025-03-25 20:30:05,582 - INFO - User lab accessed low attendance monitoring
+2025-03-25 20:30:05,678 - INFO - [CLIENT] Page loaded: /lab-assistant-portal/low-attendance/

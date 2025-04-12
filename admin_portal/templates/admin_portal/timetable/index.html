@@ -1,0 +1,171 @@
+{% extends 'admin_portal/base_admin.html' %}
+{% load static %}
+
+{% block admin_title %}Timetable Management{% endblock %}
+
+{% block admin_content %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2"><i class="fas fa-clock"></i> Timetable Management</h1>
+    <div class="btn-toolbar mb-2 mb-md-0">
+        <button type="button" class="btn btn-sm btn-primary">
+            <i class="fas fa-plus"></i> Add Timetable Entry
+        </button>
+    </div>
+</div>
+
+{% if messages %}
+    {% for message in messages %}
+        <div class="alert {{ message.tags }} alert-dismissible fade show" role="alert">
+            {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    {% endfor %}
+{% endif %}
+
+<!-- Placeholder content - Will be implemented later -->
+<div class="card shadow mb-4">
+    <div class="card-header py-3">
+        <h6 class="m-0 font-weight-bold text-primary">Timetable Feature</h6>
+    </div>
+    <div class="card-body">
+        <div class="alert alert-info">
+            <h5 class="alert-heading"><i class="fas fa-info-circle"></i> Feature Coming Soon</h5>
+            <p>The Timetable Management feature is currently under development and will be available in a future update.</p>
+            <hr>
+            <p class="mb-0">This feature will allow you to create and manage class schedules, view timetables by faculty or class, and handle substitutions.</p>
+        </div>
+        
+        <div class="text-center py-5">
+            <i class="fas fa-calendar-alt fa-5x text-muted mb-4"></i>
+            <h4>Timetable Management</h4>
+            <p class="text-muted">Check back soon for this feature!</p>
+        </div>
+    </div>
+</div>
+
+<!-- Example Timetable View -->
+<div class="card shadow mb-4">
+    <div class="card-header py-3">
+        <h6 class="m-0 font-weight-bold text-primary">Example Timetable View</h6>
+    </div>
+    <div class="card-body">
+        <div class="row mb-3">
+            <div class="col-md-4">
+                <select class="form-select">
+                    <option>All Departments</option>
+                    <option>Computer Engineering</option>
+                    <option>Information Technology</option>
+                    <option>Applied Science</option>
+                </select>
+            </div>
+            <div class="col-md-4">
+                <select class="form-select">
+                    <option>All Classes</option>
+                    <option>CE1</option>
+                    <option>CE2</option>
+                    <option>CE3</option>
+                </select>
+            </div>
+            <div class="col-md-4">
+                <select class="form-select">
+                    <option>All Faculty</option>
+                    <option>Faculty Member</option>
+                    <option>Head of Department</option>
+                </select>
+            </div>
+        </div>
+        
+        <div class="table-responsive">
+            <table class="table table-bordered table-hover">
+                <thead class="table-light">
+                    <tr>
+                        <th>Time</th>
+                        <th>Monday</th>
+                        <th>Tuesday</th>
+                        <th>Wednesday</th>
+                        <th>Thursday</th>
+                        <th>Friday</th>
+                        <th>Saturday</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <th>9:00 - 10:00</th>
+                        <td class="bg-light text-center">-</td>
+                        <td class="bg-primary bg-opacity-25">
+                            <strong>CE101</strong><br>
+                            <small>Faculty Member</small><br>
+                            <span class="badge bg-primary">Theory</span>
+                        </td>
+                        <td class="bg-success bg-opacity-25">
+                            <strong>IT205</strong><br>
+                            <small>Faculty Member</small><br>
+                            <span class="badge bg-success">Lab</span>
+                        </td>
+                        <td class="bg-light text-center">-</td>
+                        <td class="bg-primary bg-opacity-25">
+                            <strong>CE101</strong><br>
+                            <small>Faculty Member</small><br>
+                            <span class="badge bg-primary">Theory</span>
+                        </td>
+                        <td class="bg-light text-center">-</td>
+                    </tr>
+                    <tr>
+                        <th>10:00 - 11:00</th>
+                        <td class="bg-primary bg-opacity-25">
+                            <strong>CE102</strong><br>
+                            <small>Faculty Member</small><br>
+                            <span class="badge bg-primary">Theory</span>
+                        </td>
+                        <td class="bg-light text-center">-</td>
+                        <td class="bg-success bg-opacity-25">
+                            <strong>IT205</strong><br>
+                            <small>Faculty Member</small><br>
+                            <span class="badge bg-success">Lab</span>
+                        </td>
+                        <td class="bg-primary bg-opacity-25">
+                            <strong>CE102</strong><br>
+                            <small>Faculty Member</small><br>
+                            <span class="badge bg-primary">Theory</span>
+                        </td>
+                        <td class="bg-light text-center">-</td>
+                        <td class="bg-light text-center">-</td>
+                    </tr>
+                    <tr>
+                        <th>11:00 - 12:00</th>
+                        <td class="bg-primary bg-opacity-25">
+                            <strong>CE103</strong><br>
+                            <small>Faculty Member</small><br>
+                            <span class="badge bg-primary">Theory</span>
+                        </td>
+                        <td class="bg-primary bg-opacity-25">
+                            <strong>CE104</strong><br>
+                            <small>Head of Department</small><br>
+                            <span class="badge bg-primary">Theory</span>
+                        </td>
+                        <td class="bg-light text-center">-</td>
+                        <td class="bg-primary bg-opacity-25">
+                            <strong>CE103</strong><br>
+                            <small>Faculty Member</small><br>
+                            <span class="badge bg-primary">Theory</span>
+                        </td>
+                        <td class="bg-primary bg-opacity-25">
+                            <strong>CE104</strong><br>
+                            <small>Head of Department</small><br>
+                            <span class="badge bg-primary">Theory</span>
+                        </td>
+                        <td class="bg-light text-center">-</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        
+        <div class="mt-3 text-center">
+            <span class="badge bg-primary">Theory</span> &nbsp;
+            <span class="badge bg-success">Lab</span> &nbsp;
+            <span class="badge bg-warning">Elective</span> &nbsp;
+            <span class="badge bg-danger">Substitution</span>
+        </div>
+    </div>
+</div>
+{% endblock %}

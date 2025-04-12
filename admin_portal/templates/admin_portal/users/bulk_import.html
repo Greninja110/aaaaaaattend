@@ -1,0 +1,194 @@
+{% extends 'admin_portal/base_admin.html' %}
+{% load static %}
+
+{% block admin_title %}Bulk Import Users{% endblock %}
+
+{% block admin_content %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2"><i class="fas fa-file-import"></i> Bulk Import Users</h1>
+    <div class="btn-toolbar mb-2 mb-md-0">
+        <a href="{% url 'admin_portal:user_list' %}" class="btn btn-sm btn-secondary">
+            <i class="fas fa-arrow-left"></i> Back to Users
+        </a>
+    </div>
+</div>
+
+{% if messages %}
+    {% for message in messages %}
+        <div class="alert {{ message.tags }} alert-dismissible fade show" role="alert">
+            {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    {% endfor %}
+{% endif %}
+
+<div class="row">
+    <div class="col-md-6">
+        <div class="card shadow mb-4">
+            <div class="card-header py-3">
+                <h6 class="m-0 font-weight-bold text-primary">Upload User Data</h6>
+            </div>
+            <div class="card-body">
+                <form method="post" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    
+                    <div class="mb-3">
+                        <label for="{{ form.import_type.id_for_label }}" class="form-label">Import Type</label>
+                        {{ form.import_type }}
+                        <div class="form-text">Select the type of users to import</div>
+                        {% if form.import_type.errors %}
+                        <div class="invalid-feedback d-block">
+                            {{ form.import_type.errors }}
+                        </div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="{{ form.file.id_for_label }}" class="form-label">CSV/Excel File</label>
+                        {{ form.file }}
+                        <div class="form-text">{{ form.file.help_text }}</div>
+                        {% if form.file.errors %}
+                        <div class="invalid-feedback d-block">
+                            {{ form.file.errors }}
+                        </div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="alert alert-info">
+                        <h6 class="alert-heading"><i class="fas fa-info-circle"></i> File Format Requirements</h6>
+                        <p class="mb-0">Please ensure your file follows the correct format for the selected import type. 
+                        <a href="#" class="template-download" data-type="students">Download template</a> for reference.</p>
+                    </div>
+                    
+                    <div class="mt-4">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-upload"></i> Upload & Import
+                        </button>
+                        <button type="reset" class="btn btn-secondary">
+                            <i class="fas fa-undo"></i> Reset
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        
+        <div class="card shadow mb-4">
+            <div class="card-header py-3">
+                <h6 class="m-0 font-weight-bold text-primary">Download Templates</h6>
+            </div>
+            <div class="card-body">
+                <p>Download import templates for different user types:</p>
+                <div class="d-grid gap-2">
+                    <a href="{% url 'admin_portal:download_import_template' import_type='students' %}" class="btn btn-outline-primary">
+                        <i class="fas fa-download"></i> Student Import Template
+                    </a>
+                    <a href="{% url 'admin_portal:download_import_template' import_type='faculty' %}" class="btn btn-outline-success">
+                        <i class="fas fa-download"></i> Faculty Import Template
+                    </a>
+                    <a href="{% url 'admin_portal:download_import_template' import_type='lab_assistant' %}" class="btn btn-outline-info">
+                        <i class="fas fa-download"></i> Lab Assistant Import Template
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-6">
+        <div class="card shadow mb-4">
+            <div class="card-header py-3">
+                <h6 class="m-0 font-weight-bold text-primary">Recent Imports</h6>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-bordered table-hover">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Type</th>
+                                <th>Records</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for import_log in recent_imports %}
+                            <tr>
+                                <td>{{ import_log.created_at|date:"M d, Y H:i" }}</td>
+                                <td><span class="badge bg-primary">{{ import_log.import_type|title }}</span></td>
+                                <td>{{ import_log.successful_records }}/{{ import_log.total_records }}</td>
+                                <td>
+                                    {% if import_log.failed_records == 0 %}
+                                        <span class="badge bg-success">Complete</span>
+                                    {% elif import_log.successful_records == 0 %}
+                                        <span class="badge bg-danger">Failed</span>
+                                    {% else %}
+                                        <span class="badge bg-warning">Partial</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <a href="{% url 'admin_portal:import_results' log_id=import_log.import_id %}" class="btn btn-sm btn-info">
+                                        <i class="fas fa-eye"></i>
+                                    </a>
+                                </td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="5" class="text-center">No recent imports</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card shadow mb-4">
+            <div class="card-header py-3">
+                <h6 class="m-0 font-weight-bold text-primary">Import Guidelines</h6>
+            </div>
+            <div class="card-body">
+                <ul class="list-group list-group-flush">
+                    <li class="list-group-item">
+                        <i class="fas fa-check-circle text-success me-2"></i>
+                        CSV file must use comma (,) as delimiter
+                    </li>
+                    <li class="list-group-item">
+                        <i class="fas fa-check-circle text-success me-2"></i>
+                        First row must contain column headers
+                    </li>
+                    <li class="list-group-item">
+                        <i class="fas fa-check-circle text-success me-2"></i>
+                        All email addresses must end with @mbit.edu.in
+                    </li>
+                    <li class="list-group-item">
+                        <i class="fas fa-check-circle text-success me-2"></i>
+                        Department codes must match existing departments
+                    </li>
+                    <li class="list-group-item">
+                        <i class="fas fa-check-circle text-success me-2"></i>
+                        Default password for all imported users will be '123'
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block admin_custom_js %}
+<script>
+    $(document).ready(function() {
+        // Change template download link based on selected import type
+        $('#{{ form.import_type.id_for_label }}').on('change', function() {
+            const importType = $(this).val();
+            $('.template-download').attr('href', "{% url 'admin_portal:download_import_template' import_type='placeholder' %}".replace('placeholder', importType));
+            $('.template-download').data('type', importType);
+        });
+        
+        // Initialize template download link
+        const initialType = $('#{{ form.import_type.id_for_label }}').val() || 'students';
+        $('.template-download').attr('href', "{% url 'admin_portal:download_import_template' import_type='placeholder' %}".replace('placeholder', initialType));
+        $('.template-download').data('type', initialType);
+    });
+</script>
+{% endblock %}

@@ -1,0 +1,874 @@
+{% extends 'student_portal/base_student.html' %}
+{% load static %}
+
+{% block student_title %}Daily Attendance{% endblock %}
+
+{% block student_content %}
+<div class="container-fluid py-4">
+    <!-- Page Header -->
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+        <div>
+            <h2 class="h3 mb-0">Daily Attendance Details</h2>
+            <p class="text-muted mb-0">View your attendance records for each class day by day</p>
+        </div>
+        <div>
+            <button type="button" class="btn btn-sm btn-outline-primary me-2" id="printAttendance">
+                <i class="fas fa-print mr-1"></i> Print
+            </button>
+            <a href="{% url 'student_portal:attendance' %}" class="btn btn-sm btn-primary">
+                <i class="fas fa-arrow-left mr-1"></i> Back to Summary
+            </a>
+        </div>
+    </div>
+    
+    <!-- Filter Options -->
+    <div class="card shadow mb-4 dashboard-card">
+        <div class="card-body">
+            <form id="filterForm" method="GET">
+                <div class="row g-3">
+                    <div class="col-md-3">
+                        <label for="subjectFilter" class="form-label">Subject</label>
+                        <select class="form-select" id="subjectFilter" name="subject">
+                            <option value="">All Subjects</option>
+                            {% for subject in subjects %}
+                            <option value="{{ subject.id }}" {% if selected_subject == subject.id %}selected{% endif %}>
+                                {{ subject.code }} - {{ subject.name }}
+                            </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <label for="monthFilter" class="form-label">Month</label>
+                        <select class="form-select" id="monthFilter" name="month">
+                            <option value="">All Months</option>
+                            {% for month in months %}
+                            <option value="{{ month.number }}" {% if selected_month == month.number %}selected{% endif %}>
+                                {{ month.name }}
+                            </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <label for="statusFilter" class="form-label">Status</label>
+                        <select class="form-select" id="statusFilter" name="status">
+                            <option value="">All Status</option>
+                            <option value="present" {% if selected_status == 'present' %}selected{% endif %}>Present</option>
+                            <option value="absent" {% if selected_status == 'absent' %}selected{% endif %}>Absent</option>
+                            <option value="leave" {% if selected_status == 'leave' %}selected{% endif %}>On Leave</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3 d-flex align-items-end">
+                        <button type="submit" class="btn btn-primary w-100" id="applyFilters">
+                            <i class="fas fa-filter mr-1"></i> Apply Filters
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <!-- Subject Info Banner -->
+    {% if subject_info %}
+    <div class="card shadow mb-4 dashboard-card subject-info-banner">
+        <div class="card-body p-4">
+            <div class="row align-items-center">
+                <div class="col-md-2 text-center">
+                    <div class="subject-icon">
+                        <i class="{{ subject_info.icon }}"></i>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <h4 class="mb-0">{{ subject_info.name }}</h4>
+                    <p class="text-muted mb-2">{{ subject_info.code }} | {{ subject_info.faculty }}</p>
+                    <div class="subject-meta">
+                        <span class="badge bg-info me-2">{{ subject_info.type }}</span>
+                        <span class="badge bg-secondary me-2">Semester {{ subject_info.semester }}</span>
+                        <span class="badge bg-primary">{{ subject_info.credits }} Credits</span>
+                    </div>
+                </div>
+                <div class="col-md-4 text-end">
+                    <div class="attendance-summary">
+                        <div class="attendance-percent">{{ subject_info.attendance_percentage }}%</div>
+                        <div class="attendance-progress">
+                            <div class="progress" style="height: 8px;">
+                                <div class="progress-bar 
+                                    {% if subject_info.attendance_percentage >= 85 %}bg-success
+                                    {% elif subject_info.attendance_percentage >= 75 %}bg-warning
+                                    {% else %}bg-danger{% endif %}" 
+                                    role="progressbar" 
+                                    style="width: {{ subject_info.attendance_percentage }}%" 
+                                    aria-valuenow="{{ subject_info.attendance_percentage }}" 
+                                    aria-valuemin="0" 
+                                    aria-valuemax="100"></div>
+                            </div>
+                        </div>
+                        <div class="attendance-stats">
+                            <div class="stat-item">
+                                <div class="stat-value">{{ subject_info.total_classes }}</div>
+                                <div class="stat-label">Total Classes</div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-value">{{ subject_info.attended_classes }}</div>
+                                <div class="stat-label">Present</div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-value">{{ subject_info.absent_classes }}</div>
+                                <div class="stat-label">Absent</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+    
+    <!-- Calendar View -->
+    <div class="card shadow mb-4 dashboard-card">
+        <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+            <h6 class="m-0 font-weight-bold">Attendance Calendar</h6>
+            <div class="dropdown no-arrow">
+                <a class="dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    <i class="fas fa-ellipsis-v fa-sm fa-fw text-gray-400"></i>
+                </a>
+                <div class="dropdown-menu dropdown-menu-right shadow animated--fade-in" aria-labelledby="dropdownMenuLink">
+                    <a class="dropdown-item" href="#" data-view="month"><i class="fas fa-calendar-alt mr-2"></i>Month View</a>
+                    <a class="dropdown-item" href="#" data-view="day"><i class="fas fa-calendar-day mr-2"></i>Day View</a>
+                    <div class="dropdown-divider"></div>
+                    <a class="dropdown-item" href="#" id="refreshCalendar"><i class="fas fa-sync-alt mr-2"></i>Refresh Calendar</a>
+                </div>
+            </div>
+        </div>
+        <div class="card-body">
+            <div class="mb-3 text-center">
+                <div class="btn-group">
+                    <button type="button" class="btn btn-outline-primary" id="prevMonth" data-month="{{ prev_month.number }}" data-year="{{ prev_month.year }}">
+                        <i class="fas fa-chevron-left"></i>
+                    </button>
+                    <button type="button" class="btn btn-outline-primary" id="currentMonth">
+                        {{ current_month.name }} {{ current_month.year }}
+                    </button>
+                    <button type="button" class="btn btn-outline-primary" id="nextMonth" data-month="{{ next_month.number }}" data-year="{{ next_month.year }}">
+                        <i class="fas fa-chevron-right"></i>
+                    </button>
+                </div>
+            </div>
+            
+            <div class="attendance-calendar">
+                <div class="calendar-header">
+                    <div>Sun</div>
+                    <div>Mon</div>
+                    <div>Tue</div>
+                    <div>Wed</div>
+                    <div>Thu</div>
+                    <div>Fri</div>
+                    <div>Sat</div>
+                </div>
+                <div class="calendar-body">
+                    {% for week in calendar_weeks %}
+                        {% for day in week %}
+                            {% if day.is_empty %}
+                                <div class="calendar-day empty"></div>
+                            {% else %}
+                                <div class="calendar-day {% if day.is_today %}current-day{% endif %}" data-date="{{ day.date|date:'Y-m-d' }}">
+                                    <div class="day-number">{{ day.day }}</div>
+                                    <div class="day-status {% if day.status == 'present' %}present{% elif day.status == 'absent' %}absent{% elif day.status == 'leave' %}leave{% endif %}">
+                                        <i class="fas {% if day.status == 'present' %}fa-check-circle{% elif day.status == 'absent' %}fa-times-circle{% elif day.status == 'leave' %}fa-calendar-check{% else %}fa-minus-circle{% endif %}"></i>
+                                    </div>
+                                </div>
+                            {% endif %}
+                        {% endfor %}
+                    {% endfor %}
+                </div>
+            </div>
+            
+            <div class="calendar-legend mt-3">
+                <div class="legend-item">
+                    <div class="legend-color present"></div>
+                    <div class="legend-label">Present</div>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color absent"></div>
+                    <div class="legend-label">Absent</div>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color leave"></div>
+                    <div class="legend-label">On Leave</div>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color no-class"></div>
+                    <div class="legend-label">No Class</div>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color current"></div>
+                    <div class="legend-label">Current Day</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Detailed Attendance Records -->
+    <div class="card shadow mb-4 dashboard-card">
+        <div class="card-header py-3">
+            <h6 class="m-0 font-weight-bold">Detailed Attendance Records</h6>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover" id="attendanceDetailsTable">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Date</th>
+                            <th>Day</th>
+                            <th>Time</th>
+                            <th>Type</th>
+                            <th>Topic</th>
+                            <th>Faculty</th>
+                            <th>Status</th>
+                            <th>Remarks</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for record in attendance_records %}
+                        <tr>
+                            <td>{{ record.date|date:"M d, Y" }}</td>
+                            <td>{{ record.day }}</td>
+                            <td>{{ record.start_time }} - {{ record.end_time }}</td>
+                            <td><span class="badge {% if record.is_lab %}bg-primary{% else %}bg-secondary{% endif %}">{{ record.type }}</span></td>
+                            <td>{{ record.topic }}</td>
+                            <td>{{ record.faculty }}</td>
+                            <td>
+                                <span class="badge 
+                                      {% if record.status == 'present' %}bg-success
+                                      {% elif record.status == 'absent' %}bg-danger
+                                      {% elif record.status == 'leave' %}bg-secondary
+                                      {% endif %}">
+                                    {{ record.status|title }}
+                                </span>
+                            </td>
+                            <td>{{ record.remarks|default:"-" }}</td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="8" class="text-center">No attendance records found for the selected filters.</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Attendance Trend Chart -->
+    <div class="card shadow mb-4 dashboard-card">
+        <div class="card-header py-3">
+            <h6 class="m-0 font-weight-bold">Attendance Trend</h6>
+        </div>
+        <div class="card-body">
+            <div class="chart-container" style="position: relative; height:300px;">
+                <canvas id="attendanceTrendChart"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Day Detail Modal -->
+<div class="modal fade" id="dayDetailModal" tabindex="-1" aria-labelledby="dayDetailModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="dayDetailModalLabel">Attendance for <span id="modalDate"></span></h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div id="dayDetailContent">
+                    <div class="text-center py-5">
+                        <div class="spinner-border text-primary" role="status">
+                            <span class="visually-hidden">Loading...</span>
+                        </div>
+                        <p class="mt-3">Loading attendance details...</p>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline-primary me-2" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" id="requestCorrectionBtn">
+                    <i class="fas fa-exclamation-circle me-1"></i> Request Correction
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Request Correction Modal -->
+<div class="modal fade" id="requestCorrectionModal" tabindex="-1" aria-labelledby="requestCorrectionModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title" id="requestCorrectionModalLabel">Request Attendance Correction</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="correctionRequestForm" method="POST" action="{% url 'student_portal:request_attendance_correction' %}" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <input type="hidden" id="attendanceId" name="attendance_id">
+                    <div class="mb-3">
+                        <label for="correctionDate" class="form-label">Date</label>
+                        <input type="text" class="form-control" id="correctionDate" name="date" readonly>
+                    </div>
+                    <div class="mb-3">
+                        <label for="correctionSubject" class="form-label">Subject</label>
+                        <input type="text" class="form-control" id="correctionSubject" name="subject" readonly>
+                    </div>
+                    <div class="mb-3">
+                        <label for="correctionCurrentStatus" class="form-label">Current Status</label>
+                        <input type="text" class="form-control" id="correctionCurrentStatus" name="current_status" readonly>
+                    </div>
+                    <div class="mb-3">
+                        <label for="correctionRequestedStatus" class="form-label">Requested Status</label>
+                        <select class="form-select" id="correctionRequestedStatus" name="requested_status" required>
+                            <option value="">Select Status</option>
+                            <option value="present">Present</option>
+                            <option value="absent">Absent</option>
+                            <option value="leave">On Leave</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="correctionReason" class="form-label">Reason for Correction</label>
+                        <textarea class="form-control" id="correctionReason" name="reason" rows="3" required></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label for="correctionEvidence" class="form-label">Supporting Evidence (if any)</label>
+                        <input class="form-control" type="file" id="correctionEvidence" name="evidence">
+                        <div class="form-text">Upload any supporting documents (e.g., medical certificate). Max size: 2MB.</div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" id="submitCorrectionRequest">Submit Request</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block student_custom_css %}
+<style>
+    /* Subject info banner styling */
+    .subject-info-banner {
+        background: linear-gradient(to right, #f8f9fc, #ffffff);
+    }
+    
+    .subject-icon {
+        width: 80px;
+        height: 80px;
+        background-color: #4e73df;
+        color: white;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 2rem;
+        margin: 0 auto;
+    }
+    
+    .subject-meta {
+        margin-top: 10px;
+    }
+    
+    .attendance-summary {
+        text-align: center;
+    }
+    
+    .attendance-percent {
+        font-size: 2.5rem;
+        font-weight: 700;
+        color: #4e73df;
+    }
+    
+    .attendance-progress {
+        width: 100%;
+        margin: 10px 0;
+    }
+    
+    .attendance-stats {
+        display: flex;
+        justify-content: space-around;
+        margin-top: 15px;
+    }
+    
+    .stat-item {
+        text-align: center;
+    }
+    
+    .stat-value {
+        font-size: 1.2rem;
+        font-weight: 600;
+    }
+    
+    .stat-label {
+        font-size: 0.8rem;
+        color: #858796;
+    }
+    
+    /* Calendar styling */
+    .attendance-calendar {
+        display: grid;
+        grid-template-rows: auto 1fr;
+        gap: 10px;
+    }
+    
+    .calendar-header {
+        display: grid;
+        grid-template-columns: repeat(7, 1fr);
+        text-align: center;
+        font-weight: 600;
+        color: #4e73df;
+    }
+    
+    .calendar-body {
+        display: grid;
+        grid-template-columns: repeat(7, 1fr);
+        gap: 5px;
+    }
+    
+    .calendar-day {
+        height: 80px;
+        background-color: #fff;
+        border-radius: 8px;
+        padding: 5px;
+        box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+        display: flex;
+        flex-direction: column;
+        position: relative;
+        cursor: pointer;
+    }
+    
+    .calendar-day:hover {
+        box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+        transform: translateY(-2px);
+        transition: all 0.2s ease-in-out;
+    }
+    
+    .calendar-day.empty {
+        background-color: transparent;
+        box-shadow: none;
+        cursor: default;
+    }
+    
+    .calendar-day.empty:hover {
+        transform: none;
+        box-shadow: none;
+    }
+    
+    .calendar-day.current-day {
+        border: 2px solid #4e73df;
+    }
+    
+    .day-number {
+        position: absolute;
+        top: 5px;
+        left: 5px;
+        font-weight: 600;
+        color: #5a5c69;
+    }
+    
+    .day-status {
+        flex: 1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+    }
+    
+    .day-status.present i {
+        color: #1cc88a;
+    }
+    
+    .day-status.absent i {
+        color: #e74a3b;
+    }
+    
+    .day-status.leave i {
+        color: #f6c23e;
+    }
+    
+    .day-status i {
+        color: #d1d3e2;
+    }
+    
+    /* Calendar legend */
+    .calendar-legend {
+        display: flex;
+        justify-content: center;
+        gap: 20px;
+    }
+    
+    .legend-item {
+        display: flex;
+        align-items: center;
+        gap: 5px;
+    }
+    
+    .legend-color {
+        width: 15px;
+        height: 15px;
+        border-radius: 50%;
+    }
+    
+    .legend-color.present {
+        background-color: #1cc88a;
+    }
+    
+    .legend-color.absent {
+        background-color: #e74a3b;
+    }
+    
+    .legend-color.leave {
+        background-color: #f6c23e;
+    }
+    
+    .legend-color.no-class {
+        background-color: #d1d3e2;
+    }
+    
+    .legend-color.current {
+        background-color: #ffffff;
+        border: 2px solid #4e73df;
+    }
+    
+    .legend-label {
+        font-size: 0.8rem;
+        color: #5a5c69;
+    }
+    
+    /* Day detail modal styling */
+    .day-detail-status {
+        padding: 15px;
+        border-radius: 5px;
+        margin-bottom: 20px;
+        text-align: center;
+        font-weight: 600;
+    }
+    
+    .day-detail-status.present {
+        background-color: #e3fcef;
+        color: #1cc88a;
+    }
+    
+    .day-detail-status.absent {
+        background-color: #faeceb;
+        color: #e74a3b;
+    }
+    
+    .day-detail-status.leave {
+        background-color: #fff8e5;
+        color: #f6c23e;
+    }
+    
+    .day-detail-info {
+        margin-bottom: 20px;
+    }
+    
+    .day-detail-info h6, .attendance-evidence h6 {
+        margin-bottom: 10px;
+        color: #4e73df;
+        font-weight: 600;
+    }
+    
+    .day-detail-info .table th {
+        font-weight: 600;
+        color: #5a5c69;
+    }
+    
+    .attendance-evidence {
+        padding: 15px;
+        background-color: #f8f9fc;
+        border-radius: 5px;
+    }
+</style>
+{% endblock %}
+
+{% block student_custom_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Initialize DataTable
+        const attendanceTable = $('#attendanceDetailsTable').DataTable({
+            ordering: true,
+            pageLength: 10,
+            lengthMenu: [5, 10, 25, 50],
+            language: {
+                search: "_INPUT_",
+                searchPlaceholder: "Search records..."
+            }
+        });
+        
+        // Initialize Attendance Trend Chart
+        const trendCtx = document.getElementById('attendanceTrendChart').getContext('2d');
+        
+        // Get attendance data from Django context
+        const months = [{% for month in trend_data.months %}"{{ month }}"{% if not forloop.last %}, {% endif %}{% endfor %}];
+        const attendance = [{% for value in trend_data.attendance %}{{ value }}{% if not forloop.last %}, {% endif %}{% endfor %}];
+        
+        const attendanceTrendChart = new Chart(trendCtx, {
+            type: 'line',
+            data: {
+                labels: months,
+                datasets: [{
+                    label: 'Monthly Attendance %',
+                    data: attendance,
+                    fill: {
+                        target: 'origin',
+                        above: 'rgba(78, 115, 223, 0.1)'
+                    },
+                    borderColor: '#4e73df',
+                    borderWidth: 3,
+                    pointBackgroundColor: '#4e73df',
+                    pointBorderColor: '#fff',
+                    pointHoverBackgroundColor: '#fff',
+                    pointHoverBorderColor: '#4e73df',
+                    pointRadius: 4,
+                    pointHoverRadius: 6,
+                    tension: 0.4
+                }, {
+                    label: 'Required Threshold',
+                    data: Array(months.length).fill(75),
+                    borderColor: '#e74a3b',
+                    borderWidth: 2,
+                    borderDash: [5, 5],
+                    pointRadius: 0,
+                    fill: false
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        beginAtZero: false,
+                        min: 60,
+                        max: 100,
+                        ticks: {
+                            stepSize: 5
+                        },
+                        title: {
+                            display: true,
+                            text: 'Attendance %'
+                        },
+                        grid: {
+                            borderDash: [2, 2]
+                        }
+                    },
+                    x: {
+                        grid: {
+                            display: false
+                        }
+                    }
+                },
+                plugins: {
+                    legend: {
+                        display: true,
+                        position: 'top',
+                        labels: {
+                            boxWidth: 15,
+                            usePointStyle: true
+                        }
+                    },
+                    tooltip: {
+                        mode: 'index',
+                        intersect: false,
+                        callbacks: {
+                            label: function(context) {
+                                return context.dataset.label + ': ' + context.raw + '%';
+                            }
+                        }
+                    }
+                },
+                interaction: {
+                    mode: 'nearest',
+                    axis: 'x',
+                    intersect: false
+                }
+            }
+        });
+        
+        // Month navigation
+        document.getElementById('prevMonth').addEventListener('click', function() {
+            const month = this.dataset.month;
+            const year = this.dataset.year;
+            
+            // Update form and submit
+            const form = document.getElementById('filterForm');
+            let monthInput = form.querySelector('input[name="nav_month"]');
+            let yearInput = form.querySelector('input[name="nav_year"]');
+            
+            if (!monthInput) {
+                monthInput = document.createElement('input');
+                monthInput.type = 'hidden';
+                monthInput.name = 'nav_month';
+                form.appendChild(monthInput);
+            }
+            
+            if (!yearInput) {
+                yearInput = document.createElement('input');
+                yearInput.type = 'hidden';
+                yearInput.name = 'nav_year';
+                form.appendChild(yearInput);
+            }
+            
+            monthInput.value = month;
+            yearInput.value = year;
+            
+            form.submit();
+        });
+        
+        document.getElementById('nextMonth').addEventListener('click', function() {
+            const month = this.dataset.month;
+            const year = this.dataset.year;
+            
+            // Update form and submit
+            const form = document.getElementById('filterForm');
+            let monthInput = form.querySelector('input[name="nav_month"]');
+            let yearInput = form.querySelector('input[name="nav_year"]');
+            
+            if (!monthInput) {
+                monthInput = document.createElement('input');
+                monthInput.type = 'hidden';
+                monthInput.name = 'nav_month';
+                form.appendChild(monthInput);
+            }
+            
+            if (!yearInput) {
+                yearInput = document.createElement('input');
+                yearInput.type = 'hidden';
+                yearInput.name = 'nav_year';
+                form.appendChild(yearInput);
+            }
+            
+            monthInput.value = month;
+            yearInput.value = year;
+            
+            form.submit();
+        });
+        
+        // Show day detail modal when clicking on a calendar day
+        document.querySelectorAll('.calendar-day:not(.empty)').forEach(day => {
+            day.addEventListener('click', function() {
+                // Get date from the day element
+                const date = this.dataset.date;
+                if (!date) return;
+                
+                // Format date for display
+                const dateObj = new Date(date);
+                const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+                const formattedDate = dateObj.toLocaleDateString('en-US', options);
+                
+                // Update modal title
+                document.getElementById('modalDate').textContent = formattedDate;
+                
+                // Show modal
+                $('#dayDetailModal').modal('show');
+                
+                // Fetch day details with AJAX
+                $.ajax({
+                    url: "{% url 'student_portal:get_day_attendance' %}",
+                    method: "GET",
+                    data: {
+                        date: date,
+                        subject: document.getElementById('subjectFilter').value || ''
+                    },
+                    success: function(response) {
+                        // Update modal content
+                        document.getElementById('dayDetailContent').innerHTML = response.html;
+                        
+                        // Update form fields for correction request
+                        if (response.attendance_id) {
+                            document.getElementById('attendanceId').value = response.attendance_id;
+                            document.getElementById('correctionDate').value = formattedDate;
+                            document.getElementById('correctionSubject').value = response.subject_name;
+                            document.getElementById('correctionCurrentStatus').value = response.status;
+                            
+                            // Enable or disable correction button based on correction eligibility
+                            document.getElementById('requestCorrectionBtn').disabled = !response.can_request_correction;
+                        }
+                    },
+                    error: function(xhr, status, error) {
+                        document.getElementById('dayDetailContent').innerHTML = `
+                            <div class="alert alert-danger">
+                                <i class="fas fa-exclamation-circle me-2"></i>
+                                Failed to load attendance details. Please try again.
+                            </div>
+                        `;
+                        console.error("Error fetching day details:", error);
+                    }
+                });
+            });
+        });
+        
+        // Handle request correction button
+        document.getElementById('requestCorrectionBtn').addEventListener('click', function() {
+            // Hide day detail modal
+            $('#dayDetailModal').modal('hide');
+            
+            // Show request correction modal
+            $('#requestCorrectionModal').modal('show');
+        });
+        
+        // Handle submit correction request
+        document.getElementById('submitCorrectionRequest').addEventListener('click', function() {
+            const form = document.getElementById('correctionRequestForm');
+            const status = document.getElementById('correctionRequestedStatus').value;
+            const reason = document.getElementById('correctionReason').value;
+            
+            // Check if form is valid
+            if (!status || !reason) {
+                Swal.fire({
+                    title: 'Missing Information',
+                    text: 'Please select a status and provide a reason for the correction request.',
+                    icon: 'error',
+                    confirmButtonColor: '#4e73df'
+                });
+                return;
+            }
+            
+            // Submit form
+            form.submit();
+        });
+        
+        // Handle print attendance button
+        document.getElementById('printAttendance').addEventListener('click', function() {
+            window.print();
+        });
+        
+        // Handle refresh calendar
+        document.getElementById('refreshCalendar').addEventListener('click', function() {
+            // Reload the page with current filters
+            document.getElementById('filterForm').submit();
+        });
+        
+        // Handle view change
+        document.querySelectorAll('[data-view]').forEach(button => {
+            button.addEventListener('click', function(e) {
+                e.preventDefault();
+                
+                const view = this.dataset.view;
+                
+                // Update form and submit
+                const form = document.getElementById('filterForm');
+                let viewInput = form.querySelector('input[name="view"]');
+                
+                if (!viewInput) {
+                    viewInput = document.createElement('input');
+                    viewInput.type = 'hidden';
+                    viewInput.name = 'view';
+                    form.appendChild(viewInput);
+                }
+                
+                viewInput.value = view;
+                
+                form.submit();
+            });
+        });
+    });
+</script>
+{% endblock %}

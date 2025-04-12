@@ -1,0 +1,566 @@
+{% extends 'student_portal/base_student.html' %}
+{% load static %}
+
+{% block student_title %}Dashboard{% endblock %}
+
+{% block student_content %}
+<div class="container-fluid py-4">
+    <!-- Welcome and Summary Section -->
+    <div class="row mb-4">
+        <div class="col-md-12">
+            <h2 class="mb-3">Student Dashboard</h2>
+            <div class="d-sm-flex align-items-center justify-content-between mb-4">
+                <p class="text-muted">Welcome back, <strong>{{ user.full_name }}</strong>! Here's your attendance summary.</p>
+                <div>
+                    <button class="btn btn-sm btn-primary" id="refreshDashboard">
+                        <i class="fas fa-sync-alt mr-1"></i> Refresh
+                    </button>
+                    <a href="{% url 'student_portal:attendance' %}" class="btn btn-sm btn-outline-primary">
+                        <i class="fas fa-calendar-check mr-1"></i> View Details
+                    </a>
+                </div>
+            </div>
+            
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="alert {{ message.tags }} alert-dismissible fade show" role="alert">
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                {% endfor %}
+            {% endif %}
+        </div>
+    </div>
+    
+    <!-- Status Cards -->
+    <div class="row">
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-primary shadow h-100 py-2 stats-card">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                                Overall Attendance</div>
+                            <div class="h5 mb-0 font-weight-bold">{{ overall_attendance }}%</div>
+                            <div class="progress mt-2" style="height: 8px;">
+                                <div class="progress-bar bg-primary" role="progressbar" style="width: {{ overall_attendance }}%" 
+                                    aria-valuenow="{{ overall_attendance }}" aria-valuemin="0" aria-valuemax="100"></div>
+                            </div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-calendar-check fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-success shadow h-100 py-2 stats-card">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
+                                Total Subjects</div>
+                            <div class="h5 mb-0 font-weight-bold">{{ total_subjects }}</div>
+                            <div class="small text-muted mt-2">Semester {{ student.current_semester }}</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-book fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-warning shadow h-100 py-2 stats-card">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
+                                Warning Subjects</div>
+                            <div class="h5 mb-0 font-weight-bold">{{ warning_subjects_count }}</div>
+                            <div class="small text-muted mt-2">Below 75% threshold</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-exclamation-triangle fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-info shadow h-100 py-2 stats-card">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-info text-uppercase mb-1">
+                                Today's Classes</div>
+                            <div class="h5 mb-0 font-weight-bold">{{ today_classes_attended }} / {{ today_total_classes }}</div>
+                            <div class="progress mt-2" style="height: 8px;">
+                                {% if today_total_classes > 0 %}
+                                    {% with percentage=today_classes_attended|floatformat:0|default:0|stringformat:"i" %}
+                                    <div class="progress-bar bg-info" role="progressbar" 
+                                         style="width: {{ percentage }}%" 
+                                         aria-valuenow="{{ percentage }}" 
+                                         aria-valuemin="0" 
+                                         aria-valuemax="100"></div>
+                                    {% endwith %}
+                                {% else %}
+                                    <div class="progress-bar bg-info" role="progressbar" style="width: 0%" 
+                                         aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-clipboard-list fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Attendance Warning Alert (if needed) -->
+    {% if warning_subjects %}
+    <div class="row mb-4">
+        <div class="col-md-12">
+            <div class="alert alert-attendance-warning alert-dismissible fade show" role="alert">
+                <h5 class="alert-heading"><i class="fas fa-exclamation-triangle me-2"></i> Attendance Warning</h5>
+                <p>Your attendance in 
+                {% for subject in warning_subjects %}
+                    <strong>{{ subject.name }} ({{ subject.attendance_percentage }}%)</strong>{% if not forloop.last %} and {% endif %}
+                {% endfor %}
+                is below the required threshold of 75%.</p>
+                <hr>
+                <p class="mb-0">Please ensure your attendance improves to avoid being detained from exams.</p>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+    
+    <!-- Today's Schedule & Subject-wise Attendance -->
+    <div class="row">
+        <div class="col-md-6">
+            <div class="card shadow mb-4 dashboard-card">
+                <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                    <h6 class="m-0 font-weight-bold">Today's Schedule</h6>
+                    <div class="dropdown no-arrow">
+                        <a class="dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            <i class="fas fa-ellipsis-v fa-sm fa-fw text-gray-400"></i>
+                        </a>
+                        <div class="dropdown-menu dropdown-menu-right shadow animated--fade-in" aria-labelledby="dropdownMenuLink">
+                            <a class="dropdown-item" href="{% url 'student_portal:timetable' %}">View Full Timetable</a>
+                            <div class="dropdown-divider"></div>
+                            <a class="dropdown-item" href="#" id="downloadSchedule">Download Schedule</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="timeline">
+                        {% if today_classes %}
+                            {% for class in today_classes %}
+                            <div class="timeline-item">
+                                <div class="timeline-marker 
+                                    {% if class.is_past and class.attended %}bg-success
+                                    {% elif class.is_past and not class.attended %}bg-danger
+                                    {% else %}bg-warning{% endif %}">
+                                </div>
+                                <div class="timeline-content">
+                                    <div class="d-flex justify-content-between">
+                                        <h6 class="timeline-title">{{ class.subject_name }}</h6>
+                                        <small class="text-muted">{{ class.start_time }} - {{ class.end_time }}</small>
+                                    </div>
+                                    <p>{{ class.faculty_name }} | {{ class.room_number }}</p>
+                                    {% if class.is_past %}
+                                        {% if class.attended %}
+                                            <span class="badge bg-success">Attended</span>
+                                        {% else %}
+                                            <span class="badge bg-danger">Missed</span>
+                                        {% endif %}
+                                    {% else %}
+                                        <span class="badge bg-warning">Upcoming</span>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            {% endfor %}
+                        {% else %}
+                            <div class="text-center py-4 text-muted">
+                                <i class="fas fa-calendar fa-3x mb-3"></i>
+                                <p>No classes scheduled for today.</p>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-6">
+            <div class="card shadow mb-4 dashboard-card">
+                <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                    <h6 class="m-0 font-weight-bold">Subject-wise Attendance</h6>
+                    <div class="dropdown no-arrow">
+                        <a class="dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            <i class="fas fa-ellipsis-v fa-sm fa-fw text-gray-400"></i>
+                        </a>
+                        <div class="dropdown-menu dropdown-menu-right shadow animated--fade-in" aria-labelledby="dropdownMenuLink">
+                            <a class="dropdown-item" href="{% url 'student_portal:attendance' %}">View Detailed Attendance</a>
+                            <div class="dropdown-divider"></div>
+                            <a class="dropdown-item" href="#" id="downloadAttendanceReport">Download Report</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body">
+                    {% if subject_attendance %}
+                        {% for subject in subject_attendance %}
+                        <div class="mb-4">
+                            <h6 class="small font-weight-bold">{{ subject.name }} <span class="float-end">{{ subject.percentage }}%</span></h6>
+                            <div class="progress">
+                                <div class="progress-bar 
+                                    {% if subject.percentage >= 90 %}bg-success
+                                    {% elif subject.percentage >= 75 %}bg-primary
+                                    {% else %}bg-warning{% endif %}" 
+                                    role="progressbar" 
+                                    style="width: {{ subject.percentage }}%" 
+                                    aria-valuenow="{{ subject.percentage }}" 
+                                    aria-valuemin="0" 
+                                    aria-valuemax="100">
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    {% else %}
+                        <div class="text-center py-4 text-muted">
+                            <i class="fas fa-chart-pie fa-3x mb-3"></i>
+                            <p>No attendance data available.</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Attendance Chart and Notifications -->
+    <div class="row">
+        <div class="col-md-8">
+            <div class="card shadow mb-4 dashboard-card">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold">Monthly Attendance Trend</h6>
+                </div>
+                <div class="card-body">
+                    <div class="chart-container" style="position: relative; height:320px;">
+                        <canvas id="attendanceChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-4">
+            <div class="card shadow mb-4 dashboard-card">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold">Notifications</h6>
+                </div>
+                <div class="card-body">
+                    <div class="notification-list">
+                        {% if notifications %}
+                            {% for notification in notifications %}
+                            <a href="{% url 'student_portal:notifications' %}" class="notification-item {% if notification.is_unread %}unread{% endif %}">
+                                <div class="notification-icon 
+                                    {% if notification.category == 'attendance' %}bg-primary
+                                    {% elif notification.category == 'academics' %}bg-info
+                                    {% elif notification.category == 'leave' %}bg-success
+                                    {% else %}bg-warning{% endif %}">
+                                    <i class="fas {{ notification.icon }}"></i>
+                                </div>
+                                <div class="notification-content">
+                                    <h6>{{ notification.title }}</h6>
+                                    <p class="small text-muted">{{ notification.message }}</p>
+                                    <span class="notification-time">{{ notification.time_ago }}</span>
+                                </div>
+                            </a>
+                            {% endfor %}
+                        {% else %}
+                            <div class="text-center py-4 text-muted">
+                                <i class="fas fa-bell-slash fa-3x mb-3"></i>
+                                <p>No new notifications.</p>
+                            </div>
+                        {% endif %}
+                    </div>
+                    <div class="text-center mt-3">
+                        <a href="{% url 'student_portal:notifications' %}" class="btn btn-sm btn-outline-primary">View All Notifications</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block student_custom_css %}
+<style>
+    /* Timeline styling */
+    .timeline {
+        position: relative;
+        padding: 0;
+        list-style: none;
+    }
+    
+    .timeline-item {
+        position: relative;
+        padding-left: 30px;
+        margin-bottom: 20px;
+    }
+    
+    .timeline-marker {
+        position: absolute;
+        left: 0;
+        width: 15px;
+        height: 15px;
+        border-radius: 50%;
+        top: 5px;
+    }
+    
+    .timeline-content {
+        padding-bottom: 15px;
+        border-bottom: 1px solid #e3e6f0;
+    }
+    
+    .timeline-content p {
+        margin-bottom: 0.5rem;
+        color: #5a5c69;
+    }
+    
+    .timeline-title {
+        margin-bottom: 0.25rem;
+        font-weight: 600;
+        color: #4e73df;
+    }
+    
+    /* Notification list */
+    .notification-list {
+        max-height: 320px;
+        overflow-y: auto;
+    }
+    
+    .notification-item {
+        display: flex;
+        padding: 10px 0;
+        border-bottom: 1px solid #e3e6f0;
+        color: inherit;
+        text-decoration: none;
+    }
+    
+    .notification-item:hover {
+        background-color: #f8f9fc;
+    }
+    
+    .notification-item.unread {
+        background-color: rgba(78, 115, 223, 0.05);
+    }
+    
+    .notification-icon {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        margin-right: 15px;
+        color: white;
+    }
+    
+    .notification-content {
+        flex: 1;
+    }
+    
+    .notification-content h6 {
+        margin-bottom: 3px;
+        font-size: 0.9rem;
+    }
+    
+    .notification-time {
+        display: block;
+        font-size: 0.75rem;
+        color: #858796;
+        margin-top: 5px;
+    }
+</style>
+{% endblock %}
+
+{% block student_custom_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Initialize attendance chart using data from backend
+        const attendanceChartCtx = document.getElementById('attendanceChart').getContext('2d');
+        
+        // Chart data should be passed from the backend via a context variable
+        const chartData = {
+            labels: {{ months|safe }},
+            datasets: [
+                {% for subject in subject_attendance_data %}
+                {
+                    label: '{{ subject.name }}',
+                    data: {{ subject.attendance_data }},
+                    backgroundColor: 'transparent',
+                    borderColor: '{{ subject.color }}',
+                    borderWidth: 2,
+                    pointBackgroundColor: '{{ subject.color }}',
+                    tension: 0.4
+                }{% if not forloop.last %},{% endif %}
+                {% endfor %}
+            ]
+        };
+        
+        const attendanceChart = new Chart(attendanceChartCtx, {
+            type: 'line',
+            data: chartData,
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        beginAtZero: false,
+                        min: 50,
+                        max: 100,
+                        ticks: {
+                            stepSize: 10
+                        },
+                        title: {
+                            display: true,
+                            text: 'Attendance %'
+                        }
+                    }
+                },
+                plugins: {
+                    legend: {
+                        position: 'top',
+                        labels: {
+                            boxWidth: 10,
+                            usePointStyle: true
+                        }
+                    },
+                    tooltip: {
+                        mode: 'index',
+                        intersect: false,
+                        callbacks: {
+                            label: function(context) {
+                                return context.dataset.label + ': ' + context.raw + '%';
+                            }
+                        }
+                    }
+                },
+                interaction: {
+                    mode: 'nearest',
+                    axis: 'x',
+                    intersect: false
+                }
+            }
+        });
+        
+        // Handle refresh button
+        document.getElementById('refreshDashboard').addEventListener('click', function() {
+            // Add a loading spinner to button
+            this.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Refreshing...';
+            this.disabled = true;
+            
+            // Log the refresh action
+            logToFile('Dashboard refresh requested');
+            
+            // Fetch updated data via AJAX
+            fetch('{% url "student_portal:index" %}?refresh=true', {
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
+            .then(data => {
+                // Handle the successful response
+                logToFile('Dashboard refreshed successfully');
+                
+                // Update the dashboard data
+                // This would typically involve updating DOM elements with new values
+                
+                // Reset button
+                this.innerHTML = '<i class="fas fa-sync-alt mr-1"></i> Refresh';
+                this.disabled = false;
+                
+                // Show success message
+                Swal.fire({
+                    title: 'Dashboard Refreshed!',
+                    text: 'Latest attendance data has been loaded.',
+                    icon: 'success',
+                    confirmButtonColor: '#4e73df',
+                    timer: 2000,
+                    timerProgressBar: true,
+                    showConfirmButton: false
+                });
+            })
+            .catch(error => {
+                // Handle errors
+                logToFile(`Dashboard refresh error: ${error.message}`, 'error');
+                
+                // Reset button
+                this.innerHTML = '<i class="fas fa-sync-alt mr-1"></i> Refresh';
+                this.disabled = false;
+                
+                // Show error message
+                Swal.fire({
+                    title: 'Error',
+                    text: 'Failed to refresh dashboard. Please try again.',
+                    icon: 'error',
+                    confirmButtonColor: '#e74a3b'
+                });
+            });
+        });
+        
+        // Download buttons functionality
+        document.getElementById('downloadSchedule').addEventListener('click', function(e) {
+            e.preventDefault();
+            downloadFile('schedule');
+        });
+        
+        document.getElementById('downloadAttendanceReport').addEventListener('click', function(e) {
+            e.preventDefault();
+            downloadFile('attendance');
+        });
+        
+        function downloadFile(type) {
+            // Log the download request
+            logToFile(`Download requested for ${type}`);
+            
+            // In a real app, this would make an AJAX call to a server endpoint
+            // that would generate the file and return it
+            
+            Swal.fire({
+                title: 'Preparing Download',
+                html: 'Generating your file...',
+                timer: 2000,
+                timerProgressBar: true,
+                didOpen: () => {
+                    Swal.showLoading();
+                }
+            }).then(() => {
+                logToFile(`Download completed for ${type}`);
+                
+                Swal.fire({
+                    title: 'Download Complete',
+                    text: `Your ${type} file has been downloaded.`,
+                    icon: 'success',
+                    confirmButtonColor: '#4e73df',
+                    timer: 2000,
+                    timerProgressBar: true,
+                    showConfirmButton: false
+                });
+            });
+        }
+    });
+</script>
+{% endblock %}

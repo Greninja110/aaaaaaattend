@@ -1,0 +1,744 @@
+{% extends 'student_portal/base_student.html' %}
+{% load static %}
+
+{% block student_title %}Notifications{% endblock %}
+
+{% block student_content %}
+<div class="container-fluid py-4">
+    <!-- Page Header -->
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+        <h2 class="h3 mb-0">Notifications</h2>
+        <div>
+            <button type="button" class="btn btn-outline-primary me-2" id="refreshNotifications">
+                <i class="fas fa-sync-alt mr-1"></i> Refresh
+            </button>
+            <button type="button" class="btn btn-primary" id="markAllRead">
+                <i class="fas fa-check-double mr-1"></i> Mark All as Read
+            </button>
+        </div>
+    </div>
+    
+    <!-- Notification Filters -->
+    <div class="card shadow mb-4 dashboard-card">
+        <div class="card-body p-3">
+            <div class="row">
+                <div class="col-md-8">
+                    <div class="btn-group" role="group">
+                        <button type="button" class="btn btn-outline-primary active filter-btn" data-filter="all">All Notifications</button>
+                        <button type="button" class="btn btn-outline-primary filter-btn" data-filter="unread">Unread</button>
+                        <button type="button" class="btn btn-outline-primary filter-btn" data-filter="attendance">Attendance</button>
+                        <button type="button" class="btn btn-outline-primary filter-btn" data-filter="academics">Academics</button>
+                        <button type="button" class="btn btn-outline-primary filter-btn" data-filter="leave">Leave Applications</button>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="input-group">
+                        <input type="text" class="form-control" placeholder="Search notifications..." id="searchNotifications">
+                        <button class="btn btn-outline-primary" type="button" id="searchButton">
+                            <i class="fas fa-search"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Notifications List -->
+    <div class="card shadow mb-4 dashboard-card">
+        <div class="card-body p-0">
+            <div class="notification-list">
+                {% if notifications %}
+                    {% for notification in notifications %}
+                    <div class="notification-item {% if not notification.is_read %}unread{% endif %}">
+                        <div class="notification-icon {{ notification.category }}">
+                            <i class="fas {% if notification.category == 'attendance' %}fa-bell{% elif notification.category == 'leave' %}fa-file-alt{% elif notification.category == 'academics' %}fa-calendar-alt{% elif notification.category == 'system' %}fa-cog{% endif %}"></i>
+                        </div>
+                        <div class="notification-content">
+                            <h5>{{ notification.title }}</h5>
+                            <p>{{ notification.message }}</p>
+                            <div class="notification-meta">
+                                <span class="notification-time"><i class="far fa-clock me-1"></i> {{ notification.created_at|timesince }} ago</span>
+                                <span class="notification-category {{ notification.category }}">{{ notification.category|title }}</span>
+                            </div>
+                        </div>
+                        <div class="notification-actions">
+                            <button class="btn btn-sm btn-outline-primary notification-action" data-action="view" data-id="{{ notification.id }}">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                            {% if not notification.is_read %}
+                            <button class="btn btn-sm btn-outline-success notification-action" data-action="mark-read" data-id="{{ notification.id }}">
+                                <i class="fas fa-check"></i>
+                            </button>
+                            {% endif %}
+                        </div>
+                    </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="text-center py-5">
+                        <img src="{% static 'img/illustrations/empty-notifications.svg' %}" alt="No Notifications" style="width: 200px; opacity: 0.6;">
+                        <h5 class="mt-3">No Notifications</h5>
+                        <p class="text-muted">You don't have any notifications at the moment.</p>
+                    </div>
+                {% endif %}
+            </div>
+            
+            <!-- Pagination -->
+            {% if is_paginated %}
+            <div class="pagination-container p-3 border-top">
+                <nav aria-label="Notifications pagination">
+                    <ul class="pagination justify-content-center mb-0">
+                        {% if page_obj.has_previous %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ page_obj.previous_page_number }}{% if request.GET.filter %}&filter={{ request.GET.filter }}{% endif %}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}" tabindex="-1">Previous</a>
+                        </li>
+                        {% else %}
+                        <li class="page-item disabled">
+                            <a class="page-link" href="#" tabindex="-1" aria-disabled="true">Previous</a>
+                        </li>
+                        {% endif %}
+                        
+                        {% for i in paginator.page_range %}
+                            {% if page_obj.number == i %}
+                                <li class="page-item active"><a class="page-link" href="#">{{ i }}</a></li>
+                            {% else %}
+                                <li class="page-item"><a class="page-link" href="?page={{ i }}{% if request.GET.filter %}&filter={{ request.GET.filter }}{% endif %}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}">{{ i }}</a></li>
+                            {% endif %}
+                        {% endfor %}
+                        
+                        {% if page_obj.has_next %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ page_obj.next_page_number }}{% if request.GET.filter %}&filter={{ request.GET.filter }}{% endif %}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}">Next</a>
+                        </li>
+                        {% else %}
+                        <li class="page-item disabled">
+                            <a class="page-link" href="#" aria-disabled="true">Next</a>
+                        </li>
+                        {% endif %}
+                    </ul>
+                </nav>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+    
+    <!-- Notification Settings -->
+    <div class="card shadow dashboard-card">
+        <div class="card-header py-3">
+            <h6 class="m-0 font-weight-bold">Notification Settings</h6>
+        </div>
+        <div class="card-body">
+            <form id="notificationSettingsForm" method="POST" action="{% url 'student_portal:update_notification_settings' %}">
+                {% csrf_token %}
+                <div class="row">
+                    <div class="col-md-6">
+                        <h5 class="mb-3">Email Notifications</h5>
+                        <div class="form-check mb-2">
+                            <input class="form-check-input" type="checkbox" id="attendanceEmails" name="attendance_emails" {% if notification_settings.attendance_emails %}checked{% endif %}>
+                            <label class="form-check-label" for="attendanceEmails">
+                                Attendance Alerts
+                            </label>
+                        </div>
+                        <div class="form-check mb-2">
+                            <input class="form-check-input" type="checkbox" id="leaveEmails" name="leave_emails" {% if notification_settings.leave_emails %}checked{% endif %}>
+                            <label class="form-check-label" for="leaveEmails">
+                                Leave Application Updates
+                            </label>
+                        </div>
+                        <div class="form-check mb-2">
+                            <input class="form-check-input" type="checkbox" id="timetableEmails" name="timetable_emails" {% if notification_settings.timetable_emails %}checked{% endif %}>
+                            <label class="form-check-label" for="timetableEmails">
+                                Timetable Changes
+                            </label>
+                        </div>
+                        <div class="form-check mb-2">
+                            <input class="form-check-input" type="checkbox" id="systemEmails" name="system_emails" {% if notification_settings.system_emails %}checked{% endif %}>
+                            <label class="form-check-label" for="systemEmails">
+                                System Notifications
+                            </label>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <h5 class="mb-3">In-App Notifications</h5>
+                        <div class="form-check mb-2">
+                            <input class="form-check-input" type="checkbox" id="attendanceInApp" name="attendance_inapp" {% if notification_settings.attendance_inapp %}checked{% endif %}>
+                            <label class="form-check-label" for="attendanceInApp">
+                                Attendance Alerts
+                            </label>
+                        </div>
+                        <div class="form-check mb-2">
+                            <input class="form-check-input" type="checkbox" id="leaveInApp" name="leave_inapp" {% if notification_settings.leave_inapp %}checked{% endif %}>
+                            <label class="form-check-label" for="leaveInApp">
+                                Leave Application Updates
+                            </label>
+                        </div>
+                        <div class="form-check mb-2">
+                            <input class="form-check-input" type="checkbox" id="timetableInApp" name="timetable_inapp" {% if notification_settings.timetable_inapp %}checked{% endif %}>
+                            <label class="form-check-label" for="timetableInApp">
+                                Timetable Changes
+                            </label>
+                        </div>
+                        <div class="form-check mb-2">
+                            <input class="form-check-input" type="checkbox" id="systemInApp" name="system_inapp" {% if notification_settings.system_inapp %}checked{% endif %}>
+                            <label class="form-check-label" for="systemInApp">
+                                System Notifications
+                            </label>
+                        </div>
+                    </div>
+                </div>
+                <div class="d-grid mt-3">
+                    <button type="submit" class="btn btn-primary" id="saveNotificationSettings">
+                        <i class="fas fa-save me-1"></i> Save Settings
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Notification Detail Modal -->
+<div class="modal fade" id="notificationDetailModal" tabindex="-1" aria-labelledby="notificationDetailModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="notificationDetailModalLabel">Notification Details</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div id="notificationDetailContent">
+                    <div class="text-center py-5">
+                        <div class="spinner-border text-primary" role="status">
+                            <span class="visually-hidden">Loading...</span>
+                        </div>
+                        <p class="mt-3">Loading notification details...</p>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-success" id="markReadInModal" data-id="">
+                    <i class="fas fa-check me-1"></i> Mark as Read
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block student_custom_css %}
+<style>
+    /* Notification list styling */
+    .notification-list {
+        display: flex;
+        flex-direction: column;
+    }
+    
+    .notification-item {
+        display: flex;
+        padding: 15px;
+        border-bottom: 1px solid #e3e6f0;
+        transition: all 0.2s ease;
+    }
+    
+    .notification-item:hover {
+        background-color: #f8f9fc;
+    }
+    
+    .notification-item.unread {
+        background-color: rgba(78, 115, 223, 0.05);
+        border-left: 4px solid #4e73df;
+    }
+    
+    .notification-icon {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        margin-right: 15px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        flex-shrink: 0;
+    }
+    
+    .notification-icon.attendance {
+        background-color: #4e73df;
+    }
+    
+    .notification-icon.academics {
+        background-color: #1cc88a;
+    }
+    
+    .notification-icon.leave {
+        background-color: #f6c23e;
+    }
+    
+    .notification-icon.system {
+        background-color: #36b9cc;
+    }
+    
+    .notification-content {
+        flex: 1;
+    }
+    
+    .notification-content h5 {
+        margin-bottom: 5px;
+        font-size: 1rem;
+        font-weight: 600;
+    }
+    
+    .notification-content p {
+        margin-bottom: 10px;
+        color: #5a5c69;
+        font-size: 0.9rem;
+    }
+    
+    .notification-meta {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+    }
+    
+    .notification-time {
+        font-size: 0.8rem;
+        color: #858796;
+    }
+    
+    .notification-category {
+        font-size: 0.75rem;
+        padding: 2px 8px;
+        border-radius: 30px;
+    }
+    
+    .notification-category.attendance {
+        background-color: #eaecf4;
+        color: #4e73df;
+    }
+    
+    .notification-category.academics {
+        background-color: #e3fcef;
+        color: #1cc88a;
+    }
+    
+    .notification-category.leave {
+        background-color: #fff8e5;
+        color: #f6c23e;
+    }
+    
+    .notification-category.system {
+        background-color: #e3f6f8;
+        color: #36b9cc;
+    }
+    
+    .notification-actions {
+        display: flex;
+        flex-direction: column;
+        gap: 5px;
+        margin-left: 15px;
+    }
+    
+    /* Filter buttons */
+    .filter-btn.active {
+        background-color: #4e73df;
+        color: white;
+        border-color: #4e73df;
+    }
+    
+    /* Notification detail modal */
+    .notification-detail-header {
+        display: flex;
+        margin-bottom: 20px;
+    }
+    
+    .notification-detail-icon {
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        margin-right: 15px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 1.2rem;
+    }
+    
+    .notification-detail-title {
+        flex: 1;
+    }
+    
+    .notification-detail-title h5 {
+        margin-bottom: 5px;
+        font-size: 1.2rem;
+        font-weight: 600;
+    }
+    
+    .notification-detail-time {
+        font-size: 0.85rem;
+        color: #858796;
+    }
+    
+    .notification-detail-content {
+        margin-bottom: 20px;
+        padding: 15px;
+        background-color: #f8f9fc;
+        border-radius: 5px;
+    }
+    
+    .notification-detail-content p:last-child {
+        margin-bottom: 0;
+    }
+    
+    .notification-detail-actions {
+        display: flex;
+        gap: 10px;
+        margin-bottom: 10px;
+    }
+</style>
+{% endblock %}
+
+{% block student_custom_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Handle notification filtering
+        document.querySelectorAll('.filter-btn').forEach(button => {
+            button.addEventListener('click', function() {
+                // Remove active class from all buttons
+                document.querySelectorAll('.filter-btn').forEach(btn => {
+                    btn.classList.remove('active');
+                });
+                
+                // Add active class to clicked button
+                this.classList.add('active');
+                
+                // Get filter value
+                const filter = this.dataset.filter;
+                
+                // Update URL with filter parameter
+                let url = new URL(window.location);
+                if (filter === 'all') {
+                    url.searchParams.delete('filter');
+                } else {
+                    url.searchParams.set('filter', filter);
+                }
+                window.location.href = url.toString();
+            });
+        });
+        
+        // Handle notification search
+        document.getElementById('searchButton').addEventListener('click', function() {
+            const searchQuery = document.getElementById('searchNotifications').value.trim();
+            
+            if (!searchQuery) return;
+            
+            // Update URL with search parameter
+            let url = new URL(window.location);
+            url.searchParams.set('search', searchQuery);
+            window.location.href = url.toString();
+        });
+        
+        // Search on enter key
+        document.getElementById('searchNotifications').addEventListener('keyup', function(e) {
+            if (e.key === 'Enter') {
+                document.getElementById('searchButton').click();
+            }
+        });
+        
+        // Handle "Mark All as Read" button
+        document.getElementById('markAllRead').addEventListener('click', function() {
+            Swal.fire({
+                title: 'Mark All as Read?',
+                text: 'Are you sure you want to mark all notifications as read?',
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonColor: '#4e73df',
+                cancelButtonColor: '#6c757d',
+                confirmButtonText: 'Yes, mark all'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // AJAX call to mark all as read
+                    $.ajax({
+                        url: "{% url 'student_portal:mark_all_notifications_read' %}",
+                        method: "POST",
+                        data: {
+                            csrfmiddlewaretoken: '{{ csrf_token }}'
+                        },
+                        beforeSend: function() {
+                            // Disable button and show loading
+                            document.getElementById('markAllRead').disabled = true;
+                            document.getElementById('markAllRead').innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Processing...';
+                        },
+                        success: function(response) {
+                            if (response.success) {
+                                // Remove unread class from all notifications
+                                document.querySelectorAll('.notification-item.unread').forEach(item => {
+                                    item.classList.remove('unread');
+                                    
+                                    // Remove mark as read button from actions
+                                    const markReadBtn = item.querySelector('[data-action="mark-read"]');
+                                    if (markReadBtn) {
+                                        markReadBtn.remove();
+                                    }
+                                });
+                                
+                                Swal.fire({
+                                    title: 'Marked as Read',
+                                    text: 'All notifications have been marked as read.',
+                                    icon: 'success',
+                                    confirmButtonColor: '#4e73df',
+                                    timer: 2000,
+                                    timerProgressBar: true
+                                });
+                            } else {
+                                Swal.fire({
+                                    title: 'Error',
+                                    text: response.message || 'There was an error marking notifications as read.',
+                                    icon: 'error',
+                                    confirmButtonColor: '#4e73df'
+                                });
+                            }
+                        },
+                        error: function(xhr, status, error) {
+                            Swal.fire({
+                                title: 'Error',
+                                text: 'There was an error marking notifications as read.',
+                                icon: 'error',
+                                confirmButtonColor: '#4e73df'
+                            });
+                            console.error("Error marking all as read:", error);
+                        },
+                        complete: function() {
+                            // Reset button
+                            document.getElementById('markAllRead').disabled = false;
+                            document.getElementById('markAllRead').innerHTML = '<i class="fas fa-check-double mr-1"></i> Mark All as Read';
+                        }
+                    });
+                }
+            });
+        });
+        
+        // Handle notification actions
+        document.addEventListener('click', function(e) {
+            const actionBtn = e.target.closest('.notification-action');
+            
+            if (actionBtn) {
+                const action = actionBtn.dataset.action;
+                const id = actionBtn.dataset.id;
+                
+                if (action === 'view') {
+                    // Show notification detail modal
+                    $('#notificationDetailModal').modal('show');
+                    document.getElementById('markReadInModal').dataset.id = id;
+                    
+                    // Fetch notification details
+                    $.ajax({
+                        url: "{% url 'student_portal:get_notification_details' %}",
+                        method: "GET",
+                        data: {
+                            notification_id: id
+                        },
+                        success: function(response) {
+                            document.getElementById('notificationDetailContent').innerHTML = response.html;
+                            
+                            // Show/hide mark as read button
+                            if (response.is_read) {
+                                document.getElementById('markReadInModal').style.display = 'none';
+                            } else {
+                                document.getElementById('markReadInModal').style.display = 'block';
+                            }
+                        },
+                        error: function(xhr, status, error) {
+                            document.getElementById('notificationDetailContent').innerHTML = `
+                                <div class="alert alert-danger">
+                                    <i class="fas fa-exclamation-circle me-2"></i>
+                                    Failed to load notification details. Please try again.
+                                </div>
+                            `;
+                            console.error("Error fetching notification details:", error);
+                        }
+                    });
+                } else if (action === 'mark-read') {
+                    // Mark notification as read
+                    $.ajax({
+                        url: "{% url 'student_portal:mark_notification_read' %}",
+                        method: "POST",
+                        data: {
+                            notification_id: id,
+                            csrfmiddlewaretoken: '{{ csrf_token }}'
+                        },
+                        success: function(response) {
+                            if (response.success) {
+                                // Update UI
+                                const notificationItem = actionBtn.closest('.notification-item');
+                                notificationItem.classList.remove('unread');
+                                actionBtn.remove();
+                                
+                                Swal.fire({
+                                    title: 'Marked as Read',
+                                    text: 'Notification has been marked as read.',
+                                    icon: 'success',
+                                    confirmButtonColor: '#4e73df',
+                                    toast: true,
+                                    position: 'top-end',
+                                    showConfirmButton: false,
+                                    timer: 3000,
+                                    timerProgressBar: true
+                                });
+                            } else {
+                                Swal.fire({
+                                    title: 'Error',
+                                    text: response.message || 'There was an error marking the notification as read.',
+                                    icon: 'error',
+                                    confirmButtonColor: '#4e73df'
+                                });
+                            }
+                        },
+                        error: function(xhr, status, error) {
+                            Swal.fire({
+                                title: 'Error',
+                                text: 'There was an error marking the notification as read.',
+                                icon: 'error',
+                                confirmButtonColor: '#4e73df'
+                            });
+                            console.error("Error marking notification as read:", error);
+                        }
+                    });
+                }
+            }
+        });
+        
+        // Handle "Mark as Read" button in modal
+        document.getElementById('markReadInModal').addEventListener('click', function() {
+            const id = this.dataset.id;
+            
+            $.ajax({
+                url: "{% url 'student_portal:mark_notification_read' %}",
+                method: "POST",
+                data: {
+                    notification_id: id,
+                    csrfmiddlewaretoken: '{{ csrf_token }}'
+                },
+                success: function(response) {
+                    if (response.success) {
+                        // Close modal
+                        $('#notificationDetailModal').modal('hide');
+                        
+                        // Update UI in the list
+                        const notificationItem = document.querySelector(`.notification-item .notification-action[data-id="${id}"]`).closest('.notification-item');
+                        if (notificationItem) {
+                            notificationItem.classList.remove('unread');
+                            const markReadBtn = notificationItem.querySelector(`.notification-action[data-action="mark-read"]`);
+                            if (markReadBtn) {
+                                markReadBtn.remove();
+                            }
+                        }
+                        
+                        Swal.fire({
+                            title: 'Marked as Read',
+                            text: 'Notification has been marked as read.',
+                            icon: 'success',
+                            confirmButtonColor: '#4e73df',
+                            toast: true,
+                            position: 'top-end',
+                            showConfirmButton: false,
+                            timer: 3000,
+                            timerProgressBar: true
+                        });
+                    } else {
+                        Swal.fire({
+                            title: 'Error',
+                            text: response.message || 'There was an error marking the notification as read.',
+                            icon: 'error',
+                            confirmButtonColor: '#4e73df'
+                        });
+                    }
+                },
+                error: function(xhr, status, error) {
+                    Swal.fire({
+                        title: 'Error',
+                        text: 'There was an error marking the notification as read.',
+                        icon: 'error',
+                        confirmButtonColor: '#4e73df'
+                    });
+                    console.error("Error marking notification as read:", error);
+                }
+            });
+        });
+        
+        // Handle notification settings form
+        document.getElementById('notificationSettingsForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const form = this;
+            const formData = new FormData(form);
+            
+            $.ajax({
+                url: form.action,
+                method: form.method,
+                data: formData,
+                processData: false,
+                contentType: false,
+                beforeSend: function() {
+                    // Disable button and show loading
+                    document.getElementById('saveNotificationSettings').disabled = true;
+                    document.getElementById('saveNotificationSettings').innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Saving...';
+                },
+                success: function(response) {
+                    if (response.success) {
+                        Swal.fire({
+                            title: 'Settings Saved',
+                            text: 'Your notification settings have been saved successfully.',
+                            icon: 'success',
+                            confirmButtonColor: '#4e73df',
+                            timer: 2000,
+                            timerProgressBar: true
+                        });
+                    } else {
+                        Swal.fire({
+                            title: 'Error',
+                            text: response.message || 'There was an error saving your notification settings.',
+                            icon: 'error',
+                            confirmButtonColor: '#4e73df'
+                        });
+                    }
+                },
+                error: function(xhr, status, error) {
+                    Swal.fire({
+                        title: 'Error',
+                        text: 'There was an error saving your notification settings.',
+                        icon: 'error',
+                        confirmButtonColor: '#4e73df'
+                    });
+                    console.error("Error saving notification settings:", error);
+                },
+                complete: function() {
+                    // Reset button
+                    document.getElementById('saveNotificationSettings').disabled = false;
+                    document.getElementById('saveNotificationSettings').innerHTML = '<i class="fas fa-save me-1"></i> Save Settings';
+                }
+            });
+        });
+        
+        // Handle refresh button
+        document.getElementById('refreshNotifications').addEventListener('click', function() {
+            // Reload the current page
+            window.location.reload();
+        });
+        
+        // Set search value from URL if present
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.has('search')) {
+            document.getElementById('searchNotifications').value = urlParams.get('search');
+        }
+        
+        // Set active filter from URL if present
+        if (urlParams.has('filter')) {
+            const filter = urlParams.get('filter');
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.classList.remove('active');
+                if (btn.dataset.filter === filter) {
+                    btn.classList.add('active');
+                }
+            });
+        }
+    });
+</script>
+{% endblock %}

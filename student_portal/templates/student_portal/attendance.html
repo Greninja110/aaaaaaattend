@@ -1,0 +1,426 @@
+{% extends 'student_portal/base_student.html' %}
+{% load static %}
+
+{% block student_title %}Attendance Details{% endblock %}
+
+{% block student_content %}
+<div class="container-fluid py-4">
+    <!-- Page Header -->
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+        <h2 class="h3 mb-0">Attendance Details</h2>
+        <div>
+            <button type="button" class="btn btn-sm btn-primary" id="printReport">
+                <i class="fas fa-print mr-1"></i> Print
+            </button>
+            <button type="button" class="btn btn-sm btn-outline-primary" id="downloadReport">
+                <i class="fas fa-download mr-1"></i> Download
+            </button>
+        </div>
+    </div>
+    
+    <!-- Filter Section -->
+    <div class="card shadow mb-4 dashboard-card">
+        <div class="card-header py-3">
+            <h6 class="m-0 font-weight-bold">Filters</h6>
+        </div>
+        <div class="card-body">
+            <form id="attendanceFilterForm" class="row g-3" method="get">
+                <div class="col-md-3">
+                    <label for="subjectFilter" class="form-label">Subject</label>
+                    <select class="form-select" id="subjectFilter" name="subject">
+                        <option value="">All Subjects</option>
+                        {% for subject in all_subjects %}
+                            <option value="{{ subject.id }}" {% if selected_subject == subject.id %}selected{% endif %}>
+                                {{ subject.subject_code }} - {{ subject.subject_name }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <label for="monthFilter" class="form-label">Month</label>
+                    <select class="form-select" id="monthFilter" name="month">
+                        <option value="">All Months</option>
+                        {% for month in months %}
+                            <option value="{{ month.value }}" {% if selected_month == month.value %}selected{% endif %}>
+                                {{ month.name }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <label for="statusFilter" class="form-label">Status</label>
+                    <select class="form-select" id="statusFilter" name="status">
+                        <option value="">All Status</option>
+                        <option value="present" {% if selected_status == 'present' %}selected{% endif %}>Present</option>
+                        <option value="absent" {% if selected_status == 'absent' %}selected{% endif %}>Absent</option>
+                        <option value="leave" {% if selected_status == 'leave' %}selected{% endif %}>On Leave</option>
+                    </select>
+                </div>
+                <div class="col-md-3 d-flex align-items-end">
+                    <button type="submit" class="btn btn-primary w-100" id="applyFilters">
+                        <i class="fas fa-filter mr-1"></i> Apply Filters
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <!-- Overall Attendance Summary -->
+    <div class="row mb-4">
+        <div class="col-md-12">
+            <div class="card shadow dashboard-card">
+                <div class="card-header py-3 d-flex justify-content-between align-items-center">
+                    <h6 class="m-0 font-weight-bold">Overall Attendance Summary</h6>
+                    <div class="text-right">
+                        <span class="badge bg-primary p-2">Current Semester: {{ student.current_semester }}</span>
+                        <span class="badge bg-secondary p-2">Academic Year: {{ current_academic_year }}</span>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="chart-container" style="position: relative; height:250px;">
+                                <canvas id="overallAttendanceChart"></canvas>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="attendance-summary-stats">
+                                <div class="row">
+                                    <div class="col-6 mb-4">
+                                        <div class="stat-item">
+                                            <h5>{{ overall_percentage }}%</h5>
+                                            <p>Overall Attendance</p>
+                                            <div class="progress" style="height: 5px;">
+                                                <div class="progress-bar bg-primary" role="progressbar" style="width: {{ overall_percentage }}%"></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-6 mb-4">
+                                        <div class="stat-item">
+                                            <h5>75%</h5>
+                                            <p>Required Threshold</p>
+                                            <div class="progress" style="height: 5px;">
+                                                <div class="progress-bar bg-danger" role="progressbar" style="width: 75%"></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-6 mb-4">
+                                        <div class="stat-item">
+                                            <h5>{{ total_classes }}</h5>
+                                            <p>Total Classes</p>
+                                        </div>
+                                    </div>
+                                    <div class="col-6 mb-4">
+                                        <div class="stat-item">
+                                            <h5>{{ classes_attended }}</h5>
+                                            <p>Classes Attended</p>
+                                        </div>
+                                    </div>
+                                    <div class="col-6">
+                                        <div class="stat-item">
+                                            <h5>{{ classes_missed }}</h5>
+                                            <p>Classes Missed</p>
+                                        </div>
+                                    </div>
+                                    <div class="col-6">
+                                        <div class="stat-item">
+                                            <h5>{{ leaves_approved }}</h5>
+                                            <p>Approved Leaves</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Subject-wise Attendance Table -->
+    <div class="card shadow mb-4 dashboard-card">
+        <div class="card-header py-3">
+            <h6 class="m-0 font-weight-bold">Subject-wise Attendance</h6>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-striped" id="subjectAttendanceTable">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Subject Code</th>
+                            <th>Subject Name</th>
+                            <th>Total Classes</th>
+                            <th>Present</th>
+                            <th>Absent</th>
+                            <th>Leave</th>
+                            <th>Percentage</th>
+                            <th>Status</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for subject in subject_attendance %}
+                        <tr>
+                            <td>{{ subject.subject_code }}</td>
+                            <td>{{ subject.subject_name }}</td>
+                            <td>{{ subject.total_classes }}</td>
+                            <td>{{ subject.present_count }}</td>
+                            <td>{{ subject.absent_count }}</td>
+                            <td>{{ subject.leave_count }}</td>
+                            <td>{{ subject.attendance_percentage }}%</td>
+                            <td>
+                                {% if subject.attendance_percentage >= 90 %}
+                                    <span class="badge bg-success">Excellent</span>
+                                {% elif subject.attendance_percentage >= 75 %}
+                                    <span class="badge bg-success">Good</span>
+                                {% elif subject.attendance_percentage >= 70 %}
+                                    <span class="badge bg-warning">Warning</span>
+                                {% else %}
+                                    <span class="badge bg-danger">Critical</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <a href="{% url 'student_portal:subject_attendance' subject.id %}" class="btn btn-sm btn-primary">Details</a>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="9" class="text-center">No subject attendance data available</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Recent Attendance Records -->
+    <div class="card shadow mb-4 dashboard-card">
+        <div class="card-header py-3 d-flex justify-content-between align-items-center">
+            <h6 class="m-0 font-weight-bold">Recent Attendance Records</h6>
+            <a href="#" class="btn btn-sm btn-outline-primary" id="viewAllRecords">View All Records</a>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover" id="recentAttendanceTable">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Date</th>
+                            <th>Subject</th>
+                            <th>Time</th>
+                            <th>Faculty</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for record in recent_attendance %}
+                        <tr>
+                            <td>{{ record.date }}</td>
+                            <td>{{ record.subject_name }}</td>
+                            <td>{{ record.start_time }} - {{ record.end_time }}</td>
+                            <td>{{ record.faculty_name }}</td>
+                            <td>
+                                {% if record.status == 'present' %}
+                                    <span class="badge bg-success">Present</span>
+                                {% elif record.status == 'absent' %}
+                                    <span class="badge bg-danger">Absent</span>
+                                {% elif record.status == 'leave' %}
+                                    <span class="badge bg-secondary">On Leave</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="5" class="text-center">No recent attendance records found</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block student_custom_css %}
+<style>
+    /* Stats styling */
+    .attendance-summary-stats {
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+    }
+    
+    .stat-item {
+        padding: 10px;
+        border-radius: 5px;
+        background-color: #f8f9fc;
+        height: 100%;
+    }
+    
+    .stat-item h5 {
+        font-size: 1.5rem;
+        font-weight: 700;
+        margin-bottom: 5px;
+        color: #4e73df;
+    }
+    
+    .stat-item p {
+        margin-bottom: 10px;
+        color: #5a5c69;
+        font-size: 0.85rem;
+    }
+    
+    /* Table customization */
+    #subjectAttendanceTable th, 
+    #recentAttendanceTable th {
+        font-weight: 600;
+        color: #4e73df;
+    }
+    
+    /* Status badges */
+    .badge {
+        padding: 0.5em 0.75em;
+        font-weight: 500;
+    }
+</style>
+{% endblock %}
+
+{% block student_custom_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        try {
+            // Log page load
+            logToFile('Attendance page loaded');
+            
+            // Initialize DataTables
+            $('#subjectAttendanceTable').DataTable({
+                ordering: true,
+                paging: false,
+                info: false,
+                searching: false
+            });
+            
+            $('#recentAttendanceTable').DataTable({
+                ordering: true,
+                pageLength: 10,
+                lengthMenu: [5, 10, 25, 50],
+                language: {
+                    search: "_INPUT_",
+                    searchPlaceholder: "Search records..."
+                }
+            });
+            
+            // Initialize Overall Attendance Doughnut Chart
+            const overallChartCtx = document.getElementById('overallAttendanceChart').getContext('2d');
+            
+            const overallAttendanceChart = new Chart(overallChartCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Present', 'Absent', 'On Leave'],
+                    datasets: [{
+                        data: [{{ classes_attended }}, {{ classes_missed }}, {{ leaves_approved }}],
+                        backgroundColor: ['#1cc88a', '#e74a3b', '#f6c23e'],
+                        hoverBackgroundColor: ['#17a673', '#d52a1a', '#dda20a'],
+                        hoverBorderColor: "rgba(234, 236, 244, 1)",
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    cutout: '70%',
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                usePointStyle: true,
+                                padding: 20
+                            }
+                        },
+                        tooltip: {
+                            titleFont: {
+                                size: 14
+                            },
+                            bodyFont: {
+                                size: 14
+                            },
+                            callbacks: {
+                                label: function(context) {
+                                    const label = context.label || '';
+                                    const value = context.raw;
+                                    const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                                    const percentage = Math.round((value / total) * 100);
+                                    return `${label}: ${value} (${percentage}%)`;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+            
+            // Handle print report button
+            document.getElementById('printReport').addEventListener('click', function() {
+                logToFile('Print attendance report requested');
+                window.print();
+            });
+            
+            // Handle download report button
+            document.getElementById('downloadReport').addEventListener('click', function() {
+                logToFile('Download attendance report requested');
+                
+                Swal.fire({
+                    title: 'Download Report',
+                    text: 'Select format to download the attendance report',
+                    icon: 'info',
+                    showCancelButton: true,
+                    confirmButtonColor: '#4e73df',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'PDF',
+                    cancelButtonText: 'Excel'
+                }).then((result) => {
+                    if (result.isConfirmed || result.dismiss === Swal.DismissReason.cancel) {
+                        let format = result.isConfirmed ? 'PDF' : 'Excel';
+                        
+                        // In a real app, you'd make an AJAX call here to get the report
+                        const url = `{% url 'student_portal:attendance' %}?export=${format.toLowerCase()}&subject=${document.getElementById('subjectFilter').value}&month=${document.getElementById('monthFilter').value}&status=${document.getElementById('statusFilter').value}`;
+                        
+                        logToFile(`Attendance report download started in ${format} format`);
+                        
+                        Swal.fire({
+                            title: 'Downloading...',
+                            html: `Preparing your ${format} report...`,
+                            timer: 2000,
+                            timerProgressBar: true,
+                            didOpen: () => {
+                                Swal.showLoading();
+                            }
+                        }).then(() => {
+                            logToFile(`Attendance report download completed in ${format} format`);
+                            
+                            Swal.fire({
+                                title: 'Success!',
+                                text: `${format} report has been downloaded.`,
+                                icon: 'success',
+                                confirmButtonColor: '#4e73df'
+                            });
+                        });
+                    }
+                });
+            });
+            
+            // Handle view all records button
+            document.getElementById('viewAllRecords').addEventListener('click', function(e) {
+                e.preventDefault();
+                
+                // Show full attendance history in a modal or redirect to a dedicated page
+                window.location.href = "{% url 'student_portal:attendance_history' %}";
+            });
+            
+        } catch (error) {
+            logToFile(`Error in attendance page: ${error.message}`, 'error');
+            console.error("An error occurred:", error);
+        }
+    });
+</script>
+{% endblock %}

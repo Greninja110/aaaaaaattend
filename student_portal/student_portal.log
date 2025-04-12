@@ -1,0 +1,17 @@
+2025-03-25 09:59:26,702 - student_portal.views - INFO - Saving preferences for user student: theme=dark, view=dashboard
+2025-03-25 09:59:28,997 - student_portal.views - INFO - Saving preferences for user student: theme=blue, view=dashboard
+2025-03-25 10:27:34,918 - student_portal.views - ERROR - Student record not found for user student
+2025-03-25 10:27:38,220 - student_portal.views - ERROR - Student record not found for user student
+2025-03-25 10:27:41,440 - student_portal.views - ERROR - Student record not found for user student
+2025-03-25 10:27:41,898 - student_portal.views - ERROR - Student record not found for user student
+2025-03-25 10:27:50,103 - student_portal.views - ERROR - Student record not found for user student
+2025-03-25 10:27:54,624 - student_portal.views - ERROR - Student record not found for user student
+2025-03-25 10:29:14,028 - student_portal.views - ERROR - Student record not found for user student
+2025-03-25 10:36:56,868 - student_portal.views - ERROR - Student record not found for user student
+2025-03-25 10:36:58,548 - student_portal.views - ERROR - Student record not found for user student
+2025-03-25 10:36:59,938 - student_portal.views - ERROR - Student record not found for user student
+2025-03-25 10:37:00,299 - student_portal.views - ERROR - Student record not found for user student
+2025-03-25 10:37:00,628 - student_portal.views - ERROR - Student record not found for user student
+2025-03-25 10:37:00,938 - student_portal.views - ERROR - Student record not found for user student
+2025-03-25 10:37:01,275 - student_portal.views - ERROR - Student record not found for user student
+2025-03-25 10:37:01,587 - student_portal.views - ERROR - Student record not found for user student

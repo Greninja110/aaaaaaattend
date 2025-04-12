@@ -1,0 +1,152 @@
+{% extends 'admin_portal/base_admin.html' %}
+{% load static %}
+
+{% block admin_title %}Subject Management{% endblock %}
+
+{% block admin_content %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2"><i class="fas fa-book"></i> Subject Management</h1>
+    <div class="btn-toolbar mb-2 mb-md-0">
+        <a href="{% url 'admin_portal:subject_create' %}" class="btn btn-sm btn-primary">
+            <i class="fas fa-plus"></i> Add Subject
+        </a>
+    </div>
+</div>
+
+{% if messages %}
+    {% for message in messages %}
+        <div class="alert {{ message.tags }} alert-dismissible fade show" role="alert">
+            {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    {% endfor %}
+{% endif %}
+
+<!-- Filters -->
+<div class="card shadow mb-4">
+    <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+        <h6 class="m-0 font-weight-bold text-primary">Filter Subjects</h6>
+        <a class="btn btn-sm btn-outline-secondary" href="{% url 'admin_portal:subject_list' %}">
+            <i class="fas fa-sync-alt"></i> Reset
+        </a>
+    </div>
+    <div class="card-body">
+        <form method="get" class="row g-3">
+            <div class="col-md-3">
+                <div class="input-group">
+                    <span class="input-group-text"><i class="fas fa-search"></i></span>
+                    <input type="text" class="form-control" name="search" placeholder="Search by name/code..." value="{{ search_query }}">
+                </div>
+            </div>
+            <div class="col-md-3">
+                <select name="department" class="form-select">
+                    <option value="">All Departments</option>
+                    {% for department in departments %}
+                        <option value="{{ department.department_id }}" {% if department_filter == department.department_id|stringformat:"i" %}selected{% endif %}>
+                            {{ department.department_name }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-2">
+                <select name="semester" class="form-select">
+                    <option value="">All Semesters</option>
+                    {% for semester in semesters %}
+                        <option value="{{ semester }}" {% if semester_filter == semester|stringformat:"i" %}selected{% endif %}>
+                            Semester {{ semester }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-2">
+                <select name="type" class="form-select">
+                    <option value="">All Types</option>
+                    <option value="theory" {% if type_filter == 'theory' %}selected{% endif %}>Theory</option>
+                    <option value="lab" {% if type_filter == 'lab' %}selected{% endif %}>Lab</option>
+                    <option value="elective" {% if type_filter == 'elective' %}selected{% endif %}>Elective</option>
+                </select>
+            </div>
+            <div class="col-md-2">
+                <button type="submit" class="btn btn-primary w-100">Filter</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Subjects Table -->
+<div class="card shadow mb-4">
+    <div class="card-header py-3">
+        <h6 class="m-0 font-weight-bold text-primary">Subjects</h6>
+    </div>
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-bordered table-hover" id="subjectsTable" width="100%" cellspacing="0">
+                <thead>
+                    <tr>
+                        <th>Code</th>
+                        <th>Subject Name</th>
+                        <th>Department</th>
+                        <th>Semester</th>
+                        <th>Credits</th>
+                        <th>Type</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for subject in subjects %}
+                    <tr>
+                        <td>{{ subject.subject_code }}</td>
+                        <td>{{ subject.subject_name }}</td>
+                        <td>{{ subject.department.department_name }}</td>
+                        <td>{{ subject.semester }}</td>
+                        <td>{{ subject.credits }}</td>
+                        <td>
+                            {% if subject.is_elective %}
+                                <span class="badge bg-info">Elective</span>
+                            {% endif %}
+                            {% if subject.has_theory %}
+                                <span class="badge bg-primary">Theory</span>
+                            {% endif %}
+                            {% if subject.has_lab %}
+                                <span class="badge bg-success">Lab</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <div class="btn-group">
+                                <a href="{% url 'admin_portal:subject_edit' subject.subject_id %}" class="btn btn-sm btn-primary">
+                                    <i class="fas fa-edit"></i>
+                                </a>
+                                <a href="{% url 'admin_portal:subject_delete' subject.subject_id %}" class="btn btn-sm btn-danger">
+                                    <i class="fas fa-trash"></i>
+                                </a>
+                            </div>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="7" class="text-center">No subjects found</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block admin_custom_js %}
+<script>
+    $(document).ready(function() {
+        // Initialize DataTable with sorting disabled since we have server-side filtering
+        $('#subjectsTable').DataTable({
+            "paging": true,
+            "searching": false,  // Disable built-in search since we use our own form
+            "ordering": true,
+            "info": true,
+            "autoWidth": false,
+            "responsive": true,
+            "lengthMenu": [[10, 25, 50, -1], [10, 25, 50, "All"]]
+        });
+    });
+</script>
+{% endblock %}

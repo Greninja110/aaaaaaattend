@@ -1,0 +1,1124 @@
+{% extends 'student_portal/base_student.html' %}
+{% load static %}
+
+{% block student_title %}Leave Application{% endblock %}
+
+{% block student_content %}
+<div class="container-fluid py-4">
+    <!-- Page Header -->
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+        <h2 class="h3 mb-0">Leave Applications</h2>
+        <div>
+            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#newLeaveModal">
+                <i class="fas fa-plus mr-1"></i> New Leave Application
+            </button>
+        </div>
+    </div>
+    
+    <!-- Leave Statistics Cards -->
+    <div class="row mb-4">
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-info shadow h-100 py-2 stats-card">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-info text-uppercase mb-1">
+                                Leave Balance</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">{{ leave_balance }} days</div>
+                            <div class="small text-muted">Academic Year {{ current_academic_year }}</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-calendar-alt fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-success shadow h-100 py-2 stats-card">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
+                                Approved Leaves</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">{{ approved_leaves }} days</div>
+                            <div class="small text-muted">This Semester</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-check-circle fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-warning shadow h-100 py-2 stats-card">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
+                                Pending Leaves</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">{{ pending_leaves }} days</div>
+                            <div class="small text-muted">Awaiting Approval</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-hourglass-half fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-danger shadow h-100 py-2 stats-card">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-danger text-uppercase mb-1">
+                                Rejected Leaves</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">{{ rejected_leaves }} days</div>
+                            <div class="small text-muted">This Semester</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-times-circle fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Pending Applications -->
+    <div class="card shadow mb-4 dashboard-card">
+        <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+            <h6 class="m-0 font-weight-bold">Pending Applications</h6>
+            <div class="dropdown no-arrow">
+                <a class="dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    <i class="fas fa-ellipsis-v fa-sm fa-fw text-gray-400"></i>
+                </a>
+                <div class="dropdown-menu dropdown-menu-right shadow animated--fade-in" aria-labelledby="dropdownMenuLink">
+                    <a class="dropdown-item" href="#" id="exportPendingToExcel"><i class="fas fa-file-excel mr-2"></i>Export to Excel</a>
+                    <a class="dropdown-item" href="#" id="exportPendingToPDF"><i class="fas fa-file-pdf mr-2"></i>Export to PDF</a>
+                    <div class="dropdown-divider"></div>
+                    <a class="dropdown-item" href="#" id="refreshPending"><i class="fas fa-redo-alt mr-2"></i>Refresh</a>
+                </div>
+            </div>
+        </div>
+        <div class="card-body">
+            {% if pending_applications %}
+            <div class="table-responsive">
+                <table class="table table-hover" id="pendingApplicationsTable">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Application ID</th>
+                            <th>From Date</th>
+                            <th>To Date</th>
+                            <th>Duration</th>
+                            <th>Reason</th>
+                            <th>Applied On</th>
+                            <th>Status</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for application in pending_applications %}
+                        <tr>
+                            <td><a href="#" class="text-primary fw-bold view-application" data-id="{{ application.id }}">#{{ application.application_id }}</a></td>
+                            <td>{{ application.start_date }}</td>
+                            <td>{{ application.end_date }}</td>
+                            <td>{{ application.duration }} day{{ application.duration|pluralize }}</td>
+                            <td>{{ application.reason_type }}</td>
+                            <td>{{ application.created_at }}</td>
+                            <td>
+                                {% if application.status == 'pending' %}
+                                    <span class="badge bg-warning">Pending</span>
+                                {% elif application.status == 'faculty_approved' %}
+                                    <span class="badge bg-info">Faculty Approved</span>
+                                {% elif application.status == 'lab_approved' %}
+                                    <span class="badge bg-primary">Lab Approved</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if application.status == 'pending' %}
+                                    <button class="btn btn-sm btn-outline-danger cancel-application" data-id="{{ application.id }}">
+                                        <i class="fas fa-times"></i> Cancel
+                                    </button>
+                                {% else %}
+                                    <button class="btn btn-sm btn-outline-primary view-application" data-id="{{ application.id }}">
+                                        <i class="fas fa-eye"></i> View
+                                    </button>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <div class="text-center py-4">
+                <img src="{% static 'img/illustrations/no-data.svg' %}" alt="No Pending Applications" style="width: 200px; margin-bottom: 20px;">
+                <h5>No Pending Applications</h5>
+                <p class="text-muted">You don't have any pending leave applications at the moment.</p>
+                <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#newLeaveModal">
+                    <i class="fas fa-plus mr-1"></i> Apply for Leave
+                </button>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+    
+    <!-- Previous Applications -->
+    <div class="card shadow mb-4 dashboard-card">
+        <div class="card-header py-3">
+            <h6 class="m-0 font-weight-bold">Leave History</h6>
+        </div>
+        <div class="card-body">
+            <ul class="nav nav-tabs" id="leaveHistoryTabs" role="tablist">
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link active" id="all-tab" data-bs-toggle="tab" data-bs-target="#all-leaves" type="button" role="tab" aria-controls="all-leaves" aria-selected="true">
+                        All
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="approved-tab" data-bs-toggle="tab" data-bs-target="#approved-leaves" type="button" role="tab" aria-controls="approved-leaves" aria-selected="false">
+                        Approved
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="rejected-tab" data-bs-toggle="tab" data-bs-target="#rejected-leaves" type="button" role="tab" aria-controls="rejected-leaves" aria-selected="false">
+                        Rejected
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="cancelled-tab" data-bs-toggle="tab" data-bs-target="#cancelled-leaves" type="button" role="tab" aria-controls="cancelled-leaves" aria-selected="false">
+                        Cancelled
+                    </button>
+                </li>
+            </ul>
+            <div class="tab-content mt-3" id="leaveHistoryTabContent">
+                <div class="tab-pane fade show active" id="all-leaves" role="tabpanel" aria-labelledby="all-tab">
+                    <div class="table-responsive">
+                        <table class="table" id="allLeavesTable">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Application ID</th>
+                                    <th>From Date</th>
+                                    <th>To Date</th>
+                                    <th>Duration</th>
+                                    <th>Reason</th>
+                                    <th>Applied On</th>
+                                    <th>Status</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for application in previous_applications %}
+                                <tr>
+                                    <td><a href="#" class="text-primary fw-bold view-application" data-id="{{ application.id }}">#{{ application.application_id }}</a></td>
+                                    <td>{{ application.start_date }}</td>
+                                    <td>{{ application.end_date }}</td>
+                                    <td>{{ application.duration }} day{{ application.duration|pluralize }}</td>
+                                    <td>{{ application.reason_type }}</td>
+                                    <td>{{ application.created_at }}</td>
+                                    <td>
+                                        {% if application.status == 'approved' %}
+                                            <span class="badge bg-success">Approved</span>
+                                        {% elif application.status == 'rejected' %}
+                                            <span class="badge bg-danger">Rejected</span>
+                                        {% elif application.status == 'cancelled' %}
+                                            <span class="badge bg-secondary">Cancelled</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        <button class="btn btn-sm btn-outline-primary view-application" data-id="{{ application.id }}">
+                                            <i class="fas fa-eye"></i> View
+                                        </button>
+                                    </td>
+                                </tr>
+                                {% empty %}
+                                <tr>
+                                    <td colspan="8" class="text-center">No leave applications found</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="tab-pane fade" id="approved-leaves" role="tabpanel" aria-labelledby="approved-tab">
+                    <!-- This tab content will be populated by JavaScript dynamically -->
+                </div>
+                <div class="tab-pane fade" id="rejected-leaves" role="tabpanel" aria-labelledby="rejected-tab">
+                    <!-- This tab content will be populated by JavaScript dynamically -->
+                </div>
+                <div class="tab-pane fade" id="cancelled-leaves" role="tabpanel" aria-labelledby="cancelled-tab">
+                    <!-- This tab content will be populated by JavaScript dynamically -->
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Leave Guidelines -->
+    <div class="card shadow mb-4 dashboard-card">
+        <div class="card-header py-3">
+            <h6 class="m-0 font-weight-bold">Leave Guidelines</h6>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="guidelines-section">
+                        <h5><i class="fas fa-info-circle text-info me-2"></i> General Information</h5>
+                        <ul class="guidelines-list">
+                            <li>Students are allowed a maximum of {{ leave_limit }} leave days per academic year.</li>
+                            <li>Applications should be submitted at least 3 days before the leave date (except for medical emergencies).</li>
+                            <li>For leaves longer than 3 consecutive days, supporting documents are mandatory.</li>
+                            <li>Medical leaves require a valid medical certificate from a registered doctor.</li>
+                            <li>Leave applications during examination periods are generally not approved unless for serious medical conditions.</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="guidelines-section">
+                        <h5><i class="fas fa-check-circle text-success me-2"></i> Approval Process</h5>
+                        <ol class="guidelines-list">
+                            <li>Student submits leave application through the portal.</li>
+                            <li>Faculty reviews and approves/rejects the application.</li>
+                            <li>For lab sessions, lab assistant's approval is also required.</li>
+                            <li>Student is notified of the decision via email and portal notification.</li>
+                            <li>Approved leaves are marked in the attendance records as "on leave" and do not count towards absence.</li>
+                        </ol>
+                    </div>
+                </div>
+            </div>
+            <div class="alert alert-info mt-3">
+                <i class="fas fa-lightbulb me-2"></i> <strong>Tip:</strong> Upload supporting documents (if any) during the application process to increase your chances of approval.
+            </div>
+        </div>
+    </div>
+    
+    <!-- New Leave Application Modal -->
+    <div class="modal fade" id="newLeaveModal" tabindex="-1" aria-labelledby="newLeaveModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header bg-primary text-white">
+                    <h5 class="modal-title" id="newLeaveModalLabel">New Leave Application</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="leaveApplicationForm" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        <div class="mb-3">
+                            <label for="leaveType" class="form-label">Leave Type <span class="text-danger">*</span></label>
+                            <select class="form-select" id="leaveType" name="leave_type" required>
+                                <option value="">Select Leave Type</option>
+                                {% for leave_type in leave_types %}
+                                    <option value="{{ leave_type.value }}">{{ leave_type.name }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label for="fromDate" class="form-label">From Date <span class="text-danger">*</span></label>
+                                <input type="date" class="form-control" id="fromDate" name="start_date" min="{{ tomorrow|date:'Y-m-d' }}" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="toDate" class="form-label">To Date <span class="text-danger">*</span></label>
+                                <input type="date" class="form-control" id="toDate" name="end_date" min="{{ tomorrow|date:'Y-m-d' }}" required>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="leaveReason" class="form-label">Reason for Leave <span class="text-danger">*</span></label>
+                            <textarea class="form-control" id="leaveReason" name="reason" rows="3" placeholder="Please provide a detailed reason for your leave application" required></textarea>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="supportingDocument" class="form-label">Supporting Document</label>
+                            <input class="form-control" type="file" id="supportingDocument" name="document">
+                            <div class="form-text">Upload medical certificate, event invitation, or any relevant document. (PDF, JPG, PNG only, max size 2MB)</div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label class="form-label">Classes to be missed</label>
+                            <div class="missed-classes-container">
+                                <div class="alert alert-info" id="selectDatesAlert">
+                                    <i class="fas fa-info-circle mr-2"></i> Please select dates to view affected classes
+                                </div>
+                                <div class="table-responsive" id="missedClassesTable" style="display: none;">
+                                    <table class="table table-sm table-bordered">
+                                        <thead class="table-light">
+                                            <tr>
+                                                <th>Select</th>
+                                                <th>Date</th>
+                                                <th>Subject</th>
+                                                <th>Time</th>
+                                                <th>Faculty</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="missedClassesTableBody">
+                                            <!-- This will be populated by JavaScript -->
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="form-check mb-3">
+                            <input class="form-check-input" type="checkbox" id="acknowledgment" name="acknowledgment" required>
+                            <label class="form-check-label" for="acknowledgment">
+                                I understand that submission of false documents or information is a violation of the college code of conduct and may result in disciplinary action.
+                            </label>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary" id="submitLeaveApplication">Submit Application</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Leave Details Modal -->
+    <div class="modal fade" id="leaveDetailsModal" tabindex="-1" aria-labelledby="leaveDetailsModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="leaveDetailsModalLabel">Leave Application Details</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row mb-3">
+                        <div class="col-md-4">
+                            <div class="leave-detail-item">
+                                <h6>Application ID</h6>
+                                <p class="application-id" id="detailApplicationId"></p>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="leave-detail-item">
+                                <h6>Status</h6>
+                                <span class="badge" id="detailStatus"></span>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="leave-detail-item">
+                                <h6>Applied On</h6>
+                                <p class="applied-date" id="detailAppliedDate"></p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="card mb-3">
+                        <div class="card-header leave-detail-header">
+                            <h6>Leave Information</h6>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <div class="leave-detail-item">
+                                        <h6>Leave Type</h6>
+                                        <p class="leave-type" id="detailLeaveType"></p>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="leave-detail-item">
+                                        <h6>From Date</h6>
+                                        <p class="from-date" id="detailFromDate"></p>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="leave-detail-item">
+                                        <h6>To Date</h6>
+                                        <p class="to-date" id="detailToDate"></p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row mt-3">
+                                <div class="col-md-8">
+                                    <div class="leave-detail-item">
+                                        <h6>Reason</h6>
+                                        <p class="leave-reason" id="detailReason"></p>
+                                    </div>
+                                </div>
+                                <div class="col-md-4" id="detailDocumentContainer">
+                                    <div class="leave-detail-item">
+                                        <h6>Supporting Documents</h6>
+                                        <p id="detailDocument"></p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="card mb-3" id="detailMissedClassesCard">
+                        <div class="card-header leave-detail-header">
+                            <h6>Missed Classes</h6>
+                        </div>
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="table table-sm">
+                                    <thead class="table-light">
+                                        <tr>
+                                            <th>Date</th>
+                                            <th>Subject</th>
+                                            <th>Time</th>
+                                            <th>Faculty</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="detailMissedClassesTableBody">
+                                        <!-- Will be populated by JavaScript -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="card mb-3" id="detailApprovalCard">
+                        <div class="card-header leave-detail-header">
+                            <h6>Approval Information</h6>
+                        </div>
+                        <div class="card-body">
+                            <div class="approval-timeline" id="detailApprovalTimeline">
+                                <!-- Will be populated by JavaScript -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-primary me-2" id="downloadLeaveDetails">
+                        <i class="fas fa-download me-1"></i> Download
+                    </button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block student_custom_css %}
+<style>
+    /* Guidelines styling */
+    .guidelines-section {
+        margin-bottom: 20px;
+    }
+    
+    .guidelines-section h5 {
+        margin-bottom: 15px;
+        color: #4e73df;
+    }
+    
+    .guidelines-list {
+        padding-left: 25px;
+    }
+    
+    .guidelines-list li {
+        margin-bottom: 10px;
+        color: #5a5c69;
+    }
+    
+    /* Leave details styling */
+    .leave-detail-item h6 {
+        margin-bottom: 5px;
+        font-size: 0.85rem;
+        color: #888;
+    }
+    
+    .leave-detail-item p {
+        margin-bottom: 0;
+        font-weight: 500;
+    }
+    
+    .leave-detail-header {
+        background-color: #f8f9fc;
+    }
+    
+    .document-link {
+        color: #4e73df;
+        text-decoration: none;
+    }
+    
+    .document-link:hover {
+        text-decoration: underline;
+    }
+    
+    /* Approval timeline */
+    .approval-timeline {
+        position: relative;
+    }
+    
+    .approval-timeline:before {
+        content: '';
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        left: 20px;
+        width: 2px;
+        background-color: #e3e6f0;
+    }
+    
+    .approval-item {
+        position: relative;
+        padding-left: 50px;
+        margin-bottom: 20px;
+    }
+    
+    .approval-item:last-child {
+        margin-bottom: 0;
+    }
+    
+    .approval-icon {
+        position: absolute;
+        left: 10px;
+        top: 0;
+        width: 30px;
+        height: 30px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 12px;
+    }
+    
+    .approval-icon.approved {
+        background-color: #1cc88a;
+    }
+    
+    .approval-icon.pending {
+        background-color: #f6c23e;
+    }
+    
+    .approval-icon.rejected {
+        background-color: #e74a3b;
+    }
+    
+    .approval-content h6 {
+        margin-bottom: 5px;
+        font-size: 0.9rem;
+    }
+    
+    .approval-date {
+        font-size: 0.75rem;
+        color: #888;
+        margin-bottom: 5px;
+    }
+    
+    .approval-comment {
+        font-size: 0.85rem;
+        color: #5a5c69;
+        margin-bottom: 0;
+    }
+</style>
+{% endblock %}
+
+{% block student_custom_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        try {
+            // Log page load
+            logToFile('Leave applications page loaded');
+            
+            // Initialize DataTable for leave history
+            $('#allLeavesTable').DataTable({
+                pageLength: 5,
+                lengthMenu: [5, 10, 25, 50],
+                language: {
+                    search: "_INPUT_",
+                    searchPlaceholder: "Search leave applications..."
+                }
+            });
+            
+            // Initialize DataTable for pending applications
+            $('#pendingApplicationsTable').DataTable({
+                pageLength: 5,
+                lengthMenu: [5, 10, 25],
+                language: {
+                    search: "_INPUT_",
+                    searchPlaceholder: "Search pending applications..."
+                }
+            });
+            
+            // Date validation
+            const fromDateInput = document.getElementById('fromDate');
+            const toDateInput = document.getElementById('toDate');
+            
+            fromDateInput.addEventListener('change', function() {
+                toDateInput.min = this.value;
+                if (toDateInput.value && new Date(toDateInput.value) < new Date(this.value)) {
+                    toDateInput.value = this.value;
+                }
+                
+                fetchMissedClasses();
+            });
+            
+            toDateInput.addEventListener('change', function() {
+                fetchMissedClasses();
+            });
+            
+            // Fetch missed classes based on selected dates
+            function fetchMissedClasses() {
+                const fromDate = document.getElementById('fromDate').value;
+                const toDate = document.getElementById('toDate').value;
+                
+                if (!fromDate || !toDate) return;
+                
+                logToFile(`Fetching missed classes for dates: ${fromDate} to ${toDate}`);
+                
+                // In a real app, this would make an AJAX call to get the list of classes
+                // For demonstration, we'll show a loading indicator
+                
+                document.getElementById('selectDatesAlert').style.display = 'none';
+                document.getElementById('missedClassesTable').style.display = 'block';
+                document.getElementById('missedClassesTableBody').innerHTML = '<tr><td colspan="5" class="text-center"><div class="spinner-border spinner-border-sm text-primary" role="status"></div> Loading classes...</td></tr>';
+                
+                // Simulate AJAX call
+                setTimeout(() => {
+                    // Get date range
+                    const start = new Date(fromDate);
+                    const end = new Date(toDate);
+                    const dateArray = [];
+                    
+                    // Create date range array
+                    let currentDate = new Date(start);
+                    while (currentDate <= end) {
+                        dateArray.push(new Date(currentDate));
+                        currentDate.setDate(currentDate.getDate() + 1);
+                    }
+                    
+                    // Generate sample classes
+                    let tableHtml = '';
+                    const subjects = ['Operating Systems', 'Computer Networks', 'Database Systems', 'Web Development', 'Artificial Intelligence'];
+                    const faculties = ['Prof. Mehta', 'Prof. Sharma', 'Prof. Joshi', 'Prof. Kumar', 'Prof. Gupta'];
+                    const timeslots = ['9:00 - 10:00 AM', '10:00 - 11:00 AM', '11:15 - 12:15 PM', '1:00 - 3:00 PM', '3:15 - 4:15 PM'];
+                    
+                    // Format dates and create rows
+                    dateArray.forEach((date, index) => {
+                        const dayOfWeek = date.toLocaleDateString('en-US', { weekday: 'long' });
+                        const formattedDate = date.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
+                        
+                        // Skip weekends
+                        if (dayOfWeek === 'Sunday') return;
+                        
+                        // Generate 1-3 classes per day
+                        const classCount = Math.floor(Math.random() * 3) + 1;
+                        
+                        for (let i = 0; i < classCount; i++) {
+                            const subjectIndex = (index + i) % subjects.length;
+                            
+                            tableHtml += `
+                            <tr>
+                                <td><input type="checkbox" class="form-check-input" name="missed_classes" value="${formattedDate}-${subjectIndex}" checked></td>
+                                <td>${formattedDate} (${dayOfWeek})</td>
+                                <td>${subjects[subjectIndex]}</td>
+                                <td>${timeslots[subjectIndex]}</td>
+                                <td>${faculties[subjectIndex]}</td>
+                            </tr>
+                            `;
+                        }
+                    });
+                    
+                    // If no classes found
+                    if (tableHtml === '') {
+                        tableHtml = '<tr><td colspan="5" class="text-center">No classes found for the selected date range</td></tr>';
+                    }
+                    
+                    document.getElementById('missedClassesTableBody').innerHTML = tableHtml;
+                    
+                    logToFile('Missed classes fetched successfully');
+                    
+                }, 1000);
+            }
+            
+            // Handle leave submission
+            document.getElementById('submitLeaveApplication').addEventListener('click', function() {
+                const form = document.getElementById('leaveApplicationForm');
+                
+                // Check if the form is valid
+                if (!form.checkValidity()) {
+                    form.reportValidity();
+                    return;
+                }
+                
+                // Get form values
+                const leaveType = document.getElementById('leaveType').value;
+                const fromDate = document.getElementById('fromDate').value;
+                const toDate = document.getElementById('toDate').value;
+                const reason = document.getElementById('leaveReason').value;
+                
+                logToFile(`Submitting leave application: ${leaveType} from ${fromDate} to ${toDate}`);
+                
+                // Create FormData object
+                const formData = new FormData(form);
+                
+                // In a real app, you would submit formData via AJAX
+                // For demonstration purposes, we'll simulate a submission
+                
+                Swal.fire({
+                    title: 'Submitting Application',
+                    html: 'Please wait while we submit your leave application...',
+                    timer: 2000,
+                    timerProgressBar: true,
+                    didOpen: () => {
+                        Swal.showLoading();
+                    }
+                }).then(() => {
+                    logToFile('Leave application submitted successfully');
+                    
+                    Swal.fire({
+                        title: 'Application Submitted!',
+                        text: 'Your leave application has been submitted successfully. You will be notified once it has been reviewed.',
+                        icon: 'success',
+                        confirmButtonColor: '#4e73df'
+                    }).then(() => {
+                        // Close the modal and refresh
+                        $('#newLeaveModal').modal('hide');
+                        window.location.reload();
+                    });
+                });
+            });
+            
+            // View application details
+            $('.view-application').on('click', function(e) {
+                e.preventDefault();
+                
+                const applicationId = $(this).data('id');
+                logToFile(`Viewing leave application details: ID ${applicationId}`);
+                
+                // In a real app, you would fetch the application details via AJAX
+                // For demonstration, we'll simulate loading application details
+                
+                Swal.fire({
+                    title: 'Loading',
+                    html: 'Fetching application details...',
+                    timer: 1000,
+                    timerProgressBar: true,
+                    didOpen: () => {
+                        Swal.showLoading();
+                    }
+                }).then(() => {
+                    // Sample application data (in a real app, this would come from the server)
+                    const applicationData = {
+                        id: applicationId,
+                        application_id: 'LA' + (1000000 + applicationId).toString().substring(1),
+                        status: ['pending', 'faculty_approved', 'approved', 'rejected'][applicationId % 4],
+                        applied_date: 'Apr 5, 2025',
+                        leave_type: 'Medical Leave',
+                        from_date: 'Apr 10, 2025',
+                        to_date: 'Apr 12, 2025',
+                        reason: 'I was suffering from high fever and headache. Doctor has advised bed rest for three days.',
+                        document: 'Medical_Certificate.pdf',
+                        missed_classes: [
+                            { date: 'Apr 10, 2025', day: 'Monday', subject: 'Operating Systems', time: '9:00 - 10:00 AM', faculty: 'Prof. Mehta' },
+                            { date: 'Apr 10, 2025', day: 'Monday', subject: 'Computer Networks', time: '10:00 - 11:00 AM', faculty: 'Prof. Sharma' },
+                            { date: 'Apr 11, 2025', day: 'Tuesday', subject: 'Database Systems', time: '9:00 - 10:00 AM', faculty: 'Prof. Joshi' },
+                            { date: 'Apr 12, 2025', day: 'Wednesday', subject: 'Software Engineering', time: '10:00 - 11:00 AM', faculty: 'Prof. Patel' }
+                        ],
+                        approvals: [
+                            { 
+                                role: 'Faculty', 
+                                name: 'Prof. Joshi', 
+                                status: applicationId % 4 > 0 ? 'approved' : 'pending',
+                                date: 'Apr 6, 2025 | 10:25 AM',
+                                comment: 'Approved based on medical certificate.'
+                            },
+                            { 
+                                role: 'Lab Assistant', 
+                                name: 'Mr. Patel', 
+                                status: applicationId % 4 > 1 ? (applicationId % 4 === 3 ? 'rejected' : 'approved') : 'pending',
+                                date: applicationId % 4 > 1 ? 'Apr 6, 2025 | 2:45 PM' : '',
+                                comment: applicationId % 4 === 3 ? 'Rejected due to upcoming lab assessment.' : 'Approved. Lab session will be made up on Apr 16th.'
+                            }
+                        ]
+                    };
+                    
+                    // Fill in application details
+                    document.getElementById('detailApplicationId').textContent = '#' + applicationData.application_id;
+                    
+                    // Set status badge
+                    const statusBadge = document.getElementById('detailStatus');
+                    statusBadge.textContent = applicationData.status === 'pending' ? 'Pending' : 
+                                             applicationData.status === 'faculty_approved' ? 'Faculty Approved' :
+                                             applicationData.status === 'approved' ? 'Approved' : 'Rejected';
+                    statusBadge.className = 'badge ' + 
+                                           (applicationData.status === 'pending' ? 'bg-warning' :
+                                            applicationData.status === 'faculty_approved' ? 'bg-info' :
+                                            applicationData.status === 'approved' ? 'bg-success' : 'bg-danger');
+                    
+                    document.getElementById('detailAppliedDate').textContent = applicationData.applied_date;
+                    document.getElementById('detailLeaveType').textContent = applicationData.leave_type;
+                    document.getElementById('detailFromDate').textContent = applicationData.from_date;
+                    document.getElementById('detailToDate').textContent = applicationData.to_date;
+                    document.getElementById('detailReason').textContent = applicationData.reason;
+                    
+                    // Document
+                    if (applicationData.document) {
+                        document.getElementById('detailDocumentContainer').style.display = 'block';
+                        document.getElementById('detailDocument').innerHTML = `
+                            <a href="#" class="document-link">
+                                <i class="fas fa-file-pdf"></i> ${applicationData.document}
+                            </a>
+                        `;
+                    } else {
+                        document.getElementById('detailDocumentContainer').style.display = 'none';
+                    }
+                    
+                    // Fill missed classes
+                    const missedClassesTableBody = document.getElementById('detailMissedClassesTableBody');
+                    if (applicationData.missed_classes && applicationData.missed_classes.length > 0) {
+                        document.getElementById('detailMissedClassesCard').style.display = 'block';
+                        let missedClassesHtml = '';
+                        
+                        applicationData.missed_classes.forEach(cls => {
+                            missedClassesHtml += `
+                            <tr>
+                                <td>${cls.date} (${cls.day})</td>
+                                <td>${cls.subject}</td>
+                                <td>${cls.time}</td>
+                                <td>${cls.faculty}</td>
+                            </tr>
+                            `;
+                        });
+                        
+                        missedClassesTableBody.innerHTML = missedClassesHtml;
+                    } else {
+                        document.getElementById('detailMissedClassesCard').style.display = 'none';
+                    }
+                    
+                    // Fill approval timeline
+                    const approvalTimeline = document.getElementById('detailApprovalTimeline');
+                    if (applicationData.approvals && applicationData.approvals.length > 0) {
+                        document.getElementById('detailApprovalCard').style.display = 'block';
+                        let approvalsHtml = '';
+                        
+                        applicationData.approvals.forEach(approval => {
+                            approvalsHtml += `
+                            <div class="approval-item">
+                                <div class="approval-icon ${approval.status}">
+                                    <i class="fas ${approval.status === 'approved' ? 'fa-check' : 
+                                                    approval.status === 'rejected' ? 'fa-times' : 
+                                                    'fa-clock'}"></i>
+                                </div>
+                                <div class="approval-content">
+                                    <h6>${approval.role} ${approval.status.charAt(0).toUpperCase() + approval.status.slice(1)} - ${approval.name}</h6>
+                                    ${approval.date ? `<p class="approval-date">${approval.date}</p>` : ''}
+                                    ${approval.comment ? `<p class="approval-comment">${approval.comment}</p>` : 
+                                     approval.status === 'pending' ? '<p class="approval-comment">Awaiting review...</p>' : ''}
+                                </div>
+                            </div>
+                            `;
+                        });
+                        
+                        approvalTimeline.innerHTML = approvalsHtml;
+                    } else {
+                        document.getElementById('detailApprovalCard').style.display = 'none';
+                    }
+                    
+                    // Show modal
+                    $('#leaveDetailsModal').modal('show');
+                    
+                    logToFile('Leave application details loaded successfully');
+                });
+            });
+            
+            // Handle cancel application
+            $('.cancel-application').on('click', function() {
+                const applicationId = $(this).data('id');
+                
+                logToFile(`Cancelling leave application: ID ${applicationId}`);
+                
+                Swal.fire({
+                    title: 'Cancel Application?',
+                    text: `Are you sure you want to cancel this leave application?`,
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#e74a3b',
+                    cancelButtonColor: '#6c757d',
+                    confirmButtonText: 'Yes, cancel it!'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        // In a real app, you would make an AJAX call to cancel the application
+                        
+                        Swal.fire({
+                            title: 'Cancelling Application',
+                            html: 'Please wait...',
+                            timer: 1500,
+                            timerProgressBar: true,
+                            didOpen: () => {
+                                Swal.showLoading();
+                            }
+                        }).then(() => {
+                            logToFile(`Leave application cancelled: ID ${applicationId}`);
+                            
+                            Swal.fire({
+                                title: 'Cancelled!',
+                                text: `Leave application has been cancelled.`,
+                                icon: 'success',
+                                confirmButtonColor: '#4e73df'
+                            }).then(() => {
+                                // Refresh the page or update UI
+                                window.location.reload();
+                            });
+                        });
+                    }
+                });
+            });
+            
+            // Handle download leave details
+            document.getElementById('downloadLeaveDetails').addEventListener('click', function() {
+                logToFile('Download leave details requested');
+                
+                Swal.fire({
+                    title: 'Downloading...',
+                    html: 'Preparing PDF document...',
+                    timer: 2000,
+                    timerProgressBar: true,
+                    didOpen: () => {
+                        Swal.showLoading();
+                    }
+                }).then(() => {
+                    logToFile('Leave details downloaded successfully');
+                    
+                    Swal.fire({
+                        title: 'Download Complete!',
+                        text: 'The leave application details have been downloaded.',
+                        icon: 'success',
+                        confirmButtonColor: '#4e73df'
+                    });
+                });
+            });
+            
+            // Handle tabbed content for leave history
+            $('button[data-bs-toggle="tab"]').on('shown.bs.tab', function (e) {
+                const targetId = $(e.target).attr('id');
+                
+                logToFile(`Leave history tab changed to: ${targetId}`);
+                
+                // In a real app, you would fetch the filtered data or filter client-side
+                // For demonstration, we'll show a loading indicator
+                
+                Swal.fire({
+                    title: 'Loading',
+                    html: 'Fetching application history...',
+                    timer: 1000,
+                    timerProgressBar: true,
+                    didOpen: () => {
+                        Swal.showLoading();
+                    }
+                }).then(() => {
+                    // Clone the all leaves table for other tabs
+                    if (targetId === 'approved-tab') {
+                        if (!$('#approvedLeavesTable').length) {
+                            const approvedTable = $('#allLeavesTable').clone().attr('id', 'approvedLeavesTable');
+                            $('#approved-leaves').html(approvedTable);
+                            
+                            // Initialize DataTable
+                            $('#approvedLeavesTable').DataTable({
+                                pageLength: 5,
+                                lengthMenu: [5, 10, 25, 50]
+                            });
+                            
+                            // Filter to show only approved leaves
+                            $('#approvedLeavesTable').DataTable().column(6).search('Approved').draw();
+                        }
+                    } else if (targetId === 'rejected-tab') {
+                        if (!$('#rejectedLeavesTable').length) {
+                            const rejectedTable = $('#allLeavesTable').clone().attr('id', 'rejectedLeavesTable');
+                            $('#rejected-leaves').html(rejectedTable);
+                            
+                            // Initialize DataTable
+                            $('#rejectedLeavesTable').DataTable({
+                                pageLength: 5,
+                                lengthMenu: [5, 10, 25, 50]
+                            });
+                            
+                            // Filter to show only rejected leaves
+                            $('#rejectedLeavesTable').DataTable().column(6).search('Rejected').draw();
+                        }
+                    } else if (targetId === 'cancelled-tab') {
+                        if (!$('#cancelledLeavesTable').length) {
+                            const cancelledTable = $('#allLeavesTable').clone().attr('id', 'cancelledLeavesTable');
+                            $('#cancelled-leaves').html(cancelledTable);
+                            
+                            // Initialize DataTable
+                            $('#cancelledLeavesTable').DataTable({
+                                pageLength: 5,
+                                lengthMenu: [5, 10, 25, 50]
+                            });
+                            
+                            // Filter to show only cancelled leaves
+                            $('#cancelledLeavesTable').DataTable().column(6).search('Cancelled').draw();
+                        }
+                    }
+                    
+                    logToFile('Leave history tab data loaded successfully');
+                });
+            });
+            
+            // Handle export buttons
+            $('#exportPendingToExcel, #exportPendingToPDF').on('click', function(e) {
+                e.preventDefault();
+                
+                const format = this.id === 'exportPendingToExcel' ? 'Excel' : 'PDF';
+                
+                logToFile(`Export pending applications to ${format} requested`);
+                
+                Swal.fire({
+                    title: 'Exporting...',
+                    html: `Preparing ${format} file...`,
+                    timer: 2000,
+                    timerProgressBar: true,
+                    didOpen: () => {
+                        Swal.showLoading();
+                    }
+                }).then(() => {
+                    logToFile(`Export pending applications to ${format} completed`);
+                    
+                    Swal.fire({
+                        title: 'Export Complete!',
+                        text: `The pending applications have been exported to ${format}.`,
+                        icon: 'success',
+                        confirmButtonColor: '#4e73df'
+                    });
+                });
+            });
+            
+            // Handle refresh button
+            $('#refreshPending').on('click', function(e) {
+                e.preventDefault();
+                
+                logToFile('Refresh pending applications requested');
+                
+                Swal.fire({
+                    title: 'Refreshing...',
+                    html: 'Fetching latest applications...',
+                    timer: 1500,
+                    timerProgressBar: true,
+                    didOpen: () => {
+                        Swal.showLoading();
+                    }
+                }).then(() => {
+                    logToFile('Pending applications refreshed successfully');
+                    
+                    Swal.fire({
+                        title: 'Refreshed!',
+                        text: 'The pending applications have been refreshed.',
+                        icon: 'success',
+                        confirmButtonColor: '#4e73df',
+                        timer: 1500,
+                        timerProgressBar: true,
+                        showConfirmButton: false
+                    });
+                });
+            });
+            
+        } catch (error) {
+            logToFile(`Error in leave applications page: ${error.message}`, 'error');
+            console.error("An error occurred:", error);
+        }
+    });
+</script>
+{% endblock %}

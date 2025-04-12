@@ -1,0 +1,221 @@
+{% extends 'admin_portal/base_admin.html' %}
+{% load static %}
+
+{% block admin_title %}System Logs{% endblock %}
+
+{% block admin_content %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2"><i class="fas fa-history"></i> System Logs</h1>
+    <div class="btn-toolbar mb-2 mb-md-0">
+        <form method="get" action="{% url 'admin_portal:export_system_logs' %}" class="me-2">
+            <!-- Pass current filters to export -->
+            {% if search_query %}<input type="hidden" name="search" value="{{ search_query }}">{% endif %}
+            {% if user_filter %}<input type="hidden" name="user" value="{{ user_filter }}">{% endif %}
+            {% if action_filter %}<input type="hidden" name="action" value="{{ action_filter }}">{% endif %}
+            {% if date_from %}<input type="hidden" name="date_from" value="{{ date_from }}">{% endif %}
+            {% if date_to %}<input type="hidden" name="date_to" value="{{ date_to }}">{% endif %}
+            <button type="submit" class="btn btn-sm btn-success">
+                <i class="fas fa-file-csv"></i> Export to CSV
+            </button>
+        </form>
+        <button type="button" class="btn btn-sm btn-primary" data-bs-toggle="collapse" data-bs-target="#filterCollapse">
+            <i class="fas fa-filter"></i> Filter Logs
+        </button>
+    </div>
+</div>
+
+{% if messages %}
+    {% for message in messages %}
+        <div class="alert {{ message.tags }} alert-dismissible fade show" role="alert">
+            {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    {% endfor %}
+{% endif %}
+
+<!-- Filters -->
+<div class="card shadow mb-4 collapse {% if search_query or user_filter or action_filter or date_from or date_to %}show{% endif %}" id="filterCollapse">
+    <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+        <h6 class="m-0 font-weight-bold text-primary">Filter System Logs</h6>
+        <a class="btn btn-sm btn-outline-secondary" href="{% url 'admin_portal:system_logs' %}">
+            <i class="fas fa-sync-alt"></i> Reset
+        </a>
+    </div>
+    <div class="card-body">
+        <form method="get" class="row g-3">
+            <div class="col-md-4">
+                <label for="search" class="form-label">Search</label>
+                <div class="input-group">
+                    <span class="input-group-text"><i class="fas fa-search"></i></span>
+                    <input type="text" class="form-control" id="search" name="search" 
+                           placeholder="Search in actions or details..." value="{{ search_query }}">
+                </div>
+            </div>
+            <div class="col-md-4">
+                <label for="user" class="form-label">User</label>
+                <select name="user" id="user" class="form-select">
+                    <option value="">All Users</option>
+                    {% for user_obj in users %}
+                        <option value="{{ user_obj.user_id }}" {% if user_filter == user_obj.user_id|stringformat:"i" %}selected{% endif %}>
+                            {{ user_obj.full_name }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-4">
+                <label for="action" class="form-label">Action</label>
+                <select name="action" id="action" class="form-select">
+                    <option value="">All Actions</option>
+                    {% for action in common_actions %}
+                        <option value="{{ action.action }}" {% if action_filter == action.action %}selected{% endif %}>
+                            {{ action.action }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-4">
+                <label for="date_from" class="form-label">Date From</label>
+                <input type="date" class="form-control" id="date_from" name="date_from" value="{{ date_from }}">
+            </div>
+            <div class="col-md-4">
+                <label for="date_to" class="form-label">Date To</label>
+                <input type="date" class="form-control" id="date_to" name="date_to" value="{{ date_to }}">
+            </div>
+            <div class="col-md-4 d-flex align-items-end">
+                <button type="submit" class="btn btn-primary w-100">
+                    <i class="fas fa-filter"></i> Apply Filters
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Logs Table -->
+<div class="card shadow mb-4">
+    <div class="card-header py-3">
+        <h6 class="m-0 font-weight-bold text-primary">System Logs</h6>
+    </div>
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-bordered table-hover" id="logsTable" width="100%" cellspacing="0">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>User</th>
+                        <th>Action</th>
+                        <th>Details</th>
+                        <th>IP Address</th>
+                        <th>Timestamp</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for log in page_obj %}
+                    <tr>
+                        <td>{{ log.log_id }}</td>
+                        <td>{{ log.user.full_name }}</td>
+                        <td>{{ log.action }}</td>
+                        <td>{{ log.details|default:"-" }}</td>
+                        <td>{{ log.ip_address|default:"-" }}</td>
+                        <td>{{ log.created_at }}</td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="6" class="text-center">No logs found</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        
+        <!-- Pagination -->
+        {% if page_obj.has_other_pages %}
+        <nav aria-label="Page navigation">
+            <ul class="pagination justify-content-center mt-4">
+                {% if page_obj.has_previous %}
+                <li class="page-item">
+                    <a class="page-link" href="?page=1{% if search_query %}&search={{ search_query }}{% endif %}{% if user_filter %}&user={{ user_filter }}{% endif %}{% if action_filter %}&action={{ action_filter }}{% endif %}{% if date_from %}&date_from={{ date_from }}{% endif %}{% if date_to %}&date_to={{ date_to }}{% endif %}" aria-label="First">
+                        <span aria-hidden="true">&laquo;&laquo;</span>
+                    </a>
+                </li>
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ page_obj.previous_page_number }}{% if search_query %}&search={{ search_query }}{% endif %}{% if user_filter %}&user={{ user_filter }}{% endif %}{% if action_filter %}&action={{ action_filter }}{% endif %}{% if date_from %}&date_from={{ date_from }}{% endif %}{% if date_to %}&date_to={{ date_to }}{% endif %}" aria-label="Previous">
+                        <span aria-hidden="true">&laquo;</span>
+                    </a>
+                </li>
+                {% else %}
+                <li class="page-item disabled">
+                    <a class="page-link" href="#" aria-label="First">
+                        <span aria-hidden="true">&laquo;&laquo;</span>
+                    </a>
+                </li>
+                <li class="page-item disabled">
+                    <a class="page-link" href="#" aria-label="Previous">
+                        <span aria-hidden="true">&laquo;</span>
+                    </a>
+                </li>
+                {% endif %}
+                
+                {% for i in page_obj.paginator.page_range %}
+                    {% if i > page_obj.number|add:'-3' and i < page_obj.number|add:'3' %}
+                    <li class="page-item {% if page_obj.number == i %}active{% endif %}">
+                        <a class="page-link" href="?page={{ i }}{% if search_query %}&search={{ search_query }}{% endif %}{% if user_filter %}&user={{ user_filter }}{% endif %}{% if action_filter %}&action={{ action_filter }}{% endif %}{% if date_from %}&date_from={{ date_from }}{% endif %}{% if date_to %}&date_to={{ date_to }}{% endif %}">{{ i }}</a>
+                    </li>
+                    {% endif %}
+                {% endfor %}
+                
+                {% if page_obj.has_next %}
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ page_obj.next_page_number }}{% if search_query %}&search={{ search_query }}{% endif %}{% if user_filter %}&user={{ user_filter }}{% endif %}{% if action_filter %}&action={{ action_filter }}{% endif %}{% if date_from %}&date_from={{ date_from }}{% endif %}{% if date_to %}&date_to={{ date_to }}{% endif %}" aria-label="Next">
+                        <span aria-hidden="true">&raquo;</span>
+                    </a>
+                </li>
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}{% if search_query %}&search={{ search_query }}{% endif %}{% if user_filter %}&user={{ user_filter }}{% endif %}{% if action_filter %}&action={{ action_filter }}{% endif %}{% if date_from %}&date_from={{ date_from }}{% endif %}{% if date_to %}&date_to={{ date_to }}{% endif %}" aria-label="Last">
+                        <span aria-hidden="true">&raquo;&raquo;</span>
+                    </a>
+                </li>
+                {% else %}
+                <li class="page-item disabled">
+                    <a class="page-link" href="#" aria-label="Next">
+                        <span aria-hidden="true">&raquo;</span>
+                    </a>
+                </li>
+                <li class="page-item disabled">
+                    <a class="page-link" href="#" aria-label="Last">
+                        <span aria-hidden="true">&raquo;&raquo;</span>
+                    </a>
+                </li>
+                {% endif %}
+            </ul>
+        </nav>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
+
+{% block admin_custom_js %}
+<script>
+    $(document).ready(function() {
+        // Initialize DataTable for logs table
+        $('#logsTable').DataTable({
+            "paging": false,  // Disable built-in pagination since we use Django's
+            "searching": false,  // Disable built-in search since we use our own form
+            "ordering": true,
+            "info": false,
+            "autoWidth": false,
+            "responsive": true
+        });
+
+        // Date range validation
+        $('#date_from, #date_to').on('change', function() {
+            const dateFrom = $('#date_from').val();
+            const dateTo = $('#date_to').val();
+            
+            if (dateFrom && dateTo && dateFrom > dateTo) {
+                alert('Date From cannot be later than Date To');
+                $(this).val('');
+            }
+        });
+    });
+</script>
+{% endblock %}

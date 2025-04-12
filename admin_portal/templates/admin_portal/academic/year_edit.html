@@ -1,0 +1,156 @@
+{% extends 'admin_portal/base_admin.html' %}
+{% load static %}
+
+{% block admin_title %}Edit Academic Year{% endblock %}
+
+{% block admin_content %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2"><i class="fas fa-calendar-alt"></i> Edit Academic Year</h1>
+    <div class="btn-toolbar mb-2 mb-md-0">
+        <a href="{% url 'admin_portal:academic_year_list' %}" class="btn btn-sm btn-secondary">
+            <i class="fas fa-arrow-left"></i> Back to Academic Years
+        </a>
+    </div>
+</div>
+
+{% if messages %}
+    {% for message in messages %}
+        <div class="alert {{ message.tags }} alert-dismissible fade show" role="alert">
+            {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    {% endfor %}
+{% endif %}
+
+<div class="row">
+    <div class="col-md-7">
+        <div class="card shadow mb-4">
+            <div class="card-header py-3 d-flex justify-content-between align-items-center">
+                <h6 class="m-0 font-weight-bold text-primary">Academic Year Information</h6>
+                <div>
+                    {% if not academic_year.is_current %}
+                    <a href="{% url 'admin_portal:set_current_academic_year' academic_year.academic_year_id %}" class="btn btn-sm btn-success">
+                        <i class="fas fa-check"></i> Set as Current
+                    </a>
+                    {% endif %}
+                    <a href="{% url 'admin_portal:academic_year_delete' academic_year.academic_year_id %}" class="btn btn-sm btn-danger">
+                        <i class="fas fa-trash"></i> Delete
+                    </a>
+                </div>
+            </div>
+            <div class="card-body">
+                <form method="post" class="needs-validation" novalidate>
+                    {% csrf_token %}
+                    
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label for="{{ form.year_start.id_for_label }}" class="form-label">Start Year</label>
+                            {{ form.year_start }}
+                            <div class="form-text">The starting year (e.g., 2023)</div>
+                            {% if form.year_start.errors %}
+                            <div class="invalid-feedback d-block">
+                                {{ form.year_start.errors }}
+                            </div>
+                            {% endif %}
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">End Year</label>
+                            <input type="number" class="form-control" id="yearEnd" readonly>
+                            <div class="form-text">Automatically calculated (start year + 1)</div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-check mb-3">
+                        {{ form.is_current }}
+                        <label class="form-check-label" for="{{ form.is_current.id_for_label }}">
+                            Set as Current Academic Year
+                        </label>
+                        <div class="form-text">If checked, this will be set as the current academic year (unsets any previously current year)</div>
+                    </div>
+                    
+                    <div class="mt-4">
+                        <button type="submit" class="btn btn-primary">Update Academic Year</button>
+                        <a href="{% url 'admin_portal:academic_year_list' %}" class="btn btn-secondary">Cancel</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-5">
+        <div class="card shadow mb-4">
+            <div class="card-header py-3">
+                <h6 class="m-0 font-weight-bold text-primary">Academic Year Details</h6>
+            </div>
+            <div class="card-body">
+                <table class="table">
+                    <tr>
+                        <th>Academic Year ID:</th>
+                        <td>{{ academic_year.academic_year_id }}</td>
+                    </tr>
+                    <tr>
+                        <th>Current Format:</th>
+                        <td>{{ academic_year.year_start }}-{{ academic_year.year_end }}</td>
+                    </tr>
+                    <tr>
+                        <th>Status:</th>
+                        <td>
+                            {% if academic_year.is_current %}
+                                <span class="badge bg-success">Current</span>
+                            {% else %}
+                                <span class="badge bg-secondary">Not Current</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                </table>
+                
+                <div class="alert alert-info mt-3">
+                    <i class="fas fa-info-circle"></i> The current academic year is used as the default for reports, timetables, and other system functions.
+                </div>
+            </div>
+        </div>
+        
+        <div class="card shadow mb-4">
+            <div class="card-header py-3">
+                <h6 class="m-0 font-weight-bold text-primary">Related Records</h6>
+            </div>
+            <div class="card-body">
+                <div class="row text-center">
+                    <div class="col-md-4">
+                        <h3 class="text-primary">15</h3>
+                        <p class="small text-muted">Faculty Assignments</p>
+                    </div>
+                    <div class="col-md-4">
+                        <h3 class="text-success">24</h3>
+                        <p class="small text-muted">Timetable Entries</p>
+                    </div>
+                    <div class="col-md-4">
+                        <h3 class="text-info">120</h3>
+                        <p class="small text-muted">Student Enrollments</p>
+                    </div>
+                </div>
+                
+                <div class="alert alert-warning mt-3">
+                    <i class="fas fa-exclamation-triangle"></i> Changing the academic year may affect related records.
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block admin_custom_js %}
+<script>
+    $(document).ready(function() {
+        // Update end year automatically when start year changes
+        $('#{{ form.year_start.id_for_label }}').on('input', function() {
+            const startYear = parseInt($(this).val()) || 0;
+            $('#yearEnd').val(startYear + 1);
+        });
+        
+        // Initialize end year from start year
+        const initialStartYear = parseInt($('#{{ form.year_start.id_for_label }}').val()) || 0;
+        $('#yearEnd').val(initialStartYear + 1);
+    });
+</script>
+{% endblock %}

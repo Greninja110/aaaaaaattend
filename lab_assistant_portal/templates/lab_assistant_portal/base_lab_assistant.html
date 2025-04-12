@@ -1,0 +1,300 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{% block lab_assistant_title %}Lab Assistant Portal{% endblock %} - MBIT Attendance System{% endblock %}
+
+{% block extra_css %}
+<style>
+/* Lab assistant portal specific styles */
+.lab-sidebar {
+    min-height: calc(100vh - 56px);
+    background-color: #343a40;
+    border-right: 1px solid rgba(0, 0, 0, 0.2);
+    box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+    padding-top: 1rem;
+}
+
+.sidebar-sticky {
+    position: sticky;
+    top: 0;
+    height: calc(100vh - 56px);
+    padding-top: 0.5rem;
+    overflow-x: hidden;
+    overflow-y: auto;
+}
+
+.sidebar-heading {
+    color: rgba(255, 255, 255, 0.6);
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    padding-left: 1rem;
+    margin-bottom: 0.5rem;
+}
+
+.lab-nav-link {
+    padding: 0.75rem 1rem;
+    display: block;
+    color: rgba(255, 255, 255, 0.8);
+    text-decoration: none;
+    border-radius: 0;
+    margin-bottom: 2px;
+    transition: all 0.2s ease;
+    border-left: 3px solid transparent;
+}
+
+.lab-nav-link:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+    color: #fff;
+    border-left: 3px solid #f6c23e;
+}
+
+.lab-nav-link.active {
+    background-color: rgba(255, 255, 255, 0.2);
+    color: #fff;
+    border-left: 3px solid #f8f9fc;
+}
+
+.lab-nav-link i {
+    margin-right: 10px;
+    width: 20px;
+    text-align: center;
+    opacity: 0.75;
+}
+
+.lab-nav-link.active i {
+    opacity: 1;
+    color: #f8f9fc;
+}
+
+.lab-content {
+    padding: 1.5rem;
+    background-color: #f8f9fa;
+}
+
+/* Profile section styling */
+.profile-section {
+    text-align: center;
+    margin-bottom: 20px;
+    padding-bottom: 15px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.profile-image {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    margin-bottom: 10px;
+    background-color: rgba(255, 255, 255, 0.1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.profile-name {
+    color: #fff;
+    font-weight: 600;
+    margin-bottom: 5px;
+    font-size: 1rem;
+}
+
+.employee-id {
+    color: rgba(255, 255, 255, 0.5);
+    font-size: 0.8rem;
+    margin-bottom: 0;
+    font-style: normal;
+}
+
+/* Card styles */
+.stats-card {
+    transition: transform 0.3s, box-shadow 0.3s;
+    border-radius: 0.5rem;
+    overflow: hidden;
+}
+
+.stats-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+}
+
+.border-left-primary { border-left: 0.25rem solid #4e73df; }
+.border-left-success { border-left: 0.25rem solid #1cc88a; }
+.border-left-info { border-left: 0.25rem solid #36b9cc; }
+.border-left-warning { border-left: 0.25rem solid #f6c23e; }
+.border-left-danger { border-left: 0.25rem solid #e74a3b; }
+
+/* Progress bars */
+.progress {
+    height: 20px;
+    margin-bottom: 10px;
+    border-radius: 0.35rem;
+}
+
+.progress-bar {
+    line-height: 20px;
+    font-size: 0.85rem;
+    font-weight: 600;
+}
+
+/* Dashboard cards */
+.dashboard-card {
+    border-radius: 0.5rem;
+    border: none;
+    box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.15);
+}
+
+.dashboard-card .card-header {
+    background-color: #f8f9fc;
+    border-bottom: 1px solid #e3e6f0;
+    border-top-left-radius: 0.5rem !important;
+    border-top-right-radius: 0.5rem !important;
+    padding: 0.75rem 1.25rem;
+}
+
+.dashboard-card .card-header h6 {
+    font-weight: 700;
+    font-size: 0.9rem;
+    color: #4e73df;
+}
+
+/* Alert styles */
+.alert-attendance-good {
+    color: #1e7e34;
+    background-color: #d4edda;
+    border-color: #c3e6cb;
+}
+
+.alert-attendance-warning {
+    color: #856404;
+    background-color: #fff3cd;
+    border-color: #ffeeba;
+}
+
+.alert-attendance-danger {
+    color: #721c24;
+    background-color: #f8d7da;
+    border-color: #f5c6cb;
+}
+
+/* Additional custom styles */
+{% block lab_assistant_custom_css %}{% endblock %}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <!-- Sidebar navigation for lab assistant portal -->
+        <nav class="col-md-2 d-none d-md-block lab-sidebar py-3">
+            <div class="sidebar-sticky">
+                <div class="profile-section">
+                    {% if lab_assistant.profile_photo %}
+                        <img src="{{ lab_assistant.profile_photo.url }}" alt="Lab Assistant Profile" class="img-fluid rounded-circle mb-2 profile-image">
+                    {% else %}
+                        <div class="profile-image mx-auto">
+                            <i class="fas fa-user fa-2x text-white-50"></i>
+                        </div>
+                    {% endif %}
+                    <h6 class="profile-name">{{ user.full_name }}</h6>
+                    <p class="employee-id">{{ lab_assistant.employee_id }}</p>
+                </div>
+                
+                <h6 class="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-1">
+                    <span>Lab Assistant Navigation</span>
+                </h6>
+                <ul class="nav flex-column">
+                    <li class="nav-item">
+                        <a class="lab-nav-link {% if active_page == 'dashboard' %}active{% endif %}" href="{% url 'lab_assistant_portal:index' %}">
+                            <i class="fas fa-tachometer-alt"></i> Dashboard
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="lab-nav-link {% if active_page == 'leave_applications' %}active{% endif %}" href="{% url 'lab_assistant_portal:leave_applications' %}">
+                            <i class="fas fa-file-alt"></i> Leave Applications
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="lab-nav-link {% if active_page == 'attendance_exceptions' %}active{% endif %}" href="{% url 'lab_assistant_portal:attendance_exceptions' %}">
+                            <i class="fas fa-exclamation-circle"></i> Attendance Exceptions
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="lab-nav-link {% if active_page == 'lab_schedule' %}active{% endif %}" href="{% url 'lab_assistant_portal:lab_schedule' %}">
+                            <i class="fas fa-flask"></i> Lab Schedule
+                        </a>
+                    </li>
+                </ul>
+                
+                <h6 class="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-1">
+                    <span>Reports & Monitoring</span>
+                </h6>
+                <ul class="nav flex-column">
+                    <li class="nav-item">
+                        <a class="lab-nav-link {% if active_page == 'low_attendance' %}active{% endif %}" href="{% url 'lab_assistant_portal:low_attendance' %}">
+                            <i class="fas fa-user-clock"></i> Low Attendance
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="lab-nav-link {% if active_page == 'reports' %}active{% endif %}" href="{% url 'lab_assistant_portal:reports' %}">
+                            <i class="fas fa-chart-bar"></i> Reports
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="lab-nav-link {% if active_page == 'profile' %}active{% endif %}" href="{% url 'lab_assistant_portal:profile' %}">
+                            <i class="fas fa-user"></i> Profile
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </nav>
+        
+        <main role="main" class="col-md-10 ml-sm-auto col-lg-10 px-4 lab-content">
+            {% block lab_assistant_content %}{% endblock %}
+        </main>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<!-- Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<!-- DataTables JS -->
+<script type="text/javascript" src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
+<!-- SweetAlert2 -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<!-- Additional JS files -->
+{% block lab_assistant_custom_js %}{% endblock %}
+
+<script>
+    // Add global logging function
+    function logToFile(message, type = 'info') {
+        console.log(`[${type.toUpperCase()}] ${new Date().toISOString()}: ${message}`);
+        
+        // In a production app, you might want to send this to a server endpoint
+        // that writes to a log file
+        
+        // AJAX call to log to server
+        $.ajax({
+            url: "{% url 'lab_assistant_portal:log' %}",
+            type: "POST",
+            data: {
+                message: message,
+                type: type,
+                csrfmiddlewaretoken: '{{ csrf_token }}'
+            },
+            success: function(data) {
+                // Success handling (silent)
+            },
+            error: function(xhr, status, error) {
+                // Error handling (silent)
+                console.error("Failed to log message:", error);
+            }
+        });
+    }
+    
+    // Log page load
+    document.addEventListener('DOMContentLoaded', function() {
+        logToFile(`Page loaded: ${window.location.pathname}`);
+    });
+</script>
+{% endblock %}

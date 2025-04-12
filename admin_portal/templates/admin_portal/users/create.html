@@ -1,0 +1,163 @@
+{% extends 'admin_portal/base_admin.html' %}
+{% load static %}
+
+{% block admin_title %}Create User{% endblock %}
+
+{% block admin_content %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2"><i class="fas fa-user-plus"></i> Create New User</h1>
+    <div class="btn-toolbar mb-2 mb-md-0">
+        <a href="{% url 'admin_portal:user_list' %}" class="btn btn-sm btn-secondary">
+            <i class="fas fa-arrow-left"></i> Back to Users
+        </a>
+    </div>
+</div>
+
+{% if messages %}
+    {% for message in messages %}
+        <div class="alert {{ message.tags }} alert-dismissible fade show" role="alert">
+            {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    {% endfor %}
+{% endif %}
+
+<div class="card shadow mb-4">
+    <div class="card-header py-3">
+        <h6 class="m-0 font-weight-bold text-primary">User Information</h6>
+    </div>
+    <div class="card-body">
+        <form method="post" class="needs-validation" novalidate>
+            {% csrf_token %}
+            
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <label for="{{ form.full_name.id_for_label }}" class="form-label">Full Name</label>
+                    {{ form.full_name }}
+                    {% if form.full_name.errors %}
+                    <div class="invalid-feedback d-block">
+                        {{ form.full_name.errors }}
+                    </div>
+                    {% endif %}
+                </div>
+                <div class="col-md-6">
+                    <label for="{{ form.email.id_for_label }}" class="form-label">Email</label>
+                    {{ form.email }}
+                    <div class="form-text">Must end with @mbit.edu.in</div>
+                    {% if form.email.errors %}
+                    <div class="invalid-feedback d-block">
+                        {{ form.email.errors }}
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <label for="{{ form.username.id_for_label }}" class="form-label">Username</label>
+                    {{ form.username }}
+                    {% if form.username.errors %}
+                    <div class="invalid-feedback d-block">
+                        {{ form.username.errors }}
+                    </div>
+                    {% endif %}
+                </div>
+                <div class="col-md-6">
+                    <label for="{{ form.role.id_for_label }}" class="form-label">Role</label>
+                    {{ form.role }}
+                    {% if form.role.errors %}
+                    <div class="invalid-feedback d-block">
+                        {{ form.role.errors }}
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <label for="{{ form.password1.id_for_label }}" class="form-label">Password</label>
+                    {{ form.password1 }}
+                    {% if form.password1.errors %}
+                    <div class="invalid-feedback d-block">
+                        {{ form.password1.errors }}
+                    </div>
+                    {% endif %}
+                </div>
+                <div class="col-md-6">
+                    <label for="{{ form.password2.id_for_label }}" class="form-label">Confirm Password</label>
+                    {{ form.password2 }}
+                    {% if form.password2.errors %}
+                    <div class="invalid-feedback d-block">
+                        {{ form.password2.errors }}
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <div class="form-check mt-4">
+                        {{ form.is_active }}
+                        <label class="form-check-label" for="{{ form.is_active.id_for_label }}">
+                            Active
+                        </label>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="mt-4">
+                <button type="submit" class="btn btn-primary">Create User</button>
+                <a href="{% url 'admin_portal:user_list' %}" class="btn btn-secondary">Cancel</a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
+
+{% block admin_custom_js %}
+<script>
+    $(document).ready(function() {
+        // Auto-generate username when typing full name
+        $('#{{ form.full_name.id_for_label }}').on('input', function() {
+            if ($('#{{ form.username.id_for_label }}').val() === '') {
+                let fullName = $(this).val();
+                let username = fullName.toLowerCase()
+                    .replace(/\s+/g, '.')
+                    .replace(/[^a-z0-9.]/g, '');
+                $('#{{ form.username.id_for_label }}').val(username);
+            }
+        });
+        
+        // Auto-complete email when typing username
+        $('#{{ form.username.id_for_label }}').on('input', function() {
+            if ($('#{{ form.email.id_for_label }}').val() === '') {
+                let username = $(this).val();
+                $('#{{ form.email.id_for_label }}').val(username + '@mbit.edu.in');
+            }
+        });
+        
+        // Password strength checker
+        $('#{{ form.password1.id_for_label }}').on('input', function() {
+            const password = $(this).val();
+            // Simple password check - in a real app, make this more sophisticated
+            if (password.length >= 8) {
+                $(this).removeClass('is-invalid').addClass('is-valid');
+            } else {
+                $(this).removeClass('is-valid').addClass('is-invalid');
+            }
+        });
+        
+        // Password match checker
+        $('#{{ form.password2.id_for_label }}').on('input', function() {
+            const password1 = $('#{{ form.password1.id_for_label }}').val();
+            const password2 = $(this).val();
+            
+            if (password2 === password1) {
+                $(this).removeClass('is-invalid').addClass('is-valid');
+            } else {
+                $(this).removeClass('is-valid').addClass('is-invalid');
+            }
+        });
+    });
+</script>
+{% endblock %}

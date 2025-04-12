@@ -1,0 +1,1252 @@
+INFO 2025-03-26 02:25:15,658 autoreload Watching for file changes with StatReloader
+INFO 2025-03-26 02:25:17,849 basehttp "GET / HTTP/1.1" 302 0
+INFO 2025-03-26 02:25:17,886 basehttp "GET /redirect/ HTTP/1.1" 302 0
+INFO 2025-03-26 02:25:17,925 basehttp "GET /lab-assistant-portal/ HTTP/1.1" 302 0
+INFO 2025-03-26 02:25:17,957 basehttp "GET / HTTP/1.1" 302 0
+INFO 2025-03-26 02:25:17,989 basehttp "GET /redirect/ HTTP/1.1" 302 0
+INFO 2025-03-26 02:25:18,023 basehttp "GET /lab-assistant-portal/ HTTP/1.1" 302 0
+INFO 2025-03-26 02:25:18,060 basehttp "GET / HTTP/1.1" 302 0
+INFO 2025-03-26 02:25:18,093 basehttp "GET /redirect/ HTTP/1.1" 302 0
+INFO 2025-03-26 02:25:18,127 basehttp "GET /lab-assistant-portal/ HTTP/1.1" 302 0
+INFO 2025-03-26 02:25:18,157 basehttp "GET / HTTP/1.1" 302 0
+INFO 2025-03-26 02:25:18,189 basehttp "GET /redirect/ HTTP/1.1" 302 0
+INFO 2025-03-26 02:25:18,226 basehttp "GET /lab-assistant-portal/ HTTP/1.1" 302 0
+INFO 2025-03-26 02:25:18,260 basehttp "GET / HTTP/1.1" 302 0
+INFO 2025-03-26 02:25:18,294 basehttp "GET /redirect/ HTTP/1.1" 302 0
+INFO 2025-03-26 02:25:18,329 basehttp "GET /lab-assistant-portal/ HTTP/1.1" 302 0
+INFO 2025-03-26 02:25:18,361 basehttp "GET / HTTP/1.1" 302 0
+INFO 2025-03-26 02:25:18,397 basehttp "GET /redirect/ HTTP/1.1" 302 0
+INFO 2025-03-26 02:25:18,432 basehttp "GET /lab-assistant-portal/ HTTP/1.1" 302 0
+INFO 2025-03-26 02:25:18,464 basehttp "GET / HTTP/1.1" 302 0
+INFO 2025-03-26 02:25:18,498 basehttp "GET /redirect/ HTTP/1.1" 302 0
+INFO 2025-03-26 02:25:19,572 basehttp "GET /redirect/ HTTP/1.1" 302 0
+INFO 2025-03-26 02:25:19,607 basehttp "GET /lab-assistant-portal/ HTTP/1.1" 302 0
+INFO 2025-03-26 02:25:19,639 basehttp "GET / HTTP/1.1" 302 0
+INFO 2025-03-26 02:25:19,785 basehttp "GET /redirect/ HTTP/1.1" 302 0
+INFO 2025-03-26 02:25:19,821 basehttp "GET /lab-assistant-portal/ HTTP/1.1" 302 0
+INFO 2025-03-26 02:25:19,852 basehttp "GET / HTTP/1.1" 302 0
+INFO 2025-03-26 02:25:19,885 basehttp "GET /redirect/ HTTP/1.1" 302 0
+INFO 2025-03-26 02:25:19,920 basehttp "GET /lab-assistant-portal/ HTTP/1.1" 302 0
+INFO 2025-03-26 02:25:19,950 basehttp "GET / HTTP/1.1" 302 0
+INFO 2025-03-26 02:25:20,098 basehttp "GET /redirect/ HTTP/1.1" 302 0
+INFO 2025-03-26 02:25:20,131 basehttp "GET /lab-assistant-portal/ HTTP/1.1" 302 0
+INFO 2025-03-26 02:25:20,161 basehttp "GET / HTTP/1.1" 302 0
+INFO 2025-03-26 02:25:20,193 basehttp "GET /redirect/ HTTP/1.1" 302 0
+INFO 2025-03-26 02:25:20,226 basehttp "GET /lab-assistant-portal/ HTTP/1.1" 302 0
+INFO 2025-03-26 02:25:20,257 basehttp "GET / HTTP/1.1" 302 0
+INFO 2025-03-26 02:25:20,287 basehttp "GET /redirect/ HTTP/1.1" 302 0
+INFO 2025-03-26 02:25:20,323 basehttp "GET /lab-assistant-portal/ HTTP/1.1" 302 0
+INFO 2025-03-26 02:25:20,353 basehttp "GET / HTTP/1.1" 302 0
+INFO 2025-03-26 02:25:20,386 basehttp "GET /redirect/ HTTP/1.1" 302 0
+INFO 2025-03-26 02:25:20,419 basehttp "GET /lab-assistant-portal/ HTTP/1.1" 302 0
+INFO 2025-03-26 02:25:22,452 basehttp "GET /lab-assistant-portal/ HTTP/1.1" 302 0
+INFO 2025-03-26 02:25:22,484 basehttp "GET / HTTP/1.1" 302 0
+INFO 2025-03-26 02:25:22,516 basehttp "GET /redirect/ HTTP/1.1" 302 0
+INFO 2025-03-26 02:25:22,551 basehttp "GET /lab-assistant-portal/ HTTP/1.1" 302 0
+INFO 2025-03-26 02:25:22,582 basehttp "GET / HTTP/1.1" 302 0
+INFO 2025-03-26 02:25:22,615 basehttp "GET /redirect/ HTTP/1.1" 302 0
+INFO 2025-03-26 02:25:22,649 basehttp "GET /lab-assistant-portal/ HTTP/1.1" 302 0
+INFO 2025-03-26 02:25:22,686 basehttp "GET / HTTP/1.1" 302 0
+INFO 2025-03-26 02:25:22,718 basehttp "GET /redirect/ HTTP/1.1" 302 0
+INFO 2025-03-26 02:25:22,752 basehttp "GET /lab-assistant-portal/ HTTP/1.1" 302 0
+INFO 2025-03-26 02:25:22,781 basehttp "GET / HTTP/1.1" 302 0
+INFO 2025-03-26 02:25:22,813 basehttp "GET /redirect/ HTTP/1.1" 302 0
+INFO 2025-03-26 02:25:22,846 basehttp "GET /lab-assistant-portal/ HTTP/1.1" 302 0
+INFO 2025-03-26 02:25:22,875 basehttp "GET / HTTP/1.1" 302 0
+INFO 2025-03-26 02:25:22,906 basehttp "GET /redirect/ HTTP/1.1" 302 0
+INFO 2025-03-26 02:25:22,939 basehttp "GET /lab-assistant-portal/ HTTP/1.1" 302 0
+INFO 2025-03-26 02:25:22,969 basehttp "GET / HTTP/1.1" 302 0
+INFO 2025-03-26 02:25:22,999 basehttp "GET /redirect/ HTTP/1.1" 302 0
+INFO 2025-03-26 02:25:23,032 basehttp "GET /lab-assistant-portal/ HTTP/1.1" 302 0
+INFO 2025-03-26 02:25:23,062 basehttp "GET / HTTP/1.1" 302 0
+INFO 2025-03-26 02:25:23,977 basehttp "GET / HTTP/1.1" 302 0
+INFO 2025-03-26 02:25:24,011 basehttp "GET /redirect/ HTTP/1.1" 302 0
+INFO 2025-03-26 02:25:24,047 basehttp "GET /lab-assistant-portal/ HTTP/1.1" 302 0
+INFO 2025-03-26 02:25:24,079 basehttp "GET / HTTP/1.1" 302 0
+INFO 2025-03-26 02:25:24,117 basehttp - Broken pipe from ('127.0.0.1', 53873)
+INFO 2025-03-26 02:25:24,141 basehttp "GET / HTTP/1.1" 302 0
+INFO 2025-03-26 02:25:24,185 basehttp "GET /redirect/ HTTP/1.1" 302 0
+INFO 2025-03-26 02:25:24,310 basehttp "GET / HTTP/1.1" 302 0
+INFO 2025-03-26 02:25:24,340 basehttp - Broken pipe from ('127.0.0.1', 53874)
+INFO 2025-03-26 02:25:24,344 basehttp "GET /redirect/ HTTP/1.1" 302 0
+INFO 2025-03-26 02:25:24,381 basehttp "GET /lab-assistant-portal/ HTTP/1.1" 302 0
+INFO 2025-03-26 02:25:24,415 basehttp "GET / HTTP/1.1" 302 0
+INFO 2025-03-26 02:25:24,453 basehttp - Broken pipe from ('127.0.0.1', 53945)
+INFO 2025-03-26 02:25:24,463 basehttp "GET / HTTP/1.1" 302 0
+INFO 2025-03-26 02:25:24,605 basehttp - Broken pipe from ('127.0.0.1', 53949)
+INFO 2025-03-26 02:25:24,613 basehttp "GET / HTTP/1.1" 302 0
+INFO 2025-03-26 02:25:24,650 basehttp "GET /redirect/ HTTP/1.1" 302 0
+INFO 2025-03-26 02:25:24,687 basehttp "GET /lab-assistant-portal/ HTTP/1.1" 302 0
+INFO 2025-03-26 02:25:24,717 basehttp "GET / HTTP/1.1" 302 0
+INFO 2025-03-26 02:25:24,750 basehttp "GET /redirect/ HTTP/1.1" 302 0
+INFO 2025-03-26 02:25:24,784 basehttp "GET /lab-assistant-portal/ HTTP/1.1" 302 0
+INFO 2025-03-26 02:25:24,820 basehttp "GET / HTTP/1.1" 302 0
+INFO 2025-03-26 02:25:24,853 basehttp "GET /redirect/ HTTP/1.1" 302 0
+INFO 2025-03-26 02:25:24,887 basehttp "GET /lab-assistant-portal/ HTTP/1.1" 302 0
+INFO 2025-03-26 02:25:24,923 basehttp - Broken pipe from ('127.0.0.1', 53954)
+INFO 2025-03-26 02:25:25,039 basehttp "GET / HTTP/1.1" 302 0
+INFO 2025-03-26 02:25:25,077 basehttp - Broken pipe from ('127.0.0.1', 53958)
+INFO 2025-03-26 02:25:25,090 basehttp "GET / HTTP/1.1" 302 0
+INFO 2025-03-26 02:25:25,124 basehttp "GET /redirect/ HTTP/1.1" 302 0
+INFO 2025-03-26 02:25:25,161 basehttp "GET /lab-assistant-portal/ HTTP/1.1" 302 0
+INFO 2025-03-26 02:25:25,197 basehttp "GET / HTTP/1.1" 302 0
+INFO 2025-03-26 02:25:25,234 basehttp - Broken pipe from ('127.0.0.1', 53969)
+INFO 2025-03-26 02:25:25,248 basehttp "GET / HTTP/1.1" 302 0
+INFO 2025-03-26 02:25:25,284 basehttp "GET /redirect/ HTTP/1.1" 302 0
+INFO 2025-03-26 02:25:25,326 basehttp "GET /lab-assistant-portal/ HTTP/1.1" 302 0
+INFO 2025-03-26 02:25:25,358 basehttp - Broken pipe from ('127.0.0.1', 53972)
+INFO 2025-03-26 02:25:25,392 basehttp "GET / HTTP/1.1" 302 0
+INFO 2025-03-26 02:25:25,430 basehttp "GET /redirect/ HTTP/1.1" 302 0
+INFO 2025-03-26 02:25:25,468 basehttp "GET /lab-assistant-portal/ HTTP/1.1" 302 0
+INFO 2025-03-26 02:25:25,504 basehttp "GET / HTTP/1.1" 302 0
+INFO 2025-03-26 02:25:25,543 basehttp - Broken pipe from ('127.0.0.1', 53978)
+INFO 2025-03-26 02:25:25,568 basehttp "GET / HTTP/1.1" 302 0
+INFO 2025-03-26 02:25:25,706 basehttp "GET /redirect/ HTTP/1.1" 302 0
+INFO 2025-03-26 02:25:25,744 basehttp "GET /lab-assistant-portal/ HTTP/1.1" 302 0
+INFO 2025-03-26 02:25:25,890 basehttp "GET / HTTP/1.1" 302 0
+INFO 2025-03-26 02:25:25,928 basehttp "GET /redirect/ HTTP/1.1" 302 0
+INFO 2025-03-26 02:25:25,964 basehttp "GET /lab-assistant-portal/ HTTP/1.1" 302 0
+INFO 2025-03-26 02:25:26,005 basehttp "GET / HTTP/1.1" 302 0
+INFO 2025-03-26 02:25:26,038 basehttp "GET /redirect/ HTTP/1.1" 302 0
+INFO 2025-03-26 02:25:26,072 basehttp "GET /lab-assistant-portal/ HTTP/1.1" 302 0
+INFO 2025-03-26 02:25:26,103 basehttp "GET / HTTP/1.1" 302 0
+INFO 2025-03-26 02:25:26,135 basehttp "GET /redirect/ HTTP/1.1" 302 0
+INFO 2025-03-26 02:25:26,171 basehttp "GET /lab-assistant-portal/ HTTP/1.1" 302 0
+INFO 2025-03-26 02:25:26,204 basehttp "GET / HTTP/1.1" 302 0
+INFO 2025-03-26 02:25:26,240 basehttp "GET /redirect/ HTTP/1.1" 302 0
+INFO 2025-03-26 02:25:26,274 basehttp "GET /lab-assistant-portal/ HTTP/1.1" 302 0
+INFO 2025-03-26 02:25:26,305 basehttp "GET / HTTP/1.1" 302 0
+INFO 2025-03-26 02:25:26,338 basehttp "GET /redirect/ HTTP/1.1" 302 0
+INFO 2025-03-26 02:25:26,372 basehttp "GET /lab-assistant-portal/ HTTP/1.1" 302 0
+INFO 2025-03-26 02:25:26,409 basehttp "GET / HTTP/1.1" 302 0
+INFO 2025-03-26 02:25:26,442 basehttp "GET /redirect/ HTTP/1.1" 302 0
+INFO 2025-03-26 02:25:31,519 basehttp "GET /redirect/ HTTP/1.1" 302 0
+INFO 2025-03-26 02:25:31,558 basehttp "GET /lab-assistant-portal/ HTTP/1.1" 302 0
+INFO 2025-03-26 02:25:31,589 basehttp "GET / HTTP/1.1" 302 0
+INFO 2025-03-26 02:25:31,625 basehttp "GET /redirect/ HTTP/1.1" 302 0
+INFO 2025-03-26 02:25:31,665 basehttp "GET /lab-assistant-portal/ HTTP/1.1" 302 0
+INFO 2025-03-26 02:25:31,693 basehttp "GET / HTTP/1.1" 302 0
+INFO 2025-03-26 02:25:31,833 basehttp "GET /redirect/ HTTP/1.1" 302 0
+INFO 2025-03-26 02:25:31,871 basehttp "GET /lab-assistant-portal/ HTTP/1.1" 302 0
+INFO 2025-03-26 02:25:31,902 basehttp "GET / HTTP/1.1" 302 0
+INFO 2025-03-26 02:25:31,932 basehttp "GET /redirect/ HTTP/1.1" 302 0
+INFO 2025-03-26 02:25:31,965 basehttp "GET /lab-assistant-portal/ HTTP/1.1" 302 0
+INFO 2025-03-26 02:25:31,996 basehttp "GET / HTTP/1.1" 302 0
+INFO 2025-03-26 02:25:32,028 basehttp "GET /redirect/ HTTP/1.1" 302 0
+INFO 2025-03-26 02:25:32,063 basehttp "GET /lab-assistant-portal/ HTTP/1.1" 302 0
+INFO 2025-03-26 02:25:32,096 basehttp "GET / HTTP/1.1" 302 0
+INFO 2025-03-26 02:25:32,239 basehttp "GET /redirect/ HTTP/1.1" 302 0
+INFO 2025-03-26 02:25:32,275 basehttp "GET /lab-assistant-portal/ HTTP/1.1" 302 0
+INFO 2025-03-26 02:25:32,308 basehttp "GET / HTTP/1.1" 302 0
+INFO 2025-03-26 02:25:32,342 basehttp "GET /redirect/ HTTP/1.1" 302 0
+INFO 2025-03-26 02:25:32,376 basehttp "GET /lab-assistant-portal/ HTTP/1.1" 302 0
+INFO 2025-03-26 02:28:49,626 basehttp "GET /lab-assistant-portal/ HTTP/1.1" 302 0
+INFO 2025-03-26 02:28:49,723 basehttp "GET /login/?next=/lab-assistant-portal/ HTTP/1.1" 200 6321
+INFO 2025-03-26 02:28:49,947 basehttp "GET /login/?next=/lab-assistant-portal/ HTTP/1.1" 200 6321
+INFO 2025-03-26 02:28:50,126 basehttp "GET /login/?next=/lab-assistant-portal/ HTTP/1.1" 200 6321
+INFO 2025-03-26 02:29:00,545 basehttp "POST /login/ HTTP/1.1" 302 0
+INFO 2025-03-26 02:29:00,587 basehttp "GET /redirect/ HTTP/1.1" 302 0
+INFO 2025-03-26 02:29:00,636 basehttp "GET /admin-portal/ HTTP/1.1" 302 0
+INFO 2025-03-26 02:29:00,721 basehttp "GET /admin-portal/dashboard/ HTTP/1.1" 200 28656
+INFO 2025-03-26 02:29:04,034 basehttp "GET /logout/ HTTP/1.1" 302 0
+INFO 2025-03-26 02:29:04,037 basehttp "GET /login/ HTTP/1.1" 200 6726
+INFO 2025-03-26 02:29:09,278 basehttp "POST /login/ HTTP/1.1" 302 0
+INFO 2025-03-26 02:29:09,316 basehttp "GET /redirect/ HTTP/1.1" 302 0
+INFO 2025-03-26 02:29:09,434 basehttp "GET /student-portal/ HTTP/1.1" 200 28732
+WARNING 2025-03-26 02:29:09,522 basehttp "GET /static/img/student_avatar.png HTTP/1.1" 404 1825
+INFO 2025-03-26 02:29:12,627 basehttp "GET /logout/ HTTP/1.1" 302 0
+INFO 2025-03-26 02:29:12,630 basehttp "GET /login/ HTTP/1.1" 200 6726
+INFO 2025-03-26 02:29:18,982 basehttp "POST /login/ HTTP/1.1" 302 0
+INFO 2025-03-26 02:29:19,020 basehttp "GET /redirect/ HTTP/1.1" 302 0
+INFO 2025-03-26 02:29:19,062 basehttp "GET /hod-portal/ HTTP/1.1" 200 8128
+INFO 2025-03-26 02:29:21,297 basehttp "GET /logout/ HTTP/1.1" 302 0
+INFO 2025-03-26 02:29:21,301 basehttp "GET /login/ HTTP/1.1" 200 6726
+INFO 2025-03-26 02:29:26,861 basehttp "POST /login/ HTTP/1.1" 302 0
+INFO 2025-03-26 02:29:26,894 basehttp "GET /redirect/ HTTP/1.1" 302 0
+INFO 2025-03-26 02:29:26,934 basehttp "GET /faculty-portal/ HTTP/1.1" 200 11971
+INFO 2025-03-26 02:29:31,142 basehttp "GET /logout/ HTTP/1.1" 302 0
+INFO 2025-03-26 02:29:31,145 basehttp "GET /login/ HTTP/1.1" 200 6726
+INFO 2025-03-26 02:29:38,987 basehttp "POST /login/ HTTP/1.1" 302 0
+INFO 2025-03-26 02:29:39,021 basehttp "GET /redirect/ HTTP/1.1" 302 0
+INFO 2025-03-26 02:29:39,055 basehttp "GET /lab-assistant-portal/ HTTP/1.1" 302 0
+INFO 2025-03-26 02:29:39,089 basehttp "GET / HTTP/1.1" 302 0
+INFO 2025-03-26 02:29:39,126 basehttp "GET /redirect/ HTTP/1.1" 302 0
+INFO 2025-03-26 02:29:39,178 basehttp "GET /lab-assistant-portal/ HTTP/1.1" 302 0
+INFO 2025-03-26 02:29:39,209 basehttp "GET / HTTP/1.1" 302 0
+INFO 2025-03-26 02:29:39,347 basehttp "GET /redirect/ HTTP/1.1" 302 0
+INFO 2025-03-26 02:29:39,380 basehttp "GET /lab-assistant-portal/ HTTP/1.1" 302 0
+INFO 2025-03-26 02:29:39,411 basehttp "GET / HTTP/1.1" 302 0
+INFO 2025-03-26 02:29:39,441 basehttp "GET /redirect/ HTTP/1.1" 302 0
+INFO 2025-03-26 02:29:39,474 basehttp "GET /lab-assistant-portal/ HTTP/1.1" 302 0
+INFO 2025-03-26 02:29:39,505 basehttp "GET / HTTP/1.1" 302 0
+INFO 2025-03-26 02:29:39,536 basehttp "GET /redirect/ HTTP/1.1" 302 0
+INFO 2025-03-26 02:29:39,569 basehttp "GET /lab-assistant-portal/ HTTP/1.1" 302 0
+INFO 2025-03-26 02:29:39,599 basehttp "GET / HTTP/1.1" 302 0
+INFO 2025-03-26 02:29:39,631 basehttp "GET /redirect/ HTTP/1.1" 302 0
+INFO 2025-03-26 02:29:39,665 basehttp "GET /lab-assistant-portal/ HTTP/1.1" 302 0
+INFO 2025-03-26 02:29:39,695 basehttp "GET / HTTP/1.1" 302 0
+INFO 2025-03-26 02:29:39,726 basehttp "GET /redirect/ HTTP/1.1" 302 0
+INFO 2025-03-26 02:29:40,789 basehttp "GET /redirect/ HTTP/1.1" 302 0
+INFO 2025-03-26 02:29:40,822 basehttp "GET /lab-assistant-portal/ HTTP/1.1" 302 0
+INFO 2025-03-26 02:29:40,854 basehttp "GET / HTTP/1.1" 302 0
+INFO 2025-03-26 02:29:40,886 basehttp "GET /redirect/ HTTP/1.1" 302 0
+INFO 2025-03-26 02:29:40,919 basehttp "GET /lab-assistant-portal/ HTTP/1.1" 302 0
+INFO 2025-03-26 02:29:40,952 basehttp "GET / HTTP/1.1" 302 0
+INFO 2025-03-26 02:29:40,984 basehttp "GET /redirect/ HTTP/1.1" 302 0
+INFO 2025-03-26 02:29:41,016 basehttp "GET /lab-assistant-portal/ HTTP/1.1" 302 0
+INFO 2025-03-26 02:29:41,046 basehttp "GET / HTTP/1.1" 302 0
+INFO 2025-03-26 02:29:41,077 basehttp "GET /redirect/ HTTP/1.1" 302 0
+INFO 2025-03-26 02:29:41,108 basehttp "GET /lab-assistant-portal/ HTTP/1.1" 302 0
+INFO 2025-03-26 02:29:41,138 basehttp "GET / HTTP/1.1" 302 0
+INFO 2025-03-26 02:29:41,169 basehttp "GET /redirect/ HTTP/1.1" 302 0
+INFO 2025-03-26 02:29:41,203 basehttp "GET /lab-assistant-portal/ HTTP/1.1" 302 0
+INFO 2025-03-26 02:29:41,235 basehttp "GET / HTTP/1.1" 302 0
+INFO 2025-03-26 02:29:41,266 basehttp "GET /redirect/ HTTP/1.1" 302 0
+INFO 2025-03-26 02:29:41,298 basehttp "GET /lab-assistant-portal/ HTTP/1.1" 302 0
+INFO 2025-03-26 02:29:41,329 basehttp "GET / HTTP/1.1" 302 0
+INFO 2025-03-26 02:29:41,359 basehttp "GET /redirect/ HTTP/1.1" 302 0
+INFO 2025-03-26 02:29:41,392 basehttp "GET /lab-assistant-portal/ HTTP/1.1" 302 0
+INFO 2025-03-26 02:29:46,470 basehttp "GET /lab-assistant-portal/ HTTP/1.1" 302 0
+INFO 2025-03-26 02:29:46,504 basehttp "GET / HTTP/1.1" 302 0
+INFO 2025-03-26 02:29:46,537 basehttp "GET /redirect/ HTTP/1.1" 302 0
+INFO 2025-03-26 02:29:46,572 basehttp "GET /lab-assistant-portal/ HTTP/1.1" 302 0
+INFO 2025-03-26 02:29:46,603 basehttp "GET / HTTP/1.1" 302 0
+INFO 2025-03-26 02:29:46,634 basehttp "GET /redirect/ HTTP/1.1" 302 0
+INFO 2025-03-26 02:29:46,668 basehttp "GET /lab-assistant-portal/ HTTP/1.1" 302 0
+INFO 2025-03-26 02:29:46,700 basehttp "GET / HTTP/1.1" 302 0
+INFO 2025-03-26 02:29:46,730 basehttp "GET /redirect/ HTTP/1.1" 302 0
+INFO 2025-03-26 02:29:46,762 basehttp "GET /lab-assistant-portal/ HTTP/1.1" 302 0
+INFO 2025-03-26 02:29:46,800 basehttp "GET / HTTP/1.1" 302 0
+INFO 2025-03-26 02:29:46,833 basehttp "GET /redirect/ HTTP/1.1" 302 0
+INFO 2025-03-26 02:29:46,866 basehttp "GET /lab-assistant-portal/ HTTP/1.1" 302 0
+INFO 2025-03-26 02:29:46,896 basehttp "GET / HTTP/1.1" 302 0
+INFO 2025-03-26 02:29:46,929 basehttp "GET /redirect/ HTTP/1.1" 302 0
+INFO 2025-03-26 02:29:46,966 basehttp "GET /lab-assistant-portal/ HTTP/1.1" 302 0
+INFO 2025-03-26 02:29:47,003 basehttp "GET / HTTP/1.1" 302 0
+INFO 2025-03-26 02:29:47,036 basehttp "GET /redirect/ HTTP/1.1" 302 0
+INFO 2025-03-26 02:29:47,069 basehttp "GET /lab-assistant-portal/ HTTP/1.1" 302 0
+INFO 2025-03-26 02:29:47,099 basehttp "GET / HTTP/1.1" 302 0
+INFO 2025-03-26 02:30:00,472 basehttp "GET /lab-assistant-portal/low-attendance/ HTTP/1.1" 302 0
+INFO 2025-03-26 02:30:00,508 basehttp "GET / HTTP/1.1" 302 0
+INFO 2025-03-26 02:30:00,543 basehttp "GET /redirect/ HTTP/1.1" 302 0
+INFO 2025-03-26 02:30:00,586 basehttp "GET /lab-assistant-portal/ HTTP/1.1" 302 0
+INFO 2025-03-26 02:30:00,619 basehttp "GET / HTTP/1.1" 302 0
+INFO 2025-03-26 02:30:00,653 basehttp "GET /redirect/ HTTP/1.1" 302 0
+INFO 2025-03-26 02:30:00,695 basehttp "GET /lab-assistant-portal/ HTTP/1.1" 302 0
+INFO 2025-03-26 02:30:00,730 basehttp "GET / HTTP/1.1" 302 0
+INFO 2025-03-26 02:30:00,771 basehttp "GET /redirect/ HTTP/1.1" 302 0
+INFO 2025-03-26 02:30:00,806 basehttp "GET /lab-assistant-portal/ HTTP/1.1" 302 0
+INFO 2025-03-26 02:30:00,837 basehttp "GET / HTTP/1.1" 302 0
+INFO 2025-03-26 02:30:00,871 basehttp "GET /redirect/ HTTP/1.1" 302 0
+INFO 2025-03-26 02:30:00,907 basehttp "GET /lab-assistant-portal/ HTTP/1.1" 302 0
+INFO 2025-03-26 02:30:01,047 basehttp "GET / HTTP/1.1" 302 0
+INFO 2025-03-26 02:30:01,083 basehttp "GET /redirect/ HTTP/1.1" 302 0
+INFO 2025-03-26 02:30:01,117 basehttp "GET /lab-assistant-portal/ HTTP/1.1" 302 0
+INFO 2025-03-26 02:30:01,150 basehttp "GET / HTTP/1.1" 302 0
+INFO 2025-03-26 02:30:01,182 basehttp "GET /redirect/ HTTP/1.1" 302 0
+INFO 2025-03-26 02:30:01,228 basehttp "GET /lab-assistant-portal/ HTTP/1.1" 302 0
+INFO 2025-03-26 02:30:01,258 basehttp "GET / HTTP/1.1" 302 0
+INFO 2025-03-26 02:30:02,322 basehttp "GET / HTTP/1.1" 302 0
+INFO 2025-03-26 02:30:02,355 basehttp "GET /redirect/ HTTP/1.1" 302 0
+INFO 2025-03-26 02:30:02,394 basehttp "GET /lab-assistant-portal/ HTTP/1.1" 302 0
+INFO 2025-03-26 02:30:02,432 basehttp "GET / HTTP/1.1" 302 0
+INFO 2025-03-26 02:30:02,475 basehttp "GET /redirect/ HTTP/1.1" 302 0
+INFO 2025-03-26 02:30:02,508 basehttp "GET /lab-assistant-portal/ HTTP/1.1" 302 0
+INFO 2025-03-26 02:30:02,545 basehttp "GET / HTTP/1.1" 302 0
+INFO 2025-03-26 02:30:02,584 basehttp "GET /redirect/ HTTP/1.1" 302 0
+INFO 2025-03-26 02:30:02,624 basehttp - Broken pipe from ('127.0.0.1', 54041)
+INFO 2025-03-26 02:36:29,330 autoreload D:\aaaaaaattend\attendance_system\lab_assistant_portal\views.py changed, reloading.
+INFO 2025-03-26 02:36:29,778 autoreload Watching for file changes with StatReloader
+INFO 2025-03-26 02:37:03,695 autoreload D:\aaaaaaattend\attendance_system\lab_assistant_portal\views.py changed, reloading.
+INFO 2025-03-26 02:37:04,116 autoreload Watching for file changes with StatReloader
+INFO 2025-03-26 02:37:08,753 basehttp "GET / HTTP/1.1" 302 0
+INFO 2025-03-26 02:37:08,792 basehttp "GET /redirect/ HTTP/1.1" 302 0
+INFO 2025-03-26 02:37:08,834 basehttp "GET /lab-assistant-portal/ HTTP/1.1" 302 0
+INFO 2025-03-26 02:37:08,865 basehttp "GET / HTTP/1.1" 302 0
+INFO 2025-03-26 02:37:08,999 basehttp "GET /redirect/ HTTP/1.1" 302 0
+INFO 2025-03-26 02:37:09,032 basehttp "GET /lab-assistant-portal/ HTTP/1.1" 302 0
+INFO 2025-03-26 02:37:09,064 basehttp "GET / HTTP/1.1" 302 0
+INFO 2025-03-26 02:37:09,097 basehttp "GET /redirect/ HTTP/1.1" 302 0
+INFO 2025-03-26 02:37:09,129 basehttp "GET /lab-assistant-portal/ HTTP/1.1" 302 0
+INFO 2025-03-26 02:37:09,161 basehttp "GET / HTTP/1.1" 302 0
+INFO 2025-03-26 02:37:09,193 basehttp "GET /redirect/ HTTP/1.1" 302 0
+INFO 2025-03-26 02:37:09,227 basehttp "GET /lab-assistant-portal/ HTTP/1.1" 302 0
+INFO 2025-03-26 02:37:09,259 basehttp "GET / HTTP/1.1" 302 0
+INFO 2025-03-26 02:37:09,296 basehttp "GET /redirect/ HTTP/1.1" 302 0
+INFO 2025-03-26 02:37:09,333 basehttp - Broken pipe from ('127.0.0.1', 54456)
+INFO 2025-03-26 02:37:18,972 basehttp "GET / HTTP/1.1" 200 6321
+INFO 2025-03-26 02:37:19,122 basehttp "GET / HTTP/1.1" 200 6321
+INFO 2025-03-26 02:37:19,301 basehttp "GET / HTTP/1.1" 200 6321
+INFO 2025-03-26 02:38:30,724 basehttp "POST /login/ HTTP/1.1" 302 0
+INFO 2025-03-26 02:38:30,761 basehttp "GET /redirect/ HTTP/1.1" 302 0
+INFO 2025-03-26 02:38:30,798 basehttp "GET /lab-assistant-portal/ HTTP/1.1" 302 0
+INFO 2025-03-26 02:38:30,837 basehttp "GET / HTTP/1.1" 302 0
+INFO 2025-03-26 02:38:30,871 basehttp "GET /redirect/ HTTP/1.1" 302 0
+INFO 2025-03-26 02:38:30,905 basehttp "GET /lab-assistant-portal/ HTTP/1.1" 302 0
+INFO 2025-03-26 02:38:30,937 basehttp "GET / HTTP/1.1" 302 0
+INFO 2025-03-26 02:38:30,968 basehttp "GET /redirect/ HTTP/1.1" 302 0
+INFO 2025-03-26 02:38:31,002 basehttp "GET /lab-assistant-portal/ HTTP/1.1" 302 0
+INFO 2025-03-26 02:38:31,040 basehttp "GET / HTTP/1.1" 302 0
+INFO 2025-03-26 02:38:31,071 basehttp "GET /redirect/ HTTP/1.1" 302 0
+INFO 2025-03-26 02:38:31,106 basehttp "GET /lab-assistant-portal/ HTTP/1.1" 302 0
+INFO 2025-03-26 02:38:31,137 basehttp "GET / HTTP/1.1" 302 0
+INFO 2025-03-26 02:38:31,169 basehttp "GET /redirect/ HTTP/1.1" 302 0
+INFO 2025-03-26 02:38:31,205 basehttp "GET /lab-assistant-portal/ HTTP/1.1" 302 0
+INFO 2025-03-26 02:38:31,243 basehttp "GET / HTTP/1.1" 302 0
+INFO 2025-03-26 02:38:31,276 basehttp "GET /redirect/ HTTP/1.1" 302 0
+INFO 2025-03-26 02:38:31,311 basehttp "GET /lab-assistant-portal/ HTTP/1.1" 302 0
+INFO 2025-03-26 02:38:31,342 basehttp "GET / HTTP/1.1" 302 0
+INFO 2025-03-26 02:38:31,385 basehttp "GET /redirect/ HTTP/1.1" 302 0
+INFO 2025-03-26 02:38:32,458 basehttp "GET /redirect/ HTTP/1.1" 302 0
+INFO 2025-03-26 02:38:32,493 basehttp "GET /lab-assistant-portal/ HTTP/1.1" 302 0
+INFO 2025-03-26 02:38:32,531 basehttp "GET / HTTP/1.1" 302 0
+INFO 2025-03-26 02:38:32,677 basehttp "GET /redirect/ HTTP/1.1" 302 0
+INFO 2025-03-26 02:38:32,712 basehttp "GET /lab-assistant-portal/ HTTP/1.1" 302 0
+INFO 2025-03-26 02:38:32,743 basehttp "GET / HTTP/1.1" 302 0
+INFO 2025-03-26 02:38:32,775 basehttp "GET /redirect/ HTTP/1.1" 302 0
+INFO 2025-03-26 02:38:32,911 basehttp "GET /lab-assistant-portal/ HTTP/1.1" 302 0
+INFO 2025-03-26 02:38:32,946 basehttp "GET / HTTP/1.1" 302 0
+INFO 2025-03-26 02:38:32,978 basehttp "GET /redirect/ HTTP/1.1" 302 0
+INFO 2025-03-26 02:38:33,013 basehttp "GET /lab-assistant-portal/ HTTP/1.1" 302 0
+INFO 2025-03-26 02:38:33,046 basehttp "GET / HTTP/1.1" 302 0
+INFO 2025-03-26 02:38:33,077 basehttp "GET /redirect/ HTTP/1.1" 302 0
+INFO 2025-03-26 02:38:33,111 basehttp "GET /lab-assistant-portal/ HTTP/1.1" 302 0
+INFO 2025-03-26 02:38:33,149 basehttp "GET / HTTP/1.1" 302 0
+INFO 2025-03-26 02:38:33,182 basehttp "GET /redirect/ HTTP/1.1" 302 0
+INFO 2025-03-26 02:38:33,214 basehttp "GET /lab-assistant-portal/ HTTP/1.1" 302 0
+INFO 2025-03-26 02:38:33,244 basehttp "GET / HTTP/1.1" 302 0
+INFO 2025-03-26 02:38:33,275 basehttp "GET /redirect/ HTTP/1.1" 302 0
+INFO 2025-03-26 02:38:33,308 basehttp "GET /lab-assistant-portal/ HTTP/1.1" 302 0
+INFO 2025-03-26 02:38:38,384 basehttp "GET /lab-assistant-portal/ HTTP/1.1" 302 0
+INFO 2025-03-26 02:38:38,421 basehttp "GET / HTTP/1.1" 302 0
+INFO 2025-03-26 02:38:38,453 basehttp "GET /redirect/ HTTP/1.1" 302 0
+INFO 2025-03-26 02:38:38,487 basehttp "GET /lab-assistant-portal/ HTTP/1.1" 302 0
+INFO 2025-03-26 02:38:38,518 basehttp "GET / HTTP/1.1" 302 0
+INFO 2025-03-26 02:38:38,551 basehttp "GET /redirect/ HTTP/1.1" 302 0
+INFO 2025-03-26 02:38:38,584 basehttp "GET /lab-assistant-portal/ HTTP/1.1" 302 0
+INFO 2025-03-26 02:38:38,619 basehttp "GET / HTTP/1.1" 302 0
+INFO 2025-03-26 02:38:38,655 basehttp "GET /redirect/ HTTP/1.1" 302 0
+INFO 2025-03-26 02:38:38,691 basehttp "GET /lab-assistant-portal/ HTTP/1.1" 302 0
+INFO 2025-03-26 02:38:38,723 basehttp "GET / HTTP/1.1" 302 0
+INFO 2025-03-26 02:38:38,755 basehttp "GET /redirect/ HTTP/1.1" 302 0
+INFO 2025-03-26 02:38:38,787 basehttp "GET /lab-assistant-portal/ HTTP/1.1" 302 0
+INFO 2025-03-26 02:38:38,825 basehttp "GET / HTTP/1.1" 302 0
+INFO 2025-03-26 02:38:38,858 basehttp "GET /redirect/ HTTP/1.1" 302 0
+INFO 2025-03-26 02:38:38,892 basehttp "GET /lab-assistant-portal/ HTTP/1.1" 302 0
+INFO 2025-03-26 02:38:38,924 basehttp "GET / HTTP/1.1" 302 0
+INFO 2025-03-26 02:38:39,058 basehttp "GET /redirect/ HTTP/1.1" 302 0
+INFO 2025-03-26 02:38:39,092 basehttp "GET /lab-assistant-portal/ HTTP/1.1" 302 0
+INFO 2025-03-26 02:38:39,123 basehttp "GET / HTTP/1.1" 302 0
+INFO 2025-03-26 02:38:51,321 basehttp "GET /redirect/ HTTP/1.1" 302 0
+INFO 2025-03-26 02:38:51,357 basehttp "GET /lab-assistant-portal/ HTTP/1.1" 302 0
+INFO 2025-03-26 02:38:51,393 basehttp "GET / HTTP/1.1" 302 0
+INFO 2025-03-26 02:38:51,429 basehttp "GET /redirect/ HTTP/1.1" 302 0
+INFO 2025-03-26 02:38:51,468 basehttp "GET /lab-assistant-portal/ HTTP/1.1" 302 0
+INFO 2025-03-26 02:38:51,501 basehttp "GET / HTTP/1.1" 302 0
+INFO 2025-03-26 02:38:51,537 basehttp "GET /redirect/ HTTP/1.1" 302 0
+INFO 2025-03-26 02:38:51,575 basehttp "GET /lab-assistant-portal/ HTTP/1.1" 302 0
+INFO 2025-03-26 02:38:51,605 basehttp "GET / HTTP/1.1" 302 0
+INFO 2025-03-26 02:38:51,644 basehttp "GET /redirect/ HTTP/1.1" 302 0
+INFO 2025-03-26 02:38:51,680 basehttp "GET /lab-assistant-portal/ HTTP/1.1" 302 0
+INFO 2025-03-26 02:38:51,713 basehttp "GET / HTTP/1.1" 302 0
+INFO 2025-03-26 02:38:51,746 basehttp "GET /redirect/ HTTP/1.1" 302 0
+INFO 2025-03-26 02:38:51,781 basehttp "GET /lab-assistant-portal/ HTTP/1.1" 302 0
+INFO 2025-03-26 02:38:51,813 basehttp "GET / HTTP/1.1" 302 0
+INFO 2025-03-26 02:38:51,849 basehttp "GET /redirect/ HTTP/1.1" 302 0
+INFO 2025-03-26 02:38:51,885 basehttp "GET /lab-assistant-portal/ HTTP/1.1" 302 0
+INFO 2025-03-26 02:38:51,917 basehttp "GET / HTTP/1.1" 302 0
+INFO 2025-03-26 02:38:51,955 basehttp "GET /redirect/ HTTP/1.1" 302 0
+INFO 2025-03-26 02:38:53,024 basehttp "GET /redirect/ HTTP/1.1" 302 0
+INFO 2025-03-26 02:38:53,060 basehttp "GET /lab-assistant-portal/ HTTP/1.1" 302 0
+INFO 2025-03-26 02:38:53,095 basehttp "GET / HTTP/1.1" 302 0
+INFO 2025-03-26 02:38:53,128 basehttp "GET /redirect/ HTTP/1.1" 302 0
+INFO 2025-03-26 02:38:53,161 basehttp "GET /lab-assistant-portal/ HTTP/1.1" 302 0
+INFO 2025-03-26 02:38:53,192 basehttp "GET / HTTP/1.1" 302 0
+INFO 2025-03-26 02:38:53,223 basehttp "GET /redirect/ HTTP/1.1" 302 0
+INFO 2025-03-26 02:38:53,256 basehttp "GET /lab-assistant-portal/ HTTP/1.1" 302 0
+INFO 2025-03-26 02:38:53,287 basehttp "GET / HTTP/1.1" 302 0
+INFO 2025-03-26 02:38:53,318 basehttp "GET /redirect/ HTTP/1.1" 302 0
+INFO 2025-03-26 02:38:53,352 basehttp "GET /lab-assistant-portal/ HTTP/1.1" 302 0
+INFO 2025-03-26 02:38:53,381 basehttp "GET / HTTP/1.1" 302 0
+INFO 2025-03-26 02:38:53,415 basehttp "GET /redirect/ HTTP/1.1" 302 0
+INFO 2025-03-26 02:38:53,447 basehttp "GET /lab-assistant-portal/ HTTP/1.1" 302 0
+INFO 2025-03-26 02:38:53,478 basehttp "GET / HTTP/1.1" 302 0
+INFO 2025-03-26 02:38:53,507 basehttp "GET /redirect/ HTTP/1.1" 302 0
+INFO 2025-03-26 02:38:53,642 basehttp "GET /lab-assistant-portal/ HTTP/1.1" 302 0
+INFO 2025-03-26 02:38:53,674 basehttp "GET / HTTP/1.1" 302 0
+INFO 2025-03-26 02:38:53,707 basehttp "GET /redirect/ HTTP/1.1" 302 0
+INFO 2025-03-26 02:38:53,740 basehttp "GET /lab-assistant-portal/ HTTP/1.1" 302 0
+INFO 2025-03-26 02:38:58,769 basehttp "GET /lab-assistant-portal/ HTTP/1.1" 302 0
+INFO 2025-03-26 02:38:58,773 basehttp "GET /login/?next=/lab-assistant-portal/ HTTP/1.1" 200 6321
+WARNING 2025-03-26 02:39:08,602 log Forbidden (CSRF cookie not set.): /login/
+WARNING 2025-03-26 02:39:08,602 basehttp "POST /login/ HTTP/1.1" 403 2870
+WARNING 2025-03-26 02:42:07,889 log Forbidden (CSRF cookie not set.): /login/
+WARNING 2025-03-26 02:42:07,891 basehttp "POST /login/ HTTP/1.1" 403 2870
+WARNING 2025-03-26 02:42:07,951 log Not Found: /favicon.ico
+WARNING 2025-03-26 02:42:07,952 basehttp "GET /favicon.ico HTTP/1.1" 404 4091
+WARNING 2025-03-26 02:42:10,150 log Forbidden (CSRF cookie not set.): /login/
+WARNING 2025-03-26 02:42:10,151 basehttp "POST /login/ HTTP/1.1" 403 2870
+WARNING 2025-03-26 02:42:10,164 log Not Found: /favicon.ico
+WARNING 2025-03-26 02:42:10,165 basehttp "GET /favicon.ico HTTP/1.1" 404 4091
+INFO 2025-03-26 02:43:04,231 basehttp "GET /login/?next=/lab-assistant-portal/ HTTP/1.1" 200 6321
+INFO 2025-03-26 02:43:15,471 basehttp "POST /login/ HTTP/1.1" 302 0
+INFO 2025-03-26 02:43:15,504 basehttp "GET /redirect/ HTTP/1.1" 302 0
+INFO 2025-03-26 02:43:15,540 basehttp "GET /lab-assistant-portal/ HTTP/1.1" 302 0
+INFO 2025-03-26 02:43:15,572 basehttp "GET / HTTP/1.1" 302 0
+INFO 2025-03-26 02:43:15,605 basehttp "GET /redirect/ HTTP/1.1" 302 0
+INFO 2025-03-26 02:43:15,640 basehttp "GET /lab-assistant-portal/ HTTP/1.1" 302 0
+INFO 2025-03-26 02:43:15,676 basehttp "GET / HTTP/1.1" 302 0
+INFO 2025-03-26 02:43:15,711 basehttp "GET /redirect/ HTTP/1.1" 302 0
+INFO 2025-03-26 02:43:15,744 basehttp "GET /lab-assistant-portal/ HTTP/1.1" 302 0
+INFO 2025-03-26 02:43:15,775 basehttp "GET / HTTP/1.1" 302 0
+INFO 2025-03-26 02:43:15,806 basehttp "GET /redirect/ HTTP/1.1" 302 0
+INFO 2025-03-26 02:43:15,837 basehttp "GET /lab-assistant-portal/ HTTP/1.1" 302 0
+INFO 2025-03-26 02:43:15,870 basehttp "GET / HTTP/1.1" 302 0
+INFO 2025-03-26 02:43:15,902 basehttp "GET /redirect/ HTTP/1.1" 302 0
+INFO 2025-03-26 02:43:15,937 basehttp "GET /lab-assistant-portal/ HTTP/1.1" 302 0
+INFO 2025-03-26 02:43:15,969 basehttp "GET / HTTP/1.1" 302 0
+INFO 2025-03-26 02:43:16,006 basehttp "GET /redirect/ HTTP/1.1" 302 0
+INFO 2025-03-26 02:43:16,040 basehttp "GET /lab-assistant-portal/ HTTP/1.1" 302 0
+INFO 2025-03-26 02:43:16,071 basehttp "GET / HTTP/1.1" 302 0
+INFO 2025-03-26 02:43:16,102 basehttp "GET /redirect/ HTTP/1.1" 302 0
+INFO 2025-03-26 02:43:17,188 basehttp "GET /redirect/ HTTP/1.1" 302 0
+INFO 2025-03-26 02:43:17,231 basehttp "GET /lab-assistant-portal/ HTTP/1.1" 302 0
+INFO 2025-03-26 02:43:17,263 basehttp "GET / HTTP/1.1" 302 0
+INFO 2025-03-26 02:43:17,298 basehttp "GET /redirect/ HTTP/1.1" 302 0
+INFO 2025-03-26 02:43:17,337 basehttp "GET /lab-assistant-portal/ HTTP/1.1" 302 0
+INFO 2025-03-26 02:43:17,367 basehttp "GET / HTTP/1.1" 302 0
+INFO 2025-03-26 02:43:17,398 basehttp "GET /redirect/ HTTP/1.1" 302 0
+INFO 2025-03-26 02:43:17,432 basehttp "GET /lab-assistant-portal/ HTTP/1.1" 302 0
+INFO 2025-03-26 02:43:17,461 basehttp "GET / HTTP/1.1" 302 0
+INFO 2025-03-26 02:43:17,495 basehttp "GET /redirect/ HTTP/1.1" 302 0
+INFO 2025-03-26 02:43:17,528 basehttp "GET /lab-assistant-portal/ HTTP/1.1" 302 0
+INFO 2025-03-26 02:43:17,568 basehttp "GET / HTTP/1.1" 302 0
+INFO 2025-03-26 02:43:17,601 basehttp "GET /redirect/ HTTP/1.1" 302 0
+INFO 2025-03-26 02:43:17,636 basehttp "GET /lab-assistant-portal/ HTTP/1.1" 302 0
+INFO 2025-03-26 02:43:17,668 basehttp "GET / HTTP/1.1" 302 0
+INFO 2025-03-26 02:43:17,700 basehttp "GET /redirect/ HTTP/1.1" 302 0
+INFO 2025-03-26 02:43:17,745 basehttp "GET /lab-assistant-portal/ HTTP/1.1" 302 0
+INFO 2025-03-26 02:43:17,777 basehttp "GET / HTTP/1.1" 302 0
+INFO 2025-03-26 02:43:17,808 basehttp "GET /redirect/ HTTP/1.1" 302 0
+INFO 2025-03-26 02:43:17,841 basehttp "GET /lab-assistant-portal/ HTTP/1.1" 302 0
+WARNING 2025-03-26 02:44:39,532 log Forbidden (CSRF cookie not set.): /login/
+WARNING 2025-03-26 02:44:39,533 basehttp "POST /login/ HTTP/1.1" 403 2870
+INFO 2025-03-26 02:56:03,922 autoreload Watching for file changes with StatReloader
+WARNING 2025-03-26 02:56:12,034 log Forbidden (CSRF cookie not set.): /login/
+WARNING 2025-03-26 02:56:12,035 basehttp "POST /login/ HTTP/1.1" 403 2870
+WARNING 2025-03-26 02:56:19,179 log Forbidden (CSRF cookie not set.): /login/
+WARNING 2025-03-26 02:56:19,180 basehttp "POST /login/ HTTP/1.1" 403 2870
+WARNING 2025-03-26 02:56:28,745 log Forbidden (CSRF cookie not set.): /login/
+WARNING 2025-03-26 02:56:28,746 basehttp "POST /login/ HTTP/1.1" 403 2870
+WARNING 2025-03-26 02:58:48,623 log Forbidden (CSRF cookie not set.): /login/
+WARNING 2025-03-26 02:58:48,624 basehttp "POST /login/ HTTP/1.1" 403 2870
+WARNING 2025-03-26 03:01:35,317 log Forbidden (CSRF cookie not set.): /login/
+WARNING 2025-03-26 03:01:35,318 basehttp "POST /login/ HTTP/1.1" 403 2870
+INFO 2025-03-26 03:03:44,461 basehttp "GET /login/ HTTP/1.1" 200 6321
+INFO 2025-03-26 03:03:54,818 basehttp "POST /login/ HTTP/1.1" 302 0
+INFO 2025-03-26 03:03:54,854 basehttp "GET /redirect/ HTTP/1.1" 302 0
+INFO 2025-03-26 03:03:54,892 basehttp "GET /lab-assistant-portal/ HTTP/1.1" 302 0
+INFO 2025-03-26 03:03:54,923 basehttp "GET / HTTP/1.1" 302 0
+INFO 2025-03-26 03:03:55,064 basehttp "GET /redirect/ HTTP/1.1" 302 0
+INFO 2025-03-26 03:03:55,097 basehttp "GET /lab-assistant-portal/ HTTP/1.1" 302 0
+INFO 2025-03-26 03:03:55,129 basehttp "GET / HTTP/1.1" 302 0
+INFO 2025-03-26 03:03:55,160 basehttp "GET /redirect/ HTTP/1.1" 302 0
+INFO 2025-03-26 03:03:55,197 basehttp "GET /lab-assistant-portal/ HTTP/1.1" 302 0
+INFO 2025-03-26 03:03:55,234 basehttp "GET / HTTP/1.1" 302 0
+INFO 2025-03-26 03:03:55,267 basehttp "GET /redirect/ HTTP/1.1" 302 0
+INFO 2025-03-26 03:03:55,302 basehttp "GET /lab-assistant-portal/ HTTP/1.1" 302 0
+INFO 2025-03-26 03:03:55,332 basehttp "GET / HTTP/1.1" 302 0
+INFO 2025-03-26 03:03:55,362 basehttp "GET /redirect/ HTTP/1.1" 302 0
+INFO 2025-03-26 03:03:55,398 basehttp "GET /lab-assistant-portal/ HTTP/1.1" 302 0
+INFO 2025-03-26 03:03:55,429 basehttp "GET / HTTP/1.1" 302 0
+INFO 2025-03-26 03:03:55,469 basehttp "GET /redirect/ HTTP/1.1" 302 0
+INFO 2025-03-26 03:03:55,503 basehttp "GET /lab-assistant-portal/ HTTP/1.1" 302 0
+INFO 2025-03-26 03:03:55,534 basehttp "GET / HTTP/1.1" 302 0
+INFO 2025-03-26 03:03:55,565 basehttp "GET /redirect/ HTTP/1.1" 302 0
+INFO 2025-03-26 03:03:56,649 basehttp "GET /redirect/ HTTP/1.1" 302 0
+INFO 2025-03-26 03:03:56,689 basehttp "GET /lab-assistant-portal/ HTTP/1.1" 302 0
+INFO 2025-03-26 03:03:56,719 basehttp "GET / HTTP/1.1" 302 0
+INFO 2025-03-26 03:03:56,753 basehttp "GET /redirect/ HTTP/1.1" 302 0
+INFO 2025-03-26 03:03:56,786 basehttp "GET /lab-assistant-portal/ HTTP/1.1" 302 0
+INFO 2025-03-26 03:03:56,825 basehttp "GET / HTTP/1.1" 302 0
+INFO 2025-03-26 03:03:56,860 basehttp "GET /redirect/ HTTP/1.1" 302 0
+INFO 2025-03-26 03:03:56,894 basehttp "GET /lab-assistant-portal/ HTTP/1.1" 302 0
+INFO 2025-03-26 03:03:56,923 basehttp "GET / HTTP/1.1" 302 0
+INFO 2025-03-26 03:03:56,956 basehttp "GET /redirect/ HTTP/1.1" 302 0
+INFO 2025-03-26 03:03:56,990 basehttp "GET /lab-assistant-portal/ HTTP/1.1" 302 0
+INFO 2025-03-26 03:03:57,019 basehttp "GET / HTTP/1.1" 302 0
+INFO 2025-03-26 03:03:57,050 basehttp "GET /redirect/ HTTP/1.1" 302 0
+INFO 2025-03-26 03:03:57,082 basehttp "GET /lab-assistant-portal/ HTTP/1.1" 302 0
+INFO 2025-03-26 03:03:57,112 basehttp "GET / HTTP/1.1" 302 0
+INFO 2025-03-26 03:03:57,141 basehttp "GET /redirect/ HTTP/1.1" 302 0
+INFO 2025-03-26 03:03:57,176 basehttp "GET /lab-assistant-portal/ HTTP/1.1" 302 0
+INFO 2025-03-26 03:03:57,206 basehttp "GET / HTTP/1.1" 302 0
+INFO 2025-03-26 03:03:57,237 basehttp "GET /redirect/ HTTP/1.1" 302 0
+INFO 2025-03-26 03:03:57,271 basehttp "GET /lab-assistant-portal/ HTTP/1.1" 302 0
+INFO 2025-03-26 03:04:02,336 basehttp "GET /lab-assistant-portal/ HTTP/1.1" 302 0
+INFO 2025-03-26 03:04:02,469 basehttp "GET / HTTP/1.1" 302 0
+INFO 2025-03-26 03:04:02,505 basehttp "GET /redirect/ HTTP/1.1" 302 0
+INFO 2025-03-26 03:04:02,540 basehttp "GET /lab-assistant-portal/ HTTP/1.1" 302 0
+INFO 2025-03-26 03:04:02,571 basehttp "GET / HTTP/1.1" 302 0
+INFO 2025-03-26 03:04:02,604 basehttp "GET /redirect/ HTTP/1.1" 302 0
+INFO 2025-03-26 03:04:02,636 basehttp "GET /lab-assistant-portal/ HTTP/1.1" 302 0
+INFO 2025-03-26 03:04:02,673 basehttp "GET / HTTP/1.1" 302 0
+INFO 2025-03-26 03:04:02,708 basehttp "GET /redirect/ HTTP/1.1" 302 0
+INFO 2025-03-26 03:04:02,741 basehttp "GET /lab-assistant-portal/ HTTP/1.1" 302 0
+INFO 2025-03-26 03:04:02,770 basehttp "GET / HTTP/1.1" 302 0
+INFO 2025-03-26 03:04:02,801 basehttp "GET /redirect/ HTTP/1.1" 302 0
+INFO 2025-03-26 03:04:02,839 basehttp "GET /lab-assistant-portal/ HTTP/1.1" 302 0
+INFO 2025-03-26 03:04:02,880 basehttp "GET / HTTP/1.1" 302 0
+INFO 2025-03-26 03:04:02,915 basehttp "GET /redirect/ HTTP/1.1" 302 0
+INFO 2025-03-26 03:04:02,959 basehttp "GET /lab-assistant-portal/ HTTP/1.1" 302 0
+INFO 2025-03-26 03:04:02,991 basehttp "GET / HTTP/1.1" 302 0
+INFO 2025-03-26 03:04:03,026 basehttp "GET /redirect/ HTTP/1.1" 302 0
+INFO 2025-03-26 03:04:03,173 basehttp "GET /lab-assistant-portal/ HTTP/1.1" 302 0
+INFO 2025-03-26 03:04:03,211 basehttp "GET / HTTP/1.1" 302 0
+INFO 2025-03-26 03:04:33,277 basehttp "GET / HTTP/1.1" 302 0
+INFO 2025-03-26 03:04:33,313 basehttp "GET /redirect/ HTTP/1.1" 302 0
+INFO 2025-03-26 03:04:33,450 basehttp "GET /lab-assistant-portal/ HTTP/1.1" 302 0
+INFO 2025-03-26 03:04:33,487 basehttp "GET / HTTP/1.1" 302 0
+INFO 2025-03-26 03:04:33,622 basehttp "GET /redirect/ HTTP/1.1" 302 0
+INFO 2025-03-26 03:04:33,654 basehttp "GET /lab-assistant-portal/ HTTP/1.1" 302 0
+INFO 2025-03-26 03:04:33,687 basehttp "GET / HTTP/1.1" 302 0
+INFO 2025-03-26 03:04:33,718 basehttp "GET /redirect/ HTTP/1.1" 302 0
+INFO 2025-03-26 03:04:33,750 basehttp "GET /lab-assistant-portal/ HTTP/1.1" 302 0
+INFO 2025-03-26 03:04:33,780 basehttp "GET / HTTP/1.1" 302 0
+INFO 2025-03-26 03:04:33,922 basehttp "GET /redirect/ HTTP/1.1" 302 0
+INFO 2025-03-26 03:04:33,958 basehttp "GET /lab-assistant-portal/ HTTP/1.1" 302 0
+INFO 2025-03-26 03:04:33,988 basehttp "GET / HTTP/1.1" 302 0
+INFO 2025-03-26 03:04:34,019 basehttp "GET /redirect/ HTTP/1.1" 302 0
+INFO 2025-03-26 03:04:34,052 basehttp "GET /lab-assistant-portal/ HTTP/1.1" 302 0
+INFO 2025-03-26 03:04:34,089 basehttp "GET / HTTP/1.1" 302 0
+INFO 2025-03-26 03:04:34,121 basehttp "GET /redirect/ HTTP/1.1" 302 0
+INFO 2025-03-26 03:04:34,155 basehttp "GET /lab-assistant-portal/ HTTP/1.1" 302 0
+INFO 2025-03-26 03:04:34,186 basehttp "GET / HTTP/1.1" 302 0
+INFO 2025-03-26 03:04:34,217 basehttp "GET /redirect/ HTTP/1.1" 302 0
+INFO 2025-03-26 03:05:34,291 basehttp "GET /redirect/ HTTP/1.1" 302 0
+INFO 2025-03-26 03:05:34,331 basehttp "GET /lab-assistant-portal/ HTTP/1.1" 302 0
+INFO 2025-03-26 03:05:34,365 basehttp "GET / HTTP/1.1" 302 0
+INFO 2025-03-26 03:05:34,398 basehttp "GET /redirect/ HTTP/1.1" 302 0
+INFO 2025-03-26 03:05:34,434 basehttp "GET /lab-assistant-portal/ HTTP/1.1" 302 0
+INFO 2025-03-26 03:05:34,466 basehttp "GET / HTTP/1.1" 302 0
+INFO 2025-03-26 03:05:34,603 basehttp "GET /redirect/ HTTP/1.1" 302 0
+INFO 2025-03-26 03:05:34,635 basehttp "GET /lab-assistant-portal/ HTTP/1.1" 302 0
+INFO 2025-03-26 03:05:34,667 basehttp "GET / HTTP/1.1" 302 0
+INFO 2025-03-26 03:05:34,703 basehttp "GET /redirect/ HTTP/1.1" 302 0
+INFO 2025-03-26 03:05:34,739 basehttp "GET /lab-assistant-portal/ HTTP/1.1" 302 0
+INFO 2025-03-26 03:05:34,774 basehttp "GET / HTTP/1.1" 302 0
+INFO 2025-03-26 03:05:34,808 basehttp "GET /redirect/ HTTP/1.1" 302 0
+INFO 2025-03-26 03:05:34,847 basehttp "GET /lab-assistant-portal/ HTTP/1.1" 302 0
+INFO 2025-03-26 03:05:34,885 basehttp "GET / HTTP/1.1" 302 0
+INFO 2025-03-26 03:05:34,921 basehttp "GET /redirect/ HTTP/1.1" 302 0
+INFO 2025-03-26 03:05:34,969 basehttp "GET /lab-assistant-portal/ HTTP/1.1" 302 0
+INFO 2025-03-26 03:05:35,007 basehttp "GET / HTTP/1.1" 302 0
+INFO 2025-03-26 03:05:35,041 basehttp "GET /redirect/ HTTP/1.1" 302 0
+INFO 2025-03-26 03:05:35,077 basehttp "GET /lab-assistant-portal/ HTTP/1.1" 302 0
+INFO 2025-03-26 03:07:36,828 autoreload D:\aaaaaaattend\attendance_system\lab_assistant_portal\views.py changed, reloading.
+INFO 2025-03-26 03:07:37,256 autoreload Watching for file changes with StatReloader
+INFO 2025-03-26 03:07:38,844 autoreload D:\aaaaaaattend\attendance_system\lab_assistant_portal\views.py changed, reloading.
+INFO 2025-03-26 03:07:39,328 autoreload Watching for file changes with StatReloader
+WARNING 2025-03-26 03:07:40,684 log Forbidden (CSRF cookie not set.): /login/
+WARNING 2025-03-26 03:07:40,685 basehttp "POST /login/ HTTP/1.1" 403 2870
+WARNING 2025-03-26 03:07:40,855 log Forbidden (CSRF cookie not set.): /login/
+WARNING 2025-03-26 03:07:40,856 basehttp "POST /login/ HTTP/1.1" 403 2870
+WARNING 2025-03-26 03:07:41,026 log Forbidden (CSRF cookie not set.): /login/
+WARNING 2025-03-26 03:07:41,026 basehttp "POST /login/ HTTP/1.1" 403 2870
+WARNING 2025-03-26 03:07:41,194 log Forbidden (CSRF cookie not set.): /login/
+WARNING 2025-03-26 03:07:41,194 basehttp "POST /login/ HTTP/1.1" 403 2870
+WARNING 2025-03-26 03:07:41,348 log Forbidden (CSRF cookie not set.): /login/
+WARNING 2025-03-26 03:07:41,349 basehttp "POST /login/ HTTP/1.1" 403 2870
+INFO 2025-03-26 03:07:44,678 basehttp "GET / HTTP/1.1" 200 6321
+INFO 2025-03-26 03:07:51,503 basehttp "POST /login/ HTTP/1.1" 302 0
+INFO 2025-03-26 03:07:51,546 basehttp "GET /redirect/ HTTP/1.1" 302 0
+INFO 2025-03-26 03:07:51,582 basehttp "GET /lab-assistant-portal/ HTTP/1.1" 302 0
+INFO 2025-03-26 03:07:51,614 basehttp "GET / HTTP/1.1" 302 0
+INFO 2025-03-26 03:07:51,651 basehttp "GET /redirect/ HTTP/1.1" 302 0
+INFO 2025-03-26 03:07:51,686 basehttp "GET /lab-assistant-portal/ HTTP/1.1" 302 0
+INFO 2025-03-26 03:07:51,718 basehttp "GET / HTTP/1.1" 302 0
+INFO 2025-03-26 03:07:51,760 basehttp "GET /redirect/ HTTP/1.1" 302 0
+INFO 2025-03-26 03:07:51,793 basehttp "GET /lab-assistant-portal/ HTTP/1.1" 302 0
+INFO 2025-03-26 03:07:51,928 basehttp "GET / HTTP/1.1" 302 0
+INFO 2025-03-26 03:07:51,962 basehttp "GET /redirect/ HTTP/1.1" 302 0
+INFO 2025-03-26 03:07:51,999 basehttp "GET /lab-assistant-portal/ HTTP/1.1" 302 0
+INFO 2025-03-26 03:07:52,037 basehttp "GET / HTTP/1.1" 302 0
+INFO 2025-03-26 03:07:52,070 basehttp "GET /redirect/ HTTP/1.1" 302 0
+INFO 2025-03-26 03:07:52,106 basehttp "GET /lab-assistant-portal/ HTTP/1.1" 302 0
+INFO 2025-03-26 03:07:52,138 basehttp "GET / HTTP/1.1" 302 0
+INFO 2025-03-26 03:07:52,288 basehttp "GET /redirect/ HTTP/1.1" 302 0
+INFO 2025-03-26 03:07:52,321 basehttp "GET /lab-assistant-portal/ HTTP/1.1" 302 0
+INFO 2025-03-26 03:07:52,353 basehttp "GET / HTTP/1.1" 302 0
+INFO 2025-03-26 03:07:52,383 basehttp "GET /redirect/ HTTP/1.1" 302 0
+INFO 2025-03-26 03:07:53,457 basehttp "GET /redirect/ HTTP/1.1" 302 0
+INFO 2025-03-26 03:07:53,495 basehttp "GET /lab-assistant-portal/ HTTP/1.1" 302 0
+INFO 2025-03-26 03:07:53,528 basehttp "GET / HTTP/1.1" 302 0
+INFO 2025-03-26 03:07:53,569 basehttp "GET /redirect/ HTTP/1.1" 302 0
+INFO 2025-03-26 03:07:53,603 basehttp "GET /lab-assistant-portal/ HTTP/1.1" 302 0
+INFO 2025-03-26 03:07:53,634 basehttp "GET / HTTP/1.1" 302 0
+INFO 2025-03-26 03:07:53,665 basehttp "GET /redirect/ HTTP/1.1" 302 0
+INFO 2025-03-26 03:07:53,697 basehttp "GET /lab-assistant-portal/ HTTP/1.1" 302 0
+INFO 2025-03-26 03:07:53,830 basehttp "GET / HTTP/1.1" 302 0
+INFO 2025-03-26 03:07:53,943 basehttp "GET /redirect/ HTTP/1.1" 302 0
+INFO 2025-03-26 03:07:53,970 basehttp - Broken pipe from ('127.0.0.1', 55856)
+INFO 2025-03-26 03:07:53,977 basehttp "GET /lab-assistant-portal/ HTTP/1.1" 302 0
+INFO 2025-03-26 03:07:54,009 basehttp "GET / HTTP/1.1" 302 0
+INFO 2025-03-26 03:07:54,039 basehttp "GET /redirect/ HTTP/1.1" 302 0
+INFO 2025-03-26 03:07:54,187 basehttp - Broken pipe from ('127.0.0.1', 55857)
+INFO 2025-03-26 03:07:54,204 basehttp "GET /redirect/ HTTP/1.1" 302 0
+INFO 2025-03-26 03:07:54,242 basehttp "GET /lab-assistant-portal/ HTTP/1.1" 302 0
+INFO 2025-03-26 03:07:54,382 basehttp - Broken pipe from ('127.0.0.1', 55915)
+INFO 2025-03-26 03:07:54,385 basehttp "GET /redirect/ HTTP/1.1" 302 0
+INFO 2025-03-26 03:07:54,421 basehttp "GET /lab-assistant-portal/ HTTP/1.1" 302 0
+INFO 2025-03-26 03:07:54,459 basehttp "GET / HTTP/1.1" 302 0
+INFO 2025-03-26 03:07:54,493 basehttp "GET /redirect/ HTTP/1.1" 302 0
+INFO 2025-03-26 03:07:54,534 basehttp - Broken pipe from ('127.0.0.1', 55922)
+INFO 2025-03-26 03:07:54,538 basehttp "GET /redirect/ HTTP/1.1" 302 0
+INFO 2025-03-26 03:07:54,575 basehttp "GET /lab-assistant-portal/ HTTP/1.1" 302 0
+INFO 2025-03-26 03:07:54,618 basehttp "GET / HTTP/1.1" 302 0
+INFO 2025-03-26 03:07:54,651 basehttp "GET /redirect/ HTTP/1.1" 302 0
+INFO 2025-03-26 03:07:54,692 basehttp - Broken pipe from ('127.0.0.1', 55926)
+INFO 2025-03-26 03:07:54,698 basehttp "GET /redirect/ HTTP/1.1" 302 0
+INFO 2025-03-26 03:07:54,736 basehttp "GET /lab-assistant-portal/ HTTP/1.1" 302 0
+INFO 2025-03-26 03:07:54,774 basehttp "GET / HTTP/1.1" 302 0
+INFO 2025-03-26 03:07:54,805 basehttp "GET /redirect/ HTTP/1.1" 302 0
+INFO 2025-03-26 03:07:54,843 basehttp "GET /lab-assistant-portal/ HTTP/1.1" 302 0
+INFO 2025-03-26 03:07:54,880 basehttp "GET / HTTP/1.1" 302 0
+INFO 2025-03-26 03:07:54,912 basehttp "GET /redirect/ HTTP/1.1" 302 0
+INFO 2025-03-26 03:07:54,954 basehttp "GET /lab-assistant-portal/ HTTP/1.1" 302 0
+INFO 2025-03-26 03:07:54,989 basehttp "GET / HTTP/1.1" 302 0
+INFO 2025-03-26 03:07:55,024 basehttp "GET /redirect/ HTTP/1.1" 302 0
+INFO 2025-03-26 03:07:55,069 basehttp "GET /lab-assistant-portal/ HTTP/1.1" 302 0
+INFO 2025-03-26 03:07:55,101 basehttp "GET / HTTP/1.1" 302 0
+INFO 2025-03-26 03:07:55,137 basehttp "GET /redirect/ HTTP/1.1" 302 0
+INFO 2025-03-26 03:07:55,176 basehttp "GET /lab-assistant-portal/ HTTP/1.1" 302 0
+INFO 2025-03-26 03:07:55,209 basehttp "GET / HTTP/1.1" 302 0
+INFO 2025-03-26 03:07:55,240 basehttp "GET /redirect/ HTTP/1.1" 302 0
+INFO 2025-03-26 03:07:55,274 basehttp "GET /lab-assistant-portal/ HTTP/1.1" 302 0
+INFO 2025-03-26 03:07:55,306 basehttp "GET / HTTP/1.1" 302 0
+INFO 2025-03-26 03:07:55,344 basehttp "GET /redirect/ HTTP/1.1" 302 0
+INFO 2025-03-26 03:07:55,379 basehttp "GET /lab-assistant-portal/ HTTP/1.1" 302 0
+INFO 2025-03-26 03:08:00,450 basehttp "GET /lab-assistant-portal/ HTTP/1.1" 302 0
+INFO 2025-03-26 03:08:00,492 basehttp "GET / HTTP/1.1" 302 0
+INFO 2025-03-26 03:08:00,533 basehttp "GET /redirect/ HTTP/1.1" 302 0
+INFO 2025-03-26 03:08:00,571 basehttp "GET /lab-assistant-portal/ HTTP/1.1" 302 0
+INFO 2025-03-26 03:08:00,609 basehttp "GET / HTTP/1.1" 302 0
+INFO 2025-03-26 03:08:00,748 basehttp "GET /redirect/ HTTP/1.1" 302 0
+INFO 2025-03-26 03:08:00,784 basehttp "GET /lab-assistant-portal/ HTTP/1.1" 302 0
+INFO 2025-03-26 03:08:00,820 basehttp "GET / HTTP/1.1" 302 0
+INFO 2025-03-26 03:08:00,856 basehttp "GET /redirect/ HTTP/1.1" 302 0
+INFO 2025-03-26 03:08:00,893 basehttp "GET /lab-assistant-portal/ HTTP/1.1" 302 0
+INFO 2025-03-26 03:08:00,933 basehttp "GET / HTTP/1.1" 302 0
+INFO 2025-03-26 03:08:00,968 basehttp "GET /redirect/ HTTP/1.1" 302 0
+INFO 2025-03-26 03:08:01,003 basehttp "GET /lab-assistant-portal/ HTTP/1.1" 302 0
+INFO 2025-03-26 03:08:01,034 basehttp "GET / HTTP/1.1" 302 0
+INFO 2025-03-26 03:08:01,074 basehttp "GET /redirect/ HTTP/1.1" 302 0
+INFO 2025-03-26 03:08:01,108 basehttp "GET /lab-assistant-portal/ HTTP/1.1" 302 0
+INFO 2025-03-26 03:08:01,140 basehttp "GET / HTTP/1.1" 302 0
+INFO 2025-03-26 03:08:01,174 basehttp "GET /redirect/ HTTP/1.1" 302 0
+INFO 2025-03-26 03:08:01,210 basehttp "GET /lab-assistant-portal/ HTTP/1.1" 302 0
+INFO 2025-03-26 03:08:01,247 basehttp "GET / HTTP/1.1" 302 0
+INFO 2025-03-26 03:08:05,345 autoreload D:\aaaaaaattend\attendance_system\lab_assistant_portal\views.py changed, reloading.
+INFO 2025-03-26 03:08:05,754 autoreload Watching for file changes with StatReloader
+INFO 2025-03-26 03:10:35,165 basehttp "GET /lab-assistant-portal/ HTTP/1.1" 302 0
+INFO 2025-03-26 03:10:35,203 basehttp "GET / HTTP/1.1" 302 0
+INFO 2025-03-26 03:10:35,238 basehttp "GET /redirect/ HTTP/1.1" 302 0
+INFO 2025-03-26 03:10:35,272 basehttp "GET /lab-assistant-portal/ HTTP/1.1" 302 0
+INFO 2025-03-26 03:10:35,302 basehttp "GET / HTTP/1.1" 302 0
+INFO 2025-03-26 03:10:35,334 basehttp "GET /redirect/ HTTP/1.1" 302 0
+INFO 2025-03-26 03:10:35,374 basehttp "GET /lab-assistant-portal/ HTTP/1.1" 302 0
+INFO 2025-03-26 03:10:35,405 basehttp "GET / HTTP/1.1" 302 0
+INFO 2025-03-26 03:10:35,436 basehttp "GET /redirect/ HTTP/1.1" 302 0
+INFO 2025-03-26 03:10:35,469 basehttp "GET /lab-assistant-portal/ HTTP/1.1" 302 0
+INFO 2025-03-26 03:10:35,499 basehttp "GET / HTTP/1.1" 302 0
+INFO 2025-03-26 03:10:35,640 basehttp "GET /redirect/ HTTP/1.1" 302 0
+INFO 2025-03-26 03:10:35,673 basehttp "GET /lab-assistant-portal/ HTTP/1.1" 302 0
+INFO 2025-03-26 03:10:35,704 basehttp "GET / HTTP/1.1" 302 0
+INFO 2025-03-26 03:10:35,734 basehttp "GET /redirect/ HTTP/1.1" 302 0
+INFO 2025-03-26 03:10:35,770 basehttp "GET /lab-assistant-portal/ HTTP/1.1" 302 0
+INFO 2025-03-26 03:10:35,801 basehttp "GET / HTTP/1.1" 302 0
+INFO 2025-03-26 03:10:35,832 basehttp "GET /redirect/ HTTP/1.1" 302 0
+INFO 2025-03-26 03:10:35,866 basehttp "GET /lab-assistant-portal/ HTTP/1.1" 302 0
+INFO 2025-03-26 03:10:35,896 basehttp "GET / HTTP/1.1" 302 0
+INFO 2025-03-26 03:11:23,567 autoreload D:\aaaaaaattend\attendance_system\lab_assistant_portal\views.py changed, reloading.
+INFO 2025-03-26 03:11:23,989 autoreload Watching for file changes with StatReloader
+INFO 2025-03-26 03:11:58,739 autoreload D:\aaaaaaattend\attendance_system\lab_assistant_portal\views.py changed, reloading.
+INFO 2025-03-26 03:11:59,163 autoreload Watching for file changes with StatReloader
+INFO 2025-03-26 03:12:19,811 autoreload D:\aaaaaaattend\attendance_system\lab_assistant_portal\views.py changed, reloading.
+INFO 2025-03-26 03:12:20,261 autoreload Watching for file changes with StatReloader
+INFO 2025-03-26 03:13:59,321 autoreload D:\aaaaaaattend\attendance_system\lab_assistant_portal\views.py changed, reloading.
+INFO 2025-03-26 03:13:59,754 autoreload Watching for file changes with StatReloader
+INFO 2025-03-26 03:14:07,046 basehttp "GET / HTTP/1.1" 200 6321
+INFO 2025-03-26 03:14:07,234 basehttp "GET / HTTP/1.1" 200 6321
+INFO 2025-03-26 03:14:14,104 basehttp "POST /login/ HTTP/1.1" 200 6771
+INFO 2025-03-26 03:14:21,754 basehttp "POST /login/ HTTP/1.1" 302 0
+INFO 2025-03-26 03:14:21,793 basehttp "GET /redirect/ HTTP/1.1" 302 0
+INFO 2025-03-26 03:14:21,831 basehttp "GET /lab-assistant-portal/ HTTP/1.1" 302 0
+INFO 2025-03-26 03:14:21,863 basehttp "GET / HTTP/1.1" 302 0
+INFO 2025-03-26 03:14:21,897 basehttp "GET /redirect/ HTTP/1.1" 302 0
+INFO 2025-03-26 03:14:21,938 basehttp "GET /lab-assistant-portal/ HTTP/1.1" 302 0
+INFO 2025-03-26 03:14:22,074 basehttp "GET / HTTP/1.1" 302 0
+INFO 2025-03-26 03:14:22,106 basehttp "GET /redirect/ HTTP/1.1" 302 0
+INFO 2025-03-26 03:14:22,139 basehttp "GET /lab-assistant-portal/ HTTP/1.1" 302 0
+INFO 2025-03-26 03:14:22,174 basehttp "GET / HTTP/1.1" 302 0
+INFO 2025-03-26 03:14:22,206 basehttp "GET /redirect/ HTTP/1.1" 302 0
+INFO 2025-03-26 03:14:22,250 basehttp "GET /lab-assistant-portal/ HTTP/1.1" 302 0
+INFO 2025-03-26 03:14:22,280 basehttp "GET / HTTP/1.1" 302 0
+INFO 2025-03-26 03:14:22,314 basehttp "GET /redirect/ HTTP/1.1" 302 0
+INFO 2025-03-26 03:14:22,351 basehttp "GET /lab-assistant-portal/ HTTP/1.1" 302 0
+INFO 2025-03-26 03:14:22,386 basehttp "GET / HTTP/1.1" 302 0
+INFO 2025-03-26 03:14:22,419 basehttp "GET /redirect/ HTTP/1.1" 302 0
+INFO 2025-03-26 03:14:22,453 basehttp "GET /lab-assistant-portal/ HTTP/1.1" 302 0
+INFO 2025-03-26 03:14:22,486 basehttp "GET / HTTP/1.1" 302 0
+INFO 2025-03-26 03:14:22,529 basehttp "GET /redirect/ HTTP/1.1" 302 0
+INFO 2025-03-26 03:14:23,610 basehttp "GET /redirect/ HTTP/1.1" 302 0
+INFO 2025-03-26 03:14:23,650 basehttp "GET /lab-assistant-portal/ HTTP/1.1" 302 0
+INFO 2025-03-26 03:14:23,681 basehttp "GET / HTTP/1.1" 302 0
+INFO 2025-03-26 03:14:23,714 basehttp "GET /redirect/ HTTP/1.1" 302 0
+INFO 2025-03-26 03:14:23,747 basehttp "GET /lab-assistant-portal/ HTTP/1.1" 302 0
+INFO 2025-03-26 03:14:23,778 basehttp "GET / HTTP/1.1" 302 0
+INFO 2025-03-26 03:14:23,811 basehttp "GET /redirect/ HTTP/1.1" 302 0
+INFO 2025-03-26 03:14:23,851 basehttp "GET /lab-assistant-portal/ HTTP/1.1" 302 0
+INFO 2025-03-26 03:14:23,882 basehttp "GET / HTTP/1.1" 302 0
+INFO 2025-03-26 03:14:23,914 basehttp "GET /redirect/ HTTP/1.1" 302 0
+INFO 2025-03-26 03:14:23,948 basehttp "GET /lab-assistant-portal/ HTTP/1.1" 302 0
+INFO 2025-03-26 03:14:23,978 basehttp "GET / HTTP/1.1" 302 0
+INFO 2025-03-26 03:14:24,011 basehttp "GET /redirect/ HTTP/1.1" 302 0
+INFO 2025-03-26 03:14:24,046 basehttp "GET /lab-assistant-portal/ HTTP/1.1" 302 0
+INFO 2025-03-26 03:14:24,191 basehttp "GET / HTTP/1.1" 302 0
+INFO 2025-03-26 03:14:24,225 basehttp "GET /redirect/ HTTP/1.1" 302 0
+INFO 2025-03-26 03:14:24,261 basehttp "GET /lab-assistant-portal/ HTTP/1.1" 302 0
+INFO 2025-03-26 03:14:24,291 basehttp "GET / HTTP/1.1" 302 0
+INFO 2025-03-26 03:14:24,326 basehttp "GET /redirect/ HTTP/1.1" 302 0
+INFO 2025-03-26 03:14:24,360 basehttp "GET /lab-assistant-portal/ HTTP/1.1" 302 0
+INFO 2025-03-26 03:14:29,427 basehttp "GET /lab-assistant-portal/ HTTP/1.1" 302 0
+INFO 2025-03-26 03:14:29,460 basehttp "GET / HTTP/1.1" 302 0
+INFO 2025-03-26 03:14:29,493 basehttp "GET /redirect/ HTTP/1.1" 302 0
+INFO 2025-03-26 03:14:29,528 basehttp "GET /lab-assistant-portal/ HTTP/1.1" 302 0
+INFO 2025-03-26 03:14:29,563 basehttp "GET / HTTP/1.1" 302 0
+INFO 2025-03-26 03:14:29,598 basehttp "GET /redirect/ HTTP/1.1" 302 0
+INFO 2025-03-26 03:14:29,633 basehttp "GET /lab-assistant-portal/ HTTP/1.1" 302 0
+INFO 2025-03-26 03:14:29,665 basehttp "GET / HTTP/1.1" 302 0
+INFO 2025-03-26 03:14:29,700 basehttp "GET /redirect/ HTTP/1.1" 302 0
+INFO 2025-03-26 03:14:29,740 basehttp "GET /lab-assistant-portal/ HTTP/1.1" 302 0
+INFO 2025-03-26 03:14:29,771 basehttp "GET / HTTP/1.1" 302 0
+INFO 2025-03-26 03:14:29,910 basehttp "GET /redirect/ HTTP/1.1" 302 0
+INFO 2025-03-26 03:14:29,947 basehttp "GET /lab-assistant-portal/ HTTP/1.1" 302 0
+INFO 2025-03-26 03:14:29,986 basehttp "GET / HTTP/1.1" 302 0
+INFO 2025-03-26 03:14:30,021 basehttp "GET /redirect/ HTTP/1.1" 302 0
+INFO 2025-03-26 03:14:30,062 basehttp "GET /lab-assistant-portal/ HTTP/1.1" 302 0
+INFO 2025-03-26 03:14:30,095 basehttp "GET / HTTP/1.1" 302 0
+INFO 2025-03-26 03:14:30,130 basehttp "GET /redirect/ HTTP/1.1" 302 0
+INFO 2025-03-26 03:14:30,282 basehttp "GET /lab-assistant-portal/ HTTP/1.1" 302 0
+INFO 2025-03-26 03:14:30,315 basehttp "GET / HTTP/1.1" 302 0
+INFO 2025-03-26 03:14:49,003 autoreload D:\aaaaaaattend\attendance_system\lab_assistant_portal\views.py changed, reloading.
+INFO 2025-03-26 03:14:49,442 autoreload Watching for file changes with StatReloader
+INFO 2025-03-26 03:14:50,984 autoreload D:\aaaaaaattend\attendance_system\lab_assistant_portal\views.py changed, reloading.
+INFO 2025-03-26 03:14:51,418 autoreload Watching for file changes with StatReloader
+INFO 2025-03-26 03:15:00,379 basehttp "GET / HTTP/1.1" 302 0
+INFO 2025-03-26 03:15:00,414 basehttp "GET /redirect/ HTTP/1.1" 302 0
+INFO 2025-03-26 03:15:00,450 basehttp "GET /lab-assistant-portal/ HTTP/1.1" 302 0
+INFO 2025-03-26 03:15:00,480 basehttp "GET / HTTP/1.1" 302 0
+INFO 2025-03-26 03:15:00,514 basehttp "GET /redirect/ HTTP/1.1" 302 0
+INFO 2025-03-26 03:15:00,547 basehttp "GET /lab-assistant-portal/ HTTP/1.1" 302 0
+INFO 2025-03-26 03:15:00,578 basehttp "GET / HTTP/1.1" 302 0
+INFO 2025-03-26 03:15:00,609 basehttp "GET /redirect/ HTTP/1.1" 302 0
+INFO 2025-03-26 03:15:00,643 basehttp "GET /lab-assistant-portal/ HTTP/1.1" 302 0
+INFO 2025-03-26 03:15:00,681 basehttp "GET / HTTP/1.1" 302 0
+INFO 2025-03-26 03:15:00,715 basehttp "GET /redirect/ HTTP/1.1" 302 0
+INFO 2025-03-26 03:15:00,747 basehttp "GET /lab-assistant-portal/ HTTP/1.1" 302 0
+INFO 2025-03-26 03:15:00,779 basehttp "GET / HTTP/1.1" 302 0
+INFO 2025-03-26 03:15:00,814 basehttp "GET /redirect/ HTTP/1.1" 302 0
+INFO 2025-03-26 03:15:00,849 basehttp "GET /lab-assistant-portal/ HTTP/1.1" 302 0
+INFO 2025-03-26 03:15:00,883 basehttp "GET / HTTP/1.1" 302 0
+INFO 2025-03-26 03:15:00,916 basehttp "GET /redirect/ HTTP/1.1" 302 0
+INFO 2025-03-26 03:15:00,950 basehttp "GET /lab-assistant-portal/ HTTP/1.1" 302 0
+INFO 2025-03-26 03:15:00,981 basehttp "GET / HTTP/1.1" 302 0
+INFO 2025-03-26 03:15:01,014 basehttp "GET /redirect/ HTTP/1.1" 302 0
+INFO 2025-03-26 03:15:49,589 autoreload D:\aaaaaaattend\attendance_system\lab_assistant_portal\views.py changed, reloading.
+INFO 2025-03-26 03:15:50,031 autoreload Watching for file changes with StatReloader
+INFO 2025-03-26 03:15:57,960 basehttp "GET /redirect/ HTTP/1.1" 302 0
+INFO 2025-03-26 03:15:58,008 basehttp "GET /lab-assistant-portal/ HTTP/1.1" 200 5168
+INFO 2025-03-26 03:15:58,120 basehttp "GET /lab-assistant-portal/ HTTP/1.1" 200 5168
+INFO 2025-03-26 03:15:58,280 basehttp "GET /lab-assistant-portal/ HTTP/1.1" 200 5168
+INFO 2025-03-26 03:15:59,340 basehttp "GET / HTTP/1.1" 302 0
+INFO 2025-03-26 03:15:59,372 basehttp "GET /redirect/ HTTP/1.1" 302 0
+INFO 2025-03-26 03:15:59,512 basehttp "GET /lab-assistant-portal/ HTTP/1.1" 200 5168
+INFO 2025-03-26 03:16:00,858 basehttp "GET / HTTP/1.1" 302 0
+INFO 2025-03-26 03:16:00,893 basehttp "GET /redirect/ HTTP/1.1" 302 0
+INFO 2025-03-26 03:16:00,930 basehttp "GET /lab-assistant-portal/ HTTP/1.1" 200 5168
+INFO 2025-03-26 03:16:01,532 basehttp "GET / HTTP/1.1" 302 0
+INFO 2025-03-26 03:16:01,568 basehttp "GET /redirect/ HTTP/1.1" 302 0
+INFO 2025-03-26 03:16:01,604 basehttp "GET /lab-assistant-portal/ HTTP/1.1" 200 5168
+INFO 2025-03-26 03:16:03,305 basehttp "GET /logout/ HTTP/1.1" 302 0
+INFO 2025-03-26 03:16:03,311 basehttp "GET /login/ HTTP/1.1" 200 17111
+INFO 2025-03-26 03:16:17,623 basehttp "POST /login/ HTTP/1.1" 302 0
+INFO 2025-03-26 03:16:17,662 basehttp "GET /redirect/ HTTP/1.1" 302 0
+INFO 2025-03-26 03:16:17,697 basehttp "GET /lab-assistant-portal/ HTTP/1.1" 200 5168
+INFO 2025-03-26 03:16:32,209 autoreload D:\aaaaaaattend\attendance_system\lab_assistant_portal\views.py changed, reloading.
+INFO 2025-03-26 03:16:32,682 autoreload Watching for file changes with StatReloader
+INFO 2025-03-26 03:16:43,385 autoreload D:\aaaaaaattend\attendance_system\lab_assistant_portal\views.py changed, reloading.
+INFO 2025-03-26 03:16:43,807 autoreload Watching for file changes with StatReloader
+INFO 2025-03-26 03:16:47,692 basehttp "GET /lab-assistant-portal/ HTTP/1.1" 200 5168
+INFO 2025-03-26 03:16:47,838 basehttp "GET /lab-assistant-portal/ HTTP/1.1" 200 5168
+INFO 2025-03-26 03:16:48,024 basehttp "GET /lab-assistant-portal/ HTTP/1.1" 200 5168
+INFO 2025-03-26 03:16:48,173 basehttp "GET /lab-assistant-portal/ HTTP/1.1" 200 5168
+INFO 2025-03-26 03:16:48,331 basehttp "GET /lab-assistant-portal/ HTTP/1.1" 200 5168
+INFO 2025-03-26 03:16:48,494 basehttp "GET /lab-assistant-portal/ HTTP/1.1" 200 5168
+INFO 2025-03-26 03:16:49,252 basehttp "GET / HTTP/1.1" 302 0
+INFO 2025-03-26 03:16:49,288 basehttp "GET /redirect/ HTTP/1.1" 302 0
+INFO 2025-03-26 03:16:49,324 basehttp "GET /lab-assistant-portal/ HTTP/1.1" 200 5168
+INFO 2025-03-26 03:16:51,169 basehttp "GET /logout/ HTTP/1.1" 302 0
+INFO 2025-03-26 03:16:51,176 basehttp "GET /login/ HTTP/1.1" 200 7075
+INFO 2025-03-26 03:17:04,306 basehttp "POST /login/ HTTP/1.1" 302 0
+INFO 2025-03-26 03:17:04,338 basehttp "GET /redirect/ HTTP/1.1" 302 0
+INFO 2025-03-26 03:17:04,375 basehttp "GET /lab-assistant-portal/ HTTP/1.1" 200 5168
+INFO 2025-03-26 03:18:10,138 basehttp "GET / HTTP/1.1" 302 0
+INFO 2025-03-26 03:18:10,175 basehttp "GET /redirect/ HTTP/1.1" 302 0
+INFO 2025-03-26 03:18:10,210 basehttp "GET /lab-assistant-portal/ HTTP/1.1" 200 5168
+INFO 2025-03-26 03:18:13,476 basehttp "GET / HTTP/1.1" 302 0
+INFO 2025-03-26 03:18:13,510 basehttp "GET /redirect/ HTTP/1.1" 302 0
+INFO 2025-03-26 03:18:13,547 basehttp "GET /lab-assistant-portal/ HTTP/1.1" 200 5168
+INFO 2025-03-26 03:18:13,803 basehttp "GET / HTTP/1.1" 302 0
+INFO 2025-03-26 03:18:13,836 basehttp "GET /redirect/ HTTP/1.1" 302 0
+INFO 2025-03-26 03:18:13,879 basehttp "GET /lab-assistant-portal/ HTTP/1.1" 200 5168
+INFO 2025-03-26 03:18:14,110 basehttp "GET / HTTP/1.1" 302 0
+INFO 2025-03-26 03:18:14,146 basehttp "GET /redirect/ HTTP/1.1" 302 0
+INFO 2025-03-26 03:18:14,182 basehttp "GET /lab-assistant-portal/ HTTP/1.1" 200 5168
+INFO 2025-03-26 03:18:14,408 basehttp "GET / HTTP/1.1" 302 0
+INFO 2025-03-26 03:18:14,444 basehttp "GET /redirect/ HTTP/1.1" 302 0
+INFO 2025-03-26 03:18:14,480 basehttp "GET /lab-assistant-portal/ HTTP/1.1" 200 5168
+INFO 2025-03-26 03:20:35,415 basehttp "GET /logout/ HTTP/1.1" 302 0
+INFO 2025-03-26 03:20:35,419 basehttp "GET /login/ HTTP/1.1" 200 7075
+INFO 2025-03-26 03:20:35,951 basehttp "GET / HTTP/1.1" 302 0
+INFO 2025-03-26 03:20:35,985 basehttp "GET /redirect/ HTTP/1.1" 302 0
+INFO 2025-03-26 03:20:36,026 basehttp "GET /lab-assistant-portal/ HTTP/1.1" 200 5168
+INFO 2025-03-26 03:22:36,110 basehttp "POST /login/ HTTP/1.1" 302 0
+INFO 2025-03-26 03:22:36,146 basehttp "GET /redirect/ HTTP/1.1" 302 0
+INFO 2025-03-26 03:22:36,190 basehttp "GET /lab-assistant-portal/ HTTP/1.1" 200 5168
+INFO 2025-03-26 03:23:43,335 basehttp "GET / HTTP/1.1" 302 0
+INFO 2025-03-26 03:23:43,368 basehttp "GET /redirect/ HTTP/1.1" 302 0
+INFO 2025-03-26 03:23:43,507 basehttp "GET /lab-assistant-portal/ HTTP/1.1" 200 5168
+INFO 2025-03-26 03:23:47,745 basehttp "GET /logout/ HTTP/1.1" 302 0
+INFO 2025-03-26 03:23:47,748 basehttp "GET /login/ HTTP/1.1" 200 7075
+INFO 2025-03-26 03:24:33,177 autoreload D:\aaaaaaattend\attendance_system\lab_assistant_portal\views.py changed, reloading.
+INFO 2025-03-26 03:24:33,652 autoreload Watching for file changes with StatReloader
+INFO 2025-03-26 03:24:43,638 basehttp "POST /login/ HTTP/1.1" 302 0
+INFO 2025-03-26 03:24:43,676 basehttp "GET /redirect/ HTTP/1.1" 302 0
+INFO 2025-03-26 03:24:43,719 basehttp "GET /lab-assistant-portal/ HTTP/1.1" 200 5168
+INFO 2025-03-26 03:24:44,856 basehttp "GET / HTTP/1.1" 302 0
+INFO 2025-03-26 03:24:44,890 basehttp "GET /redirect/ HTTP/1.1" 302 0
+INFO 2025-03-26 03:24:44,933 basehttp "GET /lab-assistant-portal/ HTTP/1.1" 200 5168
+INFO 2025-03-26 03:24:48,590 autoreload D:\aaaaaaattend\attendance_system\lab_assistant_portal\views.py changed, reloading.
+INFO 2025-03-26 03:24:49,086 autoreload Watching for file changes with StatReloader
+INFO 2025-03-26 03:24:59,171 basehttp "GET /logout/ HTTP/1.1" 302 0
+INFO 2025-03-26 03:24:59,185 basehttp "GET /login/ HTTP/1.1" 200 7075
+INFO 2025-03-26 03:25:06,022 basehttp "POST /login/ HTTP/1.1" 302 0
+INFO 2025-03-26 03:25:06,065 basehttp "GET /redirect/ HTTP/1.1" 302 0
+INFO 2025-03-26 03:25:06,117 basehttp "GET /admin-portal/ HTTP/1.1" 302 0
+INFO 2025-03-26 03:25:06,180 basehttp "GET /admin-portal/dashboard/ HTTP/1.1" 200 28656
+INFO 2025-03-26 03:25:10,124 basehttp "GET /admin-portal/users/ HTTP/1.1" 200 20296
+INFO 2025-03-26 03:25:26,068 basehttp "GET /logout/ HTTP/1.1" 302 0
+INFO 2025-03-26 03:25:26,071 basehttp "GET /login/ HTTP/1.1" 200 6726
+INFO 2025-03-26 03:25:41,777 basehttp "POST /login/ HTTP/1.1" 302 0
+INFO 2025-03-26 03:25:41,813 basehttp "GET /redirect/ HTTP/1.1" 302 0
+INFO 2025-03-26 03:25:41,852 basehttp "GET /lab-assistant-portal/ HTTP/1.1" 200 5168
+INFO 2025-03-26 03:26:28,321 autoreload D:\aaaaaaattend\attendance_system\lab_assistant_portal\views.py changed, reloading.
+INFO 2025-03-26 03:26:28,739 autoreload Watching for file changes with StatReloader
+INFO 2025-03-26 03:27:18,947 autoreload D:\aaaaaaattend\attendance_system\lab_assistant_portal\views.py changed, reloading.
+INFO 2025-03-26 03:27:19,376 autoreload Watching for file changes with StatReloader
+INFO 2025-03-26 03:27:22,059 basehttp "GET /lab-assistant-portal/ HTTP/1.1" 200 5168
+INFO 2025-03-26 03:27:22,201 basehttp "GET /lab-assistant-portal/ HTTP/1.1" 200 5168
+INFO 2025-03-26 03:27:22,351 basehttp "GET /lab-assistant-portal/ HTTP/1.1" 200 5168
+INFO 2025-03-26 03:27:22,482 basehttp "GET /lab-assistant-portal/ HTTP/1.1" 200 5168
+INFO 2025-03-26 03:27:24,128 basehttp "GET /logout/ HTTP/1.1" 302 0
+INFO 2025-03-26 03:27:24,135 basehttp "GET /login/ HTTP/1.1" 200 7075
+INFO 2025-03-26 03:27:31,459 basehttp "POST /login/ HTTP/1.1" 302 0
+INFO 2025-03-26 03:27:31,500 basehttp "GET /redirect/ HTTP/1.1" 302 0
+INFO 2025-03-26 03:27:31,640 basehttp "GET /lab-assistant-portal/ HTTP/1.1" 200 5168
+INFO 2025-03-26 03:27:33,483 basehttp "GET / HTTP/1.1" 302 0
+INFO 2025-03-26 03:27:33,518 basehttp "GET /redirect/ HTTP/1.1" 302 0
+INFO 2025-03-26 03:27:33,560 basehttp "GET /lab-assistant-portal/ HTTP/1.1" 200 5168
+INFO 2025-03-26 03:31:46,631 basehttp "GET / HTTP/1.1" 302 0
+INFO 2025-03-26 03:31:46,663 basehttp "GET /redirect/ HTTP/1.1" 302 0
+INFO 2025-03-26 03:31:46,698 basehttp "GET /lab-assistant-portal/ HTTP/1.1" 200 5168
+INFO 2025-03-26 03:36:05,819 autoreload D:\aaaaaaattend\attendance_system\lab_assistant_portal\views.py changed, reloading.
+INFO 2025-03-26 03:36:06,218 autoreload Watching for file changes with StatReloader
+INFO 2025-03-26 03:36:19,290 basehttp "GET /logout/ HTTP/1.1" 302 0
+INFO 2025-03-26 03:36:19,299 basehttp "GET /login/ HTTP/1.1" 200 7075
+INFO 2025-03-26 03:36:27,886 basehttp "POST /login/ HTTP/1.1" 302 0
+INFO 2025-03-26 03:36:28,030 basehttp "GET /redirect/ HTTP/1.1" 302 0
+INFO 2025-03-26 03:36:28,065 basehttp "GET /lab-assistant-portal/ HTTP/1.1" 200 5168
+INFO 2025-03-26 03:36:58,683 basehttp "GET / HTTP/1.1" 302 0
+INFO 2025-03-26 03:36:58,725 basehttp "GET /redirect/ HTTP/1.1" 302 0
+INFO 2025-03-26 03:36:58,760 basehttp "GET /lab-assistant-portal/ HTTP/1.1" 200 5168
+INFO 2025-03-26 03:36:59,067 basehttp "GET / HTTP/1.1" 302 0
+INFO 2025-03-26 03:36:59,101 basehttp "GET /redirect/ HTTP/1.1" 302 0
+INFO 2025-03-26 03:36:59,139 basehttp "GET /lab-assistant-portal/ HTTP/1.1" 200 5168
+INFO 2025-03-26 03:36:59,423 basehttp "GET / HTTP/1.1" 302 0
+INFO 2025-03-26 03:36:59,458 basehttp "GET /redirect/ HTTP/1.1" 302 0
+INFO 2025-03-26 03:36:59,492 basehttp "GET /lab-assistant-portal/ HTTP/1.1" 200 5168
+INFO 2025-03-26 03:36:59,745 basehttp "GET / HTTP/1.1" 302 0
+INFO 2025-03-26 03:36:59,781 basehttp "GET /redirect/ HTTP/1.1" 302 0
+INFO 2025-03-26 03:36:59,819 basehttp "GET /lab-assistant-portal/ HTTP/1.1" 200 5168
+INFO 2025-03-26 03:37:00,081 basehttp "GET / HTTP/1.1" 302 0
+INFO 2025-03-26 03:37:00,115 basehttp "GET /redirect/ HTTP/1.1" 302 0
+INFO 2025-03-26 03:37:00,152 basehttp "GET /lab-assistant-portal/ HTTP/1.1" 200 5168
+INFO 2025-03-26 03:49:07,191 autoreload Watching for file changes with StatReloader
+INFO 2025-03-26 03:49:09,727 basehttp "GET /logout/ HTTP/1.1" 302 0
+INFO 2025-03-26 03:49:09,737 basehttp "GET /login/ HTTP/1.1" 200 7075
+INFO 2025-03-26 03:49:09,861 basehttp "GET /login/ HTTP/1.1" 200 6321
+INFO 2025-03-26 03:49:10,010 basehttp "GET /login/ HTTP/1.1" 200 6321
+INFO 2025-03-26 03:49:10,163 basehttp "GET /login/ HTTP/1.1" 200 6321
+INFO 2025-03-26 03:49:15,678 basehttp "POST /login/ HTTP/1.1" 302 0
+INFO 2025-03-26 03:49:15,830 basehttp "GET /redirect/ HTTP/1.1" 302 0
+INFO 2025-03-26 03:49:15,865 basehttp "GET /lab-assistant-portal/ HTTP/1.1" 200 5168
+INFO 2025-03-26 03:49:16,991 basehttp "GET / HTTP/1.1" 302 0
+INFO 2025-03-26 03:49:17,027 basehttp "GET /redirect/ HTTP/1.1" 302 0
+INFO 2025-03-26 03:49:17,162 basehttp "GET /lab-assistant-portal/ HTTP/1.1" 200 5168
+INFO 2025-03-26 03:50:19,466 basehttp "GET /logout/ HTTP/1.1" 302 0
+INFO 2025-03-26 03:50:19,471 basehttp "GET /login/ HTTP/1.1" 200 7075
+INFO 2025-03-26 03:50:24,691 basehttp "POST /login/ HTTP/1.1" 302 0
+INFO 2025-03-26 03:50:24,836 basehttp "GET /redirect/ HTTP/1.1" 302 0
+INFO 2025-03-26 03:50:24,876 basehttp "GET /admin-portal/ HTTP/1.1" 302 0
+INFO 2025-03-26 03:50:24,936 basehttp "GET /admin-portal/dashboard/ HTTP/1.1" 200 28634
+INFO 2025-03-26 03:50:27,414 basehttp "GET /logout/ HTTP/1.1" 302 0
+INFO 2025-03-26 03:50:27,418 basehttp "GET /login/ HTTP/1.1" 200 6726
+INFO 2025-03-26 03:50:34,139 basehttp "POST /login/ HTTP/1.1" 302 0
+INFO 2025-03-26 03:50:34,202 basehttp "GET /redirect/ HTTP/1.1" 302 0
+INFO 2025-03-26 03:50:34,270 basehttp "GET /student-portal/ HTTP/1.1" 200 28732
+WARNING 2025-03-26 03:50:34,300 basehttp "GET /static/img/student_avatar.png HTTP/1.1" 404 1825
+INFO 2025-03-26 03:50:36,127 basehttp "GET /logout/ HTTP/1.1" 302 0
+INFO 2025-03-26 03:50:36,131 basehttp "GET /login/ HTTP/1.1" 200 6726
+INFO 2025-03-26 03:50:41,230 basehttp "POST /login/ HTTP/1.1" 302 0
+INFO 2025-03-26 03:50:41,264 basehttp "GET /redirect/ HTTP/1.1" 302 0
+INFO 2025-03-26 03:50:41,306 basehttp "GET /hod-portal/ HTTP/1.1" 200 8128
+INFO 2025-03-26 03:50:42,626 basehttp "GET /logout/ HTTP/1.1" 302 0
+INFO 2025-03-26 03:50:42,629 basehttp "GET /login/ HTTP/1.1" 200 6726
+INFO 2025-03-26 03:50:49,114 basehttp "POST /login/ HTTP/1.1" 302 0
+INFO 2025-03-26 03:50:49,150 basehttp "GET /redirect/ HTTP/1.1" 302 0
+INFO 2025-03-26 03:50:49,190 basehttp "GET /faculty-portal/ HTTP/1.1" 200 11971
+INFO 2025-03-26 03:50:51,765 basehttp "GET /logout/ HTTP/1.1" 302 0
+INFO 2025-03-26 03:50:51,769 basehttp "GET /login/ HTTP/1.1" 200 6726
+INFO 2025-03-26 03:52:34,768 basehttp "GET /login/ HTTP/1.1" 200 6321
+INFO 2025-03-26 03:52:34,945 basehttp "GET /login/ HTTP/1.1" 200 6321
+INFO 2025-03-26 03:52:35,102 basehttp "GET /login/ HTTP/1.1" 200 6321
+INFO 2025-03-26 03:52:35,255 basehttp "GET /login/ HTTP/1.1" 200 6321
+INFO 2025-03-26 03:52:35,414 basehttp "GET /login/ HTTP/1.1" 200 6321
+INFO 2025-03-26 03:52:41,338 basehttp "POST /login/ HTTP/1.1" 302 0
+INFO 2025-03-26 03:52:41,375 basehttp "GET /redirect/ HTTP/1.1" 302 0
+INFO 2025-03-26 03:52:41,409 basehttp "GET /lab-assistant-portal/ HTTP/1.1" 200 5168
+INFO 2025-03-26 03:53:28,746 autoreload Watching for file changes with StatReloader
+INFO 2025-03-26 03:53:30,825 basehttp "GET / HTTP/1.1" 302 0
+INFO 2025-03-26 03:53:30,862 basehttp "GET /redirect/ HTTP/1.1" 302 0
+INFO 2025-03-26 03:53:30,903 basehttp "GET /lab-assistant-portal/ HTTP/1.1" 200 5168
+INFO 2025-03-26 03:53:33,792 basehttp "GET /logout/ HTTP/1.1" 302 0
+INFO 2025-03-26 03:53:33,799 basehttp "GET /login/ HTTP/1.1" 200 7075
+INFO 2025-03-26 03:53:41,728 basehttp "POST /login/ HTTP/1.1" 302 0
+INFO 2025-03-26 03:53:41,761 basehttp "GET /redirect/ HTTP/1.1" 302 0
+INFO 2025-03-26 03:53:41,795 basehttp "GET /lab-assistant-portal/ HTTP/1.1" 200 5168
+INFO 2025-03-26 03:53:43,583 basehttp "GET / HTTP/1.1" 302 0
+INFO 2025-03-26 03:53:43,618 basehttp "GET /redirect/ HTTP/1.1" 302 0
+INFO 2025-03-26 03:53:43,656 basehttp "GET /lab-assistant-portal/ HTTP/1.1" 200 5168
+INFO 2025-03-26 03:55:03,111 autoreload Watching for file changes with StatReloader
+INFO 2025-03-26 03:55:05,140 basehttp "GET / HTTP/1.1" 302 0
+INFO 2025-03-26 03:55:05,176 basehttp "GET /redirect/ HTTP/1.1" 302 0
+ERROR 2025-03-26 03:55:05,316 log Internal Server Error: /lab-assistant-portal/
+Traceback (most recent call last):
+  File "D:\aaaaaaattend\.venv\Lib\site-packages\django\db\models\fields\__init__.py", line 2053, in get_prep_value
+    return int(value)
+           ^^^^^^^^^^
+TypeError: int() argument must be a string, a bytes-like object or a real number, not 'LabAssistant'
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "D:\aaaaaaattend\.venv\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "D:\aaaaaaattend\.venv\Lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\aaaaaaattend\.venv\Lib\site-packages\django\contrib\auth\decorators.py", line 23, in _wrapper_view
+    return view_func(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\aaaaaaattend\attendance_system\lab_assistant_portal\views.py", line 51, in wrapper
+    return view_func(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\aaaaaaattend\attendance_system\lab_assistant_portal\views.py", line 146, in index
+    approved_leaves_month = LeaveApplication.objects.filter(
+                            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\aaaaaaattend\.venv\Lib\site-packages\django\db\models\manager.py", line 87, in manager_method
+    return getattr(self.get_queryset(), name)(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\aaaaaaattend\.venv\Lib\site-packages\django\db\models\query.py", line 1436, in filter
+    return self._filter_or_exclude(False, args, kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\aaaaaaattend\.venv\Lib\site-packages\django\db\models\query.py", line 1454, in _filter_or_exclude
+    clone._filter_or_exclude_inplace(negate, args, kwargs)
+  File "D:\aaaaaaattend\.venv\Lib\site-packages\django\db\models\query.py", line 1461, in _filter_or_exclude_inplace
+    self._query.add_q(Q(*args, **kwargs))
+  File "D:\aaaaaaattend\.venv\Lib\site-packages\django\db\models\sql\query.py", line 1546, in add_q
+    clause, _ = self._add_q(q_object, self.used_aliases)
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\aaaaaaattend\.venv\Lib\site-packages\django\db\models\sql\query.py", line 1577, in _add_q
+    child_clause, needed_inner = self.build_filter(
+                                 ^^^^^^^^^^^^^^^^^^
+  File "D:\aaaaaaattend\.venv\Lib\site-packages\django\db\models\sql\query.py", line 1492, in build_filter
+    condition = self.build_lookup(lookups, col, value)
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\aaaaaaattend\.venv\Lib\site-packages\django\db\models\sql\query.py", line 1319, in build_lookup
+    lookup = lookup_class(lhs, rhs)
+             ^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\aaaaaaattend\.venv\Lib\site-packages\django\db\models\lookups.py", line 27, in __init__
+    self.rhs = self.get_prep_lookup()
+               ^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\aaaaaaattend\.venv\Lib\site-packages\django\db\models\lookups.py", line 341, in get_prep_lookup
+    return super().get_prep_lookup()
+           ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\aaaaaaattend\.venv\Lib\site-packages\django\db\models\lookups.py", line 85, in get_prep_lookup
+    return self.lhs.output_field.get_prep_value(self.rhs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\aaaaaaattend\.venv\Lib\site-packages\django\db\models\fields\__init__.py", line 2055, in get_prep_value
+    raise e.__class__(
+TypeError: Field 'lab_assistant_approval' expected a number but got <LabAssistant: Lab Assistant>.
+ERROR 2025-03-26 03:55:05,320 basehttp "GET /lab-assistant-portal/ HTTP/1.1" 500 149498
+INFO 2025-03-26 03:57:13,393 autoreload D:\aaaaaaattend\attendance_system\core\models.py changed, reloading.
+INFO 2025-03-26 03:57:13,863 autoreload Watching for file changes with StatReloader
+INFO 2025-03-26 03:57:36,213 autoreload Watching for file changes with StatReloader
+INFO 2025-03-26 03:57:37,683 basehttp "GET / HTTP/1.1" 302 0
+INFO 2025-03-26 03:57:37,727 basehttp "GET /redirect/ HTTP/1.1" 302 0
+ERROR 2025-03-26 03:57:37,808 log Internal Server Error: /lab-assistant-portal/
+Traceback (most recent call last):
+  File "D:\aaaaaaattend\.venv\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "D:\aaaaaaattend\.venv\Lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\aaaaaaattend\.venv\Lib\site-packages\django\contrib\auth\decorators.py", line 23, in _wrapper_view
+    return view_func(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\aaaaaaattend\attendance_system\lab_assistant_portal\views.py", line 51, in wrapper
+    return view_func(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\aaaaaaattend\attendance_system\lab_assistant_portal\views.py", line 146, in index
+    approved_leaves_month = LeaveApplication.objects.filter(
+                            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\aaaaaaattend\.venv\Lib\site-packages\django\db\models\manager.py", line 87, in manager_method
+    return getattr(self.get_queryset(), name)(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\aaaaaaattend\.venv\Lib\site-packages\django\db\models\query.py", line 1436, in filter
+    return self._filter_or_exclude(False, args, kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\aaaaaaattend\.venv\Lib\site-packages\django\db\models\query.py", line 1454, in _filter_or_exclude
+    clone._filter_or_exclude_inplace(negate, args, kwargs)
+  File "D:\aaaaaaattend\.venv\Lib\site-packages\django\db\models\query.py", line 1461, in _filter_or_exclude_inplace
+    self._query.add_q(Q(*args, **kwargs))
+  File "D:\aaaaaaattend\.venv\Lib\site-packages\django\db\models\sql\query.py", line 1546, in add_q
+    clause, _ = self._add_q(q_object, self.used_aliases)
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\aaaaaaattend\.venv\Lib\site-packages\django\db\models\sql\query.py", line 1577, in _add_q
+    child_clause, needed_inner = self.build_filter(
+                                 ^^^^^^^^^^^^^^^^^^
+  File "D:\aaaaaaattend\.venv\Lib\site-packages\django\db\models\sql\query.py", line 1427, in build_filter
+    lookups, parts, reffed_expression = self.solve_lookup_type(arg, summarize)
+                                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\aaaaaaattend\.venv\Lib\site-packages\django\db\models\sql\query.py", line 1237, in solve_lookup_type
+    _, field, _, lookup_parts = self.names_to_path(lookup_splitted, self.get_meta())
+                                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\aaaaaaattend\.venv\Lib\site-packages\django\db\models\sql\query.py", line 1725, in names_to_path
+    raise FieldError(
+django.core.exceptions.FieldError: Cannot resolve keyword 'updated_at' into field. Choices are: created_at, document_path, end_date, faculty_approval, faculty_approval_id, lab_assistant_approval, lab_assistant_approval_id, leave_id, reason, start_date, status, student, student_id
+ERROR 2025-03-26 03:57:37,811 basehttp "GET /lab-assistant-portal/ HTTP/1.1" 500 133145
+INFO 2025-03-26 04:00:17,992 autoreload D:\aaaaaaattend\attendance_system\lab_assistant_portal\views.py changed, reloading.
+INFO 2025-03-26 04:00:18,417 autoreload Watching for file changes with StatReloader
+INFO 2025-03-26 04:00:54,509 autoreload Watching for file changes with StatReloader
+INFO 2025-03-26 04:02:01,782 autoreload D:\aaaaaaattend\attendance_system\lab_assistant_portal\views.py changed, reloading.
+INFO 2025-03-26 04:02:02,254 autoreload Watching for file changes with StatReloader
+INFO 2025-03-26 04:02:05,176 basehttp "GET / HTTP/1.1" 302 0
+INFO 2025-03-26 04:02:05,218 basehttp "GET /redirect/ HTTP/1.1" 302 0
+INFO 2025-03-26 04:02:05,355 basehttp "GET /lab-assistant-portal/ HTTP/1.1" 200 46324
+WARNING 2025-03-26 04:02:05,389 basehttp "GET /static/img/illustrations/no-data.svg HTTP/1.1" 404 1846
+INFO 2025-03-26 04:02:05,472 basehttp "POST /lab-assistant-portal/log/ HTTP/1.1" 200 17
+INFO 2025-03-26 04:02:05,479 basehttp "POST /lab-assistant-portal/log/ HTTP/1.1" 200 17
+INFO 2025-03-26 04:02:05,480 basehttp "POST /lab-assistant-portal/log/ HTTP/1.1" 200 17
+INFO 2025-03-26 04:02:10,035 basehttp "GET /lab-assistant-portal/ HTTP/1.1" 200 45985
+WARNING 2025-03-26 04:02:10,049 basehttp "GET /static/img/illustrations/no-data.svg HTTP/1.1" 404 1846
+INFO 2025-03-26 04:02:10,101 basehttp "POST /lab-assistant-portal/log/ HTTP/1.1" 200 17
+INFO 2025-03-26 04:02:10,104 basehttp "POST /lab-assistant-portal/log/ HTTP/1.1" 200 17
+INFO 2025-03-26 04:02:10,105 basehttp "POST /lab-assistant-portal/log/ HTTP/1.1" 200 17
+INFO 2025-03-26 04:02:11,287 basehttp "GET /lab-assistant-portal/leave-applications/ HTTP/1.1" 200 67459
+WARNING 2025-03-26 04:02:11,306 basehttp "GET /static/img/illustrations/no-data.svg HTTP/1.1" 404 1846
+INFO 2025-03-26 04:02:11,350 basehttp "POST /lab-assistant-portal/log/ HTTP/1.1" 200 17
+INFO 2025-03-26 04:02:11,362 basehttp "POST /lab-assistant-portal/log/ HTTP/1.1" 200 17
+INFO 2025-03-26 04:02:11,363 basehttp "POST /lab-assistant-portal/log/ HTTP/1.1" 200 17
+INFO 2025-03-26 04:02:13,051 basehttp "GET /lab-assistant-portal/leave-applications/ HTTP/1.1" 200 67459
+WARNING 2025-03-26 04:02:13,066 basehttp "GET /static/img/illustrations/no-data.svg HTTP/1.1" 404 1846
+INFO 2025-03-26 04:02:13,120 basehttp "POST /lab-assistant-portal/log/ HTTP/1.1" 200 17
+INFO 2025-03-26 04:02:13,121 basehttp "POST /lab-assistant-portal/log/ HTTP/1.1" 200 17
+INFO 2025-03-26 04:02:13,121 basehttp "POST /lab-assistant-portal/log/ HTTP/1.1" 200 17
+INFO 2025-03-26 04:02:13,745 basehttp "GET /lab-assistant-portal/attendance-exceptions/ HTTP/1.1" 200 86672
+WARNING 2025-03-26 04:02:13,766 basehttp "GET /static/img/illustrations/no-data.svg HTTP/1.1" 404 1846
+INFO 2025-03-26 04:02:13,805 basehttp "POST /lab-assistant-portal/log/ HTTP/1.1" 200 17
+INFO 2025-03-26 04:02:13,814 basehttp "POST /lab-assistant-portal/log/ HTTP/1.1" 200 17
+INFO 2025-03-26 04:02:13,815 basehttp "POST /lab-assistant-portal/log/ HTTP/1.1" 200 17
+INFO 2025-03-26 04:02:14,510 basehttp "GET /lab-assistant-portal/lab-schedule/ HTTP/1.1" 200 55580
+INFO 2025-03-26 04:02:14,578 basehttp "POST /lab-assistant-portal/log/ HTTP/1.1" 200 17
+INFO 2025-03-26 04:02:15,454 basehttp "GET /lab-assistant-portal/low-attendance/ HTTP/1.1" 200 75543
+INFO 2025-03-26 04:02:15,526 basehttp "POST /lab-assistant-portal/log/ HTTP/1.1" 200 17
+INFO 2025-03-26 04:02:16,634 basehttp "GET /lab-assistant-portal/reports/ HTTP/1.1" 200 82883
+INFO 2025-03-26 04:02:16,715 basehttp "POST /lab-assistant-portal/log/ HTTP/1.1" 200 17
+INFO 2025-03-26 04:02:17,714 basehttp "GET /lab-assistant-portal/profile/ HTTP/1.1" 200 72175
+INFO 2025-03-26 04:02:17,777 basehttp "POST /lab-assistant-portal/log/ HTTP/1.1" 200 17
+INFO 2025-03-26 04:02:17,779 basehttp "POST /lab-assistant-portal/log/ HTTP/1.1" 200 17
+INFO 2025-03-26 04:02:23,146 basehttp "GET /lab-assistant-portal/ HTTP/1.1" 200 45985
+WARNING 2025-03-26 04:02:23,165 basehttp "GET /static/img/illustrations/no-data.svg HTTP/1.1" 404 1846
+INFO 2025-03-26 04:02:23,215 basehttp "POST /lab-assistant-portal/log/ HTTP/1.1" 200 17
+INFO 2025-03-26 04:02:23,216 basehttp "POST /lab-assistant-portal/log/ HTTP/1.1" 200 17
+INFO 2025-03-26 04:02:23,217 basehttp "POST /lab-assistant-portal/log/ HTTP/1.1" 200 17
+INFO 2025-03-26 04:02:25,559 basehttp "GET /lab-assistant-portal/ HTTP/1.1" 200 45985
+WARNING 2025-03-26 04:02:25,576 basehttp "GET /static/img/illustrations/no-data.svg HTTP/1.1" 404 1846
+INFO 2025-03-26 04:02:25,628 basehttp "POST /lab-assistant-portal/log/ HTTP/1.1" 200 17
+INFO 2025-03-26 04:02:25,628 basehttp "POST /lab-assistant-portal/log/ HTTP/1.1" 200 17
+INFO 2025-03-26 04:02:25,630 basehttp "POST /lab-assistant-portal/log/ HTTP/1.1" 200 17
+INFO 2025-03-26 04:02:26,649 basehttp "GET /lab-assistant-portal/profile/ HTTP/1.1" 200 72175
+INFO 2025-03-26 04:02:26,712 basehttp "POST /lab-assistant-portal/log/ HTTP/1.1" 200 17
+INFO 2025-03-26 04:02:26,713 basehttp "POST /lab-assistant-portal/log/ HTTP/1.1" 200 17
+INFO 2025-03-26 04:02:30,661 basehttp "GET /logout/ HTTP/1.1" 302 0
+INFO 2025-03-26 04:02:30,671 basehttp "GET /login/ HTTP/1.1" 200 6726
+INFO 2025-03-26 04:02:37,051 basehttp "POST /login/ HTTP/1.1" 302 0
+INFO 2025-03-26 04:02:37,086 basehttp "GET /redirect/ HTTP/1.1" 302 0
+INFO 2025-03-26 04:02:37,241 basehttp "GET /admin-portal/ HTTP/1.1" 302 0
+INFO 2025-03-26 04:02:37,290 basehttp "GET /admin-portal/dashboard/ HTTP/1.1" 200 28616
+INFO 2025-03-26 04:02:40,264 basehttp "GET /admin-portal/users/ HTTP/1.1" 200 20296
+INFO 2025-03-26 04:02:46,016 basehttp "GET /admin-portal/users/4/edit/ HTTP/1.1" 200 13950
+INFO 2025-03-26 04:03:03,895 basehttp "GET /admin-portal/users/ HTTP/1.1" 200 20296
+INFO 2025-03-26 04:03:08,763 basehttp "GET /admin-portal/logs/ HTTP/1.1" 200 29453
+INFO 2025-03-26 04:03:16,126 basehttp "GET /admin-portal/logs/?page=2 HTTP/1.1" 200 29720
+INFO 2025-03-26 04:03:27,952 basehttp "GET /admin-portal/dashboard/ HTTP/1.1" 200 28363
+INFO 2025-03-26 04:03:41,291 basehttp "GET /logout/ HTTP/1.1" 302 0
+INFO 2025-03-26 04:03:41,294 basehttp "GET /login/ HTTP/1.1" 200 6726
+INFO 2025-03-26 04:03:48,842 basehttp "POST /login/ HTTP/1.1" 302 0
+INFO 2025-03-26 04:03:48,881 basehttp "GET /redirect/ HTTP/1.1" 302 0
+INFO 2025-03-26 04:03:48,941 basehttp "GET /lab-assistant-portal/ HTTP/1.1" 200 46324
+WARNING 2025-03-26 04:03:48,964 basehttp "GET /static/img/illustrations/no-data.svg HTTP/1.1" 404 1846
+INFO 2025-03-26 04:03:49,023 basehttp "POST /lab-assistant-portal/log/ HTTP/1.1" 200 17
+INFO 2025-03-26 04:03:49,027 basehttp "POST /lab-assistant-portal/log/ HTTP/1.1" 200 17
+INFO 2025-03-26 04:03:49,029 basehttp "POST /lab-assistant-portal/log/ HTTP/1.1" 200 17
+INFO 2025-03-26 04:03:50,732 basehttp "GET /lab-assistant-portal/profile/ HTTP/1.1" 200 72175
+INFO 2025-03-26 04:03:50,798 basehttp "POST /lab-assistant-portal/log/ HTTP/1.1" 200 17
+INFO 2025-03-26 04:03:50,799 basehttp "POST /lab-assistant-portal/log/ HTTP/1.1" 200 17
+INFO 2025-03-26 04:04:16,287 basehttp "GET /lab-assistant-portal/reports/ HTTP/1.1" 200 82883
+INFO 2025-03-26 04:04:16,371 basehttp "POST /lab-assistant-portal/log/ HTTP/1.1" 200 17
+INFO 2025-03-26 04:04:20,337 basehttp "GET /lab-assistant-portal/low-attendance/ HTTP/1.1" 200 75543
+INFO 2025-03-26 04:04:20,412 basehttp "POST /lab-assistant-portal/log/ HTTP/1.1" 200 17
+INFO 2025-03-26 13:42:02,247 basehttp "GET /lab-assistant-portal/low-attendance/ HTTP/1.1" 200 75543
+INFO 2025-03-26 13:42:02,363 basehttp "POST /lab-assistant-portal/log/ HTTP/1.1" 200 17
+INFO 2025-03-26 13:42:02,421 basehttp "GET /lab-assistant-portal/low-attendance/ HTTP/1.1" 200 75543
+INFO 2025-03-26 13:42:02,492 basehttp "POST /lab-assistant-portal/log/ HTTP/1.1" 200 17
+INFO 2025-03-26 13:42:02,564 basehttp "GET /lab-assistant-portal/low-attendance/ HTTP/1.1" 200 75543
+INFO 2025-03-26 13:42:02,628 basehttp "POST /lab-assistant-portal/log/ HTTP/1.1" 200 17
+INFO 2025-03-26 13:42:02,739 basehttp "GET /lab-assistant-portal/low-attendance/ HTTP/1.1" 200 75543
+INFO 2025-03-26 13:42:02,804 basehttp "POST /lab-assistant-portal/log/ HTTP/1.1" 200 17
+INFO 2025-03-26 13:42:02,877 basehttp "GET /lab-assistant-portal/low-attendance/ HTTP/1.1" 200 75543
+INFO 2025-03-26 13:42:02,942 basehttp "POST /lab-assistant-portal/log/ HTTP/1.1" 200 17
+INFO 2025-03-26 13:42:03,022 basehttp "GET /lab-assistant-portal/low-attendance/ HTTP/1.1" 200 75543
+INFO 2025-03-26 13:42:03,088 basehttp "POST /lab-assistant-portal/log/ HTTP/1.1" 200 17
+INFO 2025-03-26 13:42:04,917 basehttp "GET /logout/ HTTP/1.1" 302 0
+INFO 2025-03-26 13:42:04,920 basehttp "GET /login/ HTTP/1.1" 200 6726
+INFO 2025-03-26 13:42:09,885 basehttp "POST /login/ HTTP/1.1" 302 0
+INFO 2025-03-26 13:42:09,924 basehttp "GET /redirect/ HTTP/1.1" 302 0
+INFO 2025-03-26 13:42:09,965 basehttp "GET /admin-portal/ HTTP/1.1" 302 0
+INFO 2025-03-26 13:42:10,010 basehttp "GET /admin-portal/dashboard/ HTTP/1.1" 200 28625
+INFO 2025-03-26 15:05:13,681 basehttp "GET /logout/ HTTP/1.1" 302 0
+INFO 2025-03-26 15:05:13,686 basehttp "GET /login/ HTTP/1.1" 200 6726
+INFO 2025-03-26 15:05:28,054 basehttp "POST /login/ HTTP/1.1" 302 0
+INFO 2025-03-26 15:05:28,088 basehttp "GET /redirect/ HTTP/1.1" 302 0
+INFO 2025-03-26 15:05:28,133 basehttp "GET /admin-portal/ HTTP/1.1" 302 0
+INFO 2025-03-26 15:05:28,179 basehttp "GET /admin-portal/dashboard/ HTTP/1.1" 200 28625
+INFO 2025-03-26 15:05:29,477 basehttp "GET /admin-portal/users/ HTTP/1.1" 200 20296
+INFO 2025-03-26 15:05:35,213 basehttp "GET /admin-portal/users/create/ HTTP/1.1" 200 14354
+INFO 2025-03-26 15:05:37,117 basehttp "GET /admin-portal/departments/ HTTP/1.1" 200 12552
+INFO 2025-03-26 15:05:39,833 basehttp "GET /admin-portal/departments/create/ HTTP/1.1" 200 11627
+INFO 2025-03-26 15:05:41,196 basehttp "GET /admin-portal/departments/ HTTP/1.1" 200 12552
+INFO 2025-03-26 15:05:41,601 basehttp "GET /admin-portal/academic-years/ HTTP/1.1" 200 15242
+INFO 2025-03-26 15:05:44,547 basehttp "GET /admin-portal/subjects/ HTTP/1.1" 200 14095
+INFO 2025-03-26 15:05:46,906 basehttp "GET /admin-portal/faculty-assignment/ HTTP/1.1" 200 15487
+INFO 2025-03-26 15:05:48,565 basehttp "GET /admin-portal/timetable/ HTTP/1.1" 200 16120
+INFO 2025-03-26 15:05:49,739 basehttp "GET /admin-portal/reports/ HTTP/1.1" 200 13471
+INFO 2025-03-26 15:05:51,435 basehttp "GET /admin-portal/import/ HTTP/1.1" 200 16149
+INFO 2025-03-26 15:05:51,945 basehttp "GET /admin-portal/logs/ HTTP/1.1" 200 29490
+INFO 2025-03-26 15:05:54,790 basehttp "GET /admin-portal/settings/ HTTP/1.1" 200 12778
+INFO 2025-03-26 15:05:56,014 basehttp "GET /admin-portal/dashboard/ HTTP/1.1" 200 28402
+INFO 2025-03-26 15:05:58,541 basehttp "GET /logout/ HTTP/1.1" 302 0
+INFO 2025-03-26 15:05:58,545 basehttp "GET /login/ HTTP/1.1" 200 6726
+INFO 2025-03-26 15:06:03,366 basehttp "POST /login/ HTTP/1.1" 302 0
+INFO 2025-03-26 15:06:03,407 basehttp "GET /redirect/ HTTP/1.1" 302 0
+INFO 2025-03-26 15:06:03,575 basehttp "GET /student-portal/ HTTP/1.1" 200 28732
+WARNING 2025-03-26 15:06:03,623 basehttp "GET /static/img/student_avatar.png HTTP/1.1" 404 1825
+INFO 2025-03-26 15:06:06,061 basehttp "GET /student-portal/attendance/ HTTP/1.1" 200 28357
+WARNING 2025-03-26 15:06:06,075 basehttp "GET /static/img/student_avatar.png HTTP/1.1" 404 1825
+INFO 2025-03-26 15:06:10,497 basehttp "GET /student-portal/timetable/ HTTP/1.1" 200 37717
+WARNING 2025-03-26 15:06:10,516 basehttp "GET /static/img/student_avatar.png HTTP/1.1" 404 1825
+INFO 2025-03-26 15:06:13,190 basehttp "GET /student-portal/leave/ HTTP/1.1" 200 62989
+WARNING 2025-03-26 15:06:13,208 basehttp "GET /static/img/student_avatar.png HTTP/1.1" 404 1825
+WARNING 2025-03-26 15:06:13,210 basehttp "GET /static/img/illustrations/no-data.svg HTTP/1.1" 404 1846
+INFO 2025-03-26 15:06:14,316 basehttp "GET /student-portal/attendance/history/ HTTP/1.1" 200 25249
+WARNING 2025-03-26 15:06:14,337 basehttp "GET /static/img/student_avatar.png HTTP/1.1" 404 1825
+INFO 2025-03-26 15:06:15,124 basehttp "GET /student-portal/profile/ HTTP/1.1" 200 55031
+WARNING 2025-03-26 15:06:15,147 basehttp "GET /static/img/student_avatar.png HTTP/1.1" 404 1825
+WARNING 2025-03-26 15:06:15,148 basehttp "GET /static/img/profile-placeholder.jpg HTTP/1.1" 404 1840
+INFO 2025-03-26 15:06:17,591 basehttp "GET /logout/ HTTP/1.1" 302 0
+INFO 2025-03-26 15:06:17,597 basehttp "GET /login/ HTTP/1.1" 200 6726
+INFO 2025-03-26 15:06:23,206 basehttp "POST /login/ HTTP/1.1" 302 0
+INFO 2025-03-26 15:06:23,241 basehttp "GET /redirect/ HTTP/1.1" 302 0
+INFO 2025-03-26 15:06:23,284 basehttp "GET /hod-portal/ HTTP/1.1" 200 8128
+INFO 2025-03-26 15:06:26,017 basehttp "GET /logout/ HTTP/1.1" 302 0
+INFO 2025-03-26 15:06:26,022 basehttp "GET /login/ HTTP/1.1" 200 6726
+INFO 2025-03-26 15:06:31,609 basehttp "POST /login/ HTTP/1.1" 302 0
+INFO 2025-03-26 15:06:31,641 basehttp "GET /redirect/ HTTP/1.1" 302 0
+INFO 2025-03-26 15:06:31,698 basehttp "GET /lab-assistant-portal/ HTTP/1.1" 200 46324
+WARNING 2025-03-26 15:06:31,717 basehttp "GET /static/img/illustrations/no-data.svg HTTP/1.1" 404 1846
+INFO 2025-03-26 15:06:31,765 basehttp "POST /lab-assistant-portal/log/ HTTP/1.1" 200 17
+INFO 2025-03-26 15:06:31,773 basehttp "POST /lab-assistant-portal/log/ HTTP/1.1" 200 17
+INFO 2025-03-26 15:06:31,774 basehttp "POST /lab-assistant-portal/log/ HTTP/1.1" 200 17
+INFO 2025-03-26 15:06:34,173 basehttp "GET /lab-assistant-portal/ HTTP/1.1" 200 45985
+WARNING 2025-03-26 15:06:34,188 basehttp "GET /static/img/illustrations/no-data.svg HTTP/1.1" 404 1846
+INFO 2025-03-26 15:06:34,236 basehttp "POST /lab-assistant-portal/log/ HTTP/1.1" 200 17
+INFO 2025-03-26 15:06:34,237 basehttp "POST /lab-assistant-portal/log/ HTTP/1.1" 200 17
+INFO 2025-03-26 15:06:34,346 basehttp "POST /lab-assistant-portal/log/ HTTP/1.1" 200 17
+INFO 2025-03-26 15:06:34,823 basehttp "GET /lab-assistant-portal/leave-applications/ HTTP/1.1" 200 67459
+WARNING 2025-03-26 15:06:34,841 basehttp "GET /static/img/illustrations/no-data.svg HTTP/1.1" 404 1846
+INFO 2025-03-26 15:06:34,884 basehttp "POST /lab-assistant-portal/log/ HTTP/1.1" 200 17
+INFO 2025-03-26 15:06:34,891 basehttp "POST /lab-assistant-portal/log/ HTTP/1.1" 200 17
+INFO 2025-03-26 15:06:34,891 basehttp "POST /lab-assistant-portal/log/ HTTP/1.1" 200 17
+INFO 2025-03-26 15:06:35,276 basehttp "GET /lab-assistant-portal/attendance-exceptions/ HTTP/1.1" 200 86672
+WARNING 2025-03-26 15:06:35,292 basehttp "GET /static/img/illustrations/no-data.svg HTTP/1.1" 404 1846
+INFO 2025-03-26 15:06:35,339 basehttp "POST /lab-assistant-portal/log/ HTTP/1.1" 200 17
+INFO 2025-03-26 15:06:35,344 basehttp "POST /lab-assistant-portal/log/ HTTP/1.1" 200 17
+INFO 2025-03-26 15:06:35,345 basehttp "POST /lab-assistant-portal/log/ HTTP/1.1" 200 17
+INFO 2025-03-26 15:06:35,609 basehttp "GET /lab-assistant-portal/lab-schedule/ HTTP/1.1" 200 55580
+INFO 2025-03-26 15:06:35,678 basehttp "POST /lab-assistant-portal/log/ HTTP/1.1" 200 17
+INFO 2025-03-26 15:06:36,268 basehttp "GET /lab-assistant-portal/low-attendance/ HTTP/1.1" 200 75543
+INFO 2025-03-26 15:06:36,336 basehttp "POST /lab-assistant-portal/log/ HTTP/1.1" 200 17
+INFO 2025-03-26 15:06:36,767 basehttp "GET /lab-assistant-portal/low-attendance/ HTTP/1.1" 200 75543
+INFO 2025-03-26 15:06:36,836 basehttp "POST /lab-assistant-portal/log/ HTTP/1.1" 200 17
+INFO 2025-03-26 15:06:37,299 basehttp "GET /lab-assistant-portal/reports/ HTTP/1.1" 200 82883
+INFO 2025-03-26 15:06:37,464 basehttp "POST /lab-assistant-portal/log/ HTTP/1.1" 200 17
+INFO 2025-03-26 15:06:37,568 basehttp "GET /lab-assistant-portal/profile/ HTTP/1.1" 200 72175
+INFO 2025-03-26 15:06:37,628 basehttp "POST /lab-assistant-portal/log/ HTTP/1.1" 200 17
+INFO 2025-03-26 15:06:37,628 basehttp "POST /lab-assistant-portal/log/ HTTP/1.1" 200 17
+INFO 2025-03-26 15:06:40,436 basehttp "GET /logout/ HTTP/1.1" 302 0
+INFO 2025-03-26 15:06:40,438 basehttp "GET /login/ HTTP/1.1" 200 6726
+INFO 2025-03-26 15:06:47,197 basehttp "POST /login/ HTTP/1.1" 302 0
+INFO 2025-03-26 15:06:47,230 basehttp "GET /redirect/ HTTP/1.1" 302 0
+INFO 2025-03-26 15:06:47,279 basehttp "GET /faculty-portal/ HTTP/1.1" 200 11971
+INFO 2025-04-05 16:28:24,329 autoreload Watching for file changes with StatReloader
+INFO 2025-04-05 16:28:29,258 basehttp "GET / HTTP/1.1" 200 6321
+WARNING 2025-04-05 16:28:30,126 log Not Found: /favicon.ico
+WARNING 2025-04-05 16:28:30,127 basehttp "GET /favicon.ico HTTP/1.1" 404 4091
+INFO 2025-04-05 16:28:37,427 basehttp "POST /login/ HTTP/1.1" 302 0
+INFO 2025-04-05 16:28:37,471 basehttp "GET /redirect/ HTTP/1.1" 302 0
+INFO 2025-04-05 16:28:37,537 basehttp "GET /admin-portal/ HTTP/1.1" 302 0
+INFO 2025-04-05 16:28:37,642 basehttp "GET /admin-portal/dashboard/ HTTP/1.1" 200 28647

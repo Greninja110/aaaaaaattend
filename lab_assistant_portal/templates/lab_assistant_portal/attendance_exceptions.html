@@ -1,0 +1,1642 @@
+{% extends 'lab_assistant_portal/base_lab_assistant.html' %}
+{% load static %}
+
+{% block lab_assistant_title %}Attendance Exceptions{% endblock %}
+
+{% block lab_assistant_content %}
+<div class="container-fluid py-4">
+    <!-- Page Header -->
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+        <div>
+            <h2 class="h3 mb-0">Attendance Exceptions</h2>
+            <p class="text-muted mb-0">Manage attendance corrections and exceptions</p>
+        </div>
+        <div>
+            <button type="button" class="btn btn-outline-primary me-2" id="createExceptionBtn">
+                <i class="fas fa-plus mr-1"></i> Create Exception
+            </button>
+            <button type="button" class="btn btn-primary" id="exportReportBtn">
+                <i class="fas fa-download mr-1"></i> Export Report
+            </button>
+        </div>
+    </div>
+    
+    <!-- Exceptions Statistics Cards -->
+    <div class="row mb-4">
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-warning shadow h-100 py-2 stats-card">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
+                                Pending Requests</div>
+                            <div class="h5 mb-0 font-weight-bold">{{ pending_count }}</div>
+                            <div class="progress mt-2" style="height: 8px;">
+                                <div class="progress-bar bg-warning" role="progressbar" style="width: {{ pending_percentage }}%" 
+                                    aria-valuenow="{{ pending_percentage }}" aria-valuemin="0" aria-valuemax="100"></div>
+                            </div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-hourglass-half fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-success shadow h-100 py-2 stats-card">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
+                                Approved Exceptions</div>
+                            <div class="h5 mb-0 font-weight-bold">{{ approved_count }}</div>
+                            <div class="progress mt-2" style="height: 8px;">
+                                <div class="progress-bar bg-success" role="progressbar" style="width: {{ approved_percentage }}%" 
+                                    aria-valuenow="{{ approved_percentage }}" aria-valuemin="0" aria-valuemax="100"></div>
+                            </div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-check-circle fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-danger shadow h-100 py-2 stats-card">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-danger text-uppercase mb-1">
+                                Rejected Exceptions</div>
+                            <div class="h5 mb-0 font-weight-bold">{{ rejected_count }}</div>
+                            <div class="progress mt-2" style="height: 8px;">
+                                <div class="progress-bar bg-danger" role="progressbar" style="width: {{ rejected_percentage }}%" 
+                                    aria-valuenow="{{ rejected_percentage }}" aria-valuemin="0" aria-valuemax="100"></div>
+                            </div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-times-circle fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-info shadow h-100 py-2 stats-card">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-info text-uppercase mb-1">
+                                Don't Care Records</div>
+                            <div class="h5 mb-0 font-weight-bold">{{ dont_care_count }}</div>
+                            <div class="progress mt-2" style="height: 8px;">
+                                <div class="progress-bar bg-info" role="progressbar" style="width: {{ dont_care_percentage }}%" 
+                                    aria-valuenow="{{ dont_care_percentage }}" aria-valuemin="0" aria-valuemax="100"></div>
+                            </div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-ban fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Filter Section -->
+    <div class="card shadow mb-4 dashboard-card">
+        <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+            <h6 class="m-0 font-weight-bold">Filters</h6>
+            <button class="btn btn-sm btn-outline-primary" id="resetFilters">Reset Filters</button>
+        </div>
+        <div class="card-body">
+            <form id="filterForm" class="row">
+                <div class="col-md-2 mb-3">
+                    <label for="exceptionTypeFilter" class="form-label">Exception Type</label>
+                    <select class="form-select" id="exceptionTypeFilter" name="exception_type">
+                        <option value="">All Types</option>
+                        <option value="correction" {% if selected_type == 'correction' %}selected{% endif %}>Attendance Correction</option>
+                        <option value="dont_care" {% if selected_type == 'dont_care' %}selected{% endif %}>Don't Care Status</option>
+                    </select>
+                </div>
+                <div class="col-md-2 mb-3">
+                    <label for="statusFilter" class="form-label">Status</label>
+                    <select class="form-select" id="statusFilter" name="status">
+                        <option value="">All Status</option>
+                        <option value="pending" {% if selected_status == 'pending' %}selected{% endif %}>Pending</option>
+                        <option value="approved" {% if selected_status == 'approved' %}selected{% endif %}>Approved</option>
+                        <option value="rejected" {% if selected_status == 'rejected' %}selected{% endif %}>Rejected</option>
+                    </select>
+                </div>
+                <div class="col-md-2 mb-3">
+                    <label for="departmentFilter" class="form-label">Department</label>
+                    <select class="form-select" id="departmentFilter" name="department">
+                        <option value="">All Departments</option>
+                        {% for department in departments %}
+                        <option value="{{ department.department_id }}" {% if selected_department == department.department_id %}selected{% endif %}>
+                            {{ department.department_name }}
+                        </option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-2 mb-3">
+                    <label for="dateRangeFilter" class="form-label">Date Range</label>
+                    <select class="form-select" id="dateRangeFilter" name="date_range">
+                        <option value="">All Time</option>
+                        <option value="today" {% if selected_date_range == 'today' %}selected{% endif %}>Today</option>
+                        <option value="yesterday" {% if selected_date_range == 'yesterday' %}selected{% endif %}>Yesterday</option>
+                        <option value="this_week" {% if selected_date_range == 'this_week' %}selected{% endif %}>This Week</option>
+                        <option value="last_week" {% if selected_date_range == 'last_week' %}selected{% endif %}>Last Week</option>
+                        <option value="this_month" {% if selected_date_range == 'this_month' %}selected{% endif %}>This Month</option>
+                        <option value="custom" {% if selected_date_range == 'custom' %}selected{% endif %}>Custom Range</option>
+                    </select>
+                </div>
+                <div class="col-md-3 mb-3" id="customDateContainer" style="{% if selected_date_range != 'custom' %}display: none;{% endif %}">
+                    <div class="row">
+                        <div class="col-6">
+                            <label for="startDate" class="form-label">Start Date</label>
+                            <input type="date" class="form-control" id="startDate" name="start_date" value="{{ custom_start_date }}">
+                        </div>
+                        <div class="col-6">
+                            <label for="endDate" class="form-label">End Date</label>
+                            <input type="date" class="form-control" id="endDate" name="end_date" value="{{ custom_end_date }}">
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-1 d-flex align-items-end mb-3">
+                    <button type="submit" class="btn btn-primary w-100">
+                        <i class="fas fa-filter mr-1"></i> Apply
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <!-- Tabs for Different Exception Types -->
+    <div class="card shadow mb-4 dashboard-card">
+        <div class="card-header py-3">
+            <ul class="nav nav-tabs card-header-tabs" id="exceptionTabs" role="tablist">
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link active" id="all-tab" data-bs-toggle="tab" data-bs-target="#all-exceptions" type="button" role="tab" aria-controls="all-exceptions" aria-selected="true">
+                        All Exceptions
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="correction-tab" data-bs-toggle="tab" data-bs-target="#correction-exceptions" type="button" role="tab" aria-controls="correction-exceptions" aria-selected="false">
+                        Attendance Corrections
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="dont-care-tab" data-bs-toggle="tab" data-bs-target="#dont-care-exceptions" type="button" role="tab" aria-controls="dont-care-exceptions" aria-selected="false">
+                        Don't Care Status
+                    </button>
+                </li>
+                <li class="nav-item ms-auto">
+                    <div class="input-group">
+                        <input type="text" class="form-control" placeholder="Search exceptions..." id="searchExceptions">
+                        <button class="btn btn-outline-primary" type="button" id="searchButton">
+                            <i class="fas fa-search"></i>
+                        </button>
+                    </div>
+                </li>
+            </ul>
+        </div>
+        <div class="card-body">
+            <div class="tab-content" id="exceptionTabsContent">
+                <!-- All Exceptions Tab -->
+                <div class="tab-pane fade show active" id="all-exceptions" role="tabpanel" aria-labelledby="all-tab">
+                    <div class="table-responsive">
+                        <table class="table table-hover" id="allExceptionsTable">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Request ID</th>
+                                    <th>Student</th>
+                                    <th>Roll Number</th>
+                                    <th>Subject</th>
+                                    <th>Date</th>
+                                    <th>Type</th>
+                                    <th>Current Status</th>
+                                    <th>Requested Status</th>
+                                    <th>Reason</th>
+                                    <th>Applied On</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for exception in exceptions %}
+                                <tr class="{% if exception.status == 'pending' %}table-warning{% elif exception.status == 'approved' %}table-success{% elif exception.status == 'rejected' %}table-danger{% endif %}">
+                                    <td><a href="#" class="view-exception" data-id="{{ exception.id }}">#{{ exception.request_id }}</a></td>
+                                    <td>{{ exception.student_name }}</td>
+                                    <td>{{ exception.roll_number }}</td>
+                                    <td>{{ exception.subject_name }}</td>
+                                    <td>{{ exception.date }}</td>
+                                    <td>
+                                        {% if exception.exception_type == 'correction' %}
+                                            <span class="badge bg-primary">Correction</span>
+                                        {% elif exception.exception_type == 'dont_care' %}
+                                            <span class="badge bg-secondary">Don't Care</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {% if exception.current_status == 'present' %}
+                                            <span class="badge bg-success">Present</span>
+                                        {% elif exception.current_status == 'absent' %}
+                                            <span class="badge bg-danger">Absent</span>
+                                        {% else %}
+                                            <span class="badge bg-secondary">N/A</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {% if exception.requested_status == 'present' %}
+                                            <span class="badge bg-success">Present</span>
+                                        {% elif exception.requested_status == 'absent' %}
+                                            <span class="badge bg-danger">Absent</span>
+                                        {% elif exception.requested_status == 'dont_care' %}
+                                            <span class="badge bg-secondary">Don't Care</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>{{ exception.reason|truncatechars:30 }}</td>
+                                    <td>{{ exception.applied_date }}</td>
+                                    <td>
+                                        {% if exception.status == 'pending' %}
+                                            <span class="badge bg-warning">Pending</span>
+                                        {% elif exception.status == 'approved' %}
+                                            <span class="badge bg-success">Approved</span>
+                                        {% elif exception.status == 'rejected' %}
+                                            <span class="badge bg-danger">Rejected</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {% if exception.status == 'pending' %}
+                                        <div class="btn-group">
+                                            <button type="button" class="btn btn-sm btn-success approve-btn" data-id="{{ exception.id }}" data-bs-toggle="tooltip" title="Approve">
+                                                <i class="fas fa-check"></i>
+                                            </button>
+                                            <button type="button" class="btn btn-sm btn-danger reject-btn" data-id="{{ exception.id }}" data-bs-toggle="tooltip" title="Reject">
+                                                <i class="fas fa-times"></i>
+                                            </button>
+                                            <button type="button" class="btn btn-sm btn-info view-btn" data-id="{{ exception.id }}" data-bs-toggle="tooltip" title="View Details">
+                                                <i class="fas fa-eye"></i>
+                                            </button>
+                                        </div>
+                                        {% else %}
+                                        <button type="button" class="btn btn-sm btn-info view-btn" data-id="{{ exception.id }}" data-bs-toggle="tooltip" title="View Details">
+                                            <i class="fas fa-eye"></i>
+                                        </button>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                {% empty %}
+                                <tr>
+                                    <td colspan="12" class="text-center py-4">
+                                        <img src="{% static 'img/illustrations/no-data.svg' %}" alt="No Exceptions" class="mb-3" style="width: 150px; opacity: 0.7;">
+                                        <h5>No Exceptions Found</h5>
+                                        <p class="text-muted">No attendance exceptions match your current filters.</p>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                
+                <!-- Attendance Corrections Tab -->
+                <div class="tab-pane fade" id="correction-exceptions" role="tabpanel" aria-labelledby="correction-tab">
+                    <!-- Will be populated by JavaScript -->
+                </div>
+                
+                <!-- Don't Care Status Tab -->
+                <div class="tab-pane fade" id="dont-care-exceptions" role="tabpanel" aria-labelledby="dont-care-tab">
+                    <!-- Will be populated by JavaScript -->
+                </div>
+            </div>
+            
+            <!-- Pagination -->
+            {% if exceptions.has_other_pages %}
+            <div class="d-flex justify-content-center mt-4">
+                <nav aria-label="Page navigation">
+                    <ul class="pagination">
+                        {% if exceptions.has_previous %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ exceptions.previous_page_number }}&{{ query_params }}" aria-label="Previous">
+                                <span aria-hidden="true">&laquo;</span>
+                            </a>
+                        </li>
+                        {% else %}
+                        <li class="page-item disabled">
+                            <span class="page-link" aria-hidden="true">&laquo;</span>
+                        </li>
+                        {% endif %}
+                        
+                        {% for i in exceptions.paginator.page_range %}
+                            {% if exceptions.number == i %}
+                            <li class="page-item active">
+                                <span class="page-link">{{ i }}</span>
+                            </li>
+                            {% else %}
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ i }}&{{ query_params }}">{{ i }}</a>
+                            </li>
+                            {% endif %}
+                        {% endfor %}
+                        
+                        {% if exceptions.has_next %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ exceptions.next_page_number }}&{{ query_params }}" aria-label="Next">
+                                <span aria-hidden="true">&raquo;</span>
+                            </a>
+                        </li>
+                        {% else %}
+                        <li class="page-item disabled">
+                            <span class="page-link" aria-hidden="true">&raquo;</span>
+                        </li>
+                        {% endif %}
+                    </ul>
+                </nav>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+    
+    <!-- Exception Analysis Charts -->
+    <div class="row">
+        <div class="col-md-6">
+            <div class="card shadow mb-4 dashboard-card">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold">Exceptions by Department</h6>
+                </div>
+                <div class="card-body">
+                    <div class="chart-container" style="position: relative; height:300px;">
+                        <canvas id="departmentChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-6">
+            <div class="card shadow mb-4 dashboard-card">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold">Exceptions by Type</h6>
+                </div>
+                <div class="card-body">
+                    <div class="chart-container" style="position: relative; height:300px;">
+                        <canvas id="typeChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Exception Details Modal -->
+<div class="modal fade" id="exceptionDetailsModal" tabindex="-1" aria-labelledby="exceptionDetailsModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exceptionDetailsModalLabel">Exception Request Details</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="text-center" id="modalLoading">
+                    <div class="spinner-border text-primary" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
+                    <p class="mt-2">Loading exception details...</p>
+                </div>
+                
+                <div id="exceptionDetails" style="display: none;">
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <div class="detail-item">
+                                <h6>Request ID</h6>
+                                <p id="detailRequestId"></p>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="detail-item">
+                                <h6>Status</h6>
+                                <div id="detailStatusContainer"></div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="card mb-4">
+                        <div class="card-header py-3">
+                            <h6 class="m-0 font-weight-bold">Student Information</h6>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="detail-item">
+                                        <h6>Student Name</h6>
+                                        <p id="detailStudentName"></p>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="detail-item">
+                                        <h6>Roll Number</h6>
+                                        <p id="detailRollNumber"></p>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="detail-item">
+                                        <h6>Department</h6>
+                                        <p id="detailDepartment"></p>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="detail-item">
+                                        <h6>Semester</h6>
+                                        <p id="detailSemester"></p>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="detail-item">
+                                        <h6>Contact Number</h6>
+                                        <p id="detailContactNumber"></p>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="detail-item">
+                                        <h6>Email</h6>
+                                        <p id="detailEmail"></p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="card mb-4">
+                        <div class="card-header py-3">
+                            <h6 class="m-0 font-weight-bold">Exception Information</h6>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="detail-item">
+                                        <h6>Exception Type</h6>
+                                        <p id="detailExceptionType"></p>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="detail-item">
+                                        <h6>Date</h6>
+                                        <p id="detailDate"></p>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="detail-item">
+                                        <h6>Subject</h6>
+                                        <p id="detailSubject"></p>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="detail-item">
+                                        <h6>Faculty</h6>
+                                        <p id="detailFaculty"></p>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="detail-item">
+                                        <h6>Current Status</h6>
+                                        <p id="detailCurrentStatus"></p>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="detail-item">
+                                        <h6>Requested Status</h6>
+                                        <p id="detailRequestedStatus"></p>
+                                    </div>
+                                </div>
+                                <div class="col-md-12">
+                                    <div class="detail-item">
+                                        <h6>Reason</h6>
+                                        <p id="detailReason"></p>
+                                    </div>
+                                </div>
+                                <div class="col-md-12" id="detailEvidenceContainer">
+                                    <div class="detail-item">
+                                        <h6>Supporting Evidence</h6>
+                                        <div id="detailEvidence"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="card mb-4">
+                        <div class="card-header py-3">
+                            <h6 class="m-0 font-weight-bold">Attendance History</h6>
+                        </div>
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="table table-sm table-hover">
+                                    <thead class="table-light">
+                                        <tr>
+                                            <th>Date</th>
+                                            <th>Day</th>
+                                            <th>Status</th>
+                                            <th>Recorded By</th>
+                                            <th>Recorded On</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="attendanceHistoryTable">
+                                        <!-- Will be populated by JavaScript -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer" id="modalFooter" style="display: none;">
+                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-outline-primary me-2" id="detailsDownloadBtn">
+                    <i class="fas fa-download me-1"></i> Download
+                </button>
+                <button type="button" class="btn btn-success me-2" id="detailsApproveBtn">
+                    <i class="fas fa-check me-1"></i> Approve
+                </button>
+                <button type="button" class="btn btn-danger" id="detailsRejectBtn">
+                    <i class="fas fa-times me-1"></i> Reject
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Create Exception Modal -->
+<div class="modal fade" id="createExceptionModal" tabindex="-1" aria-labelledby="createExceptionModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="createExceptionModalLabel">Create Attendance Exception</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="createExceptionForm">
+                    {% csrf_token %}
+                    
+                    <div class="mb-3">
+                        <label for="exceptionType" class="form-label">Exception Type</label>
+                        <select class="form-select" id="exceptionType" name="exception_type" required>
+                            <option value="">Select Exception Type</option>
+                            <option value="correction">Attendance Correction</option>
+                            <option value="dont_care">Don't Care Status</option>
+                        </select>
+                    </div>
+                    
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label for="department" class="form-label">Department</label>
+                            <select class="form-select" id="department" name="department" required>
+                                <option value="">Select Department</option>
+                                {% for department in departments %}
+                                <option value="{{ department.department_id }}">{{ department.department_name }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="semester" class="form-label">Semester</label>
+                            <select class="form-select" id="semester" name="semester" required>
+                                <option value="">Select Semester</option>
+                                {% for i in semester_range %}
+                                <option value="{{ i }}">Semester {{ i }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label for="classSection" class="form-label">Class Section</label>
+                            <select class="form-select" id="classSection" name="class_section" required>
+                                <option value="">Select Class Section</option>
+                                <!-- Will be populated by JavaScript -->
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="date" class="form-label">Date</label>
+                            <input type="date" class="form-control" id="date" name="date" required>
+                        </div>
+                    </div>
+                    
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label for="subject" class="form-label">Subject</label>
+                            <select class="form-select" id="subject" name="subject" required>
+                                <option value="">Select Subject</option>
+                                <!-- Will be populated by JavaScript -->
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="faculty" class="form-label">Faculty</label>
+                            <select class="form-select" id="faculty" name="faculty" required>
+                                <option value="">Select Faculty</option>
+                                <!-- Will be populated by JavaScript -->
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div id="studentSelectionContainer" class="mb-3">
+                        <label for="studentsSelect" class="form-label">Students</label>
+                        <div class="input-group mb-2">
+                            <select class="form-select" id="studentsSelect" name="students_select">
+                                <option value="">Select Student</option>
+                                <!-- Will be populated by JavaScript -->
+                            </select>
+                            <button class="btn btn-outline-primary" type="button" id="addStudentBtn">
+                                <i class="fas fa-plus"></i> Add
+                            </button>
+                        </div>
+                        <div class="form-check mb-2">
+                            <input class="form-check-input" type="checkbox" id="selectAllStudents" name="select_all_students">
+                            <label class="form-check-label" for="selectAllStudents">
+                                Apply to all students in the class
+                            </label>
+                        </div>
+                        <div class="selected-students-container mt-2">
+                            <div class="card">
+                                <div class="card-header py-2">
+                                    <h6 class="m-0">Selected Students</h6>
+                                </div>
+                                <div class="card-body p-2">
+                                    <ul class="list-group" id="selectedStudentsList">
+                                        <li class="list-group-item text-muted text-center" id="noStudentsSelected">No students selected</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label for="currentStatus" class="form-label">Current Status</label>
+                            <select class="form-select" id="currentStatus" name="current_status">
+                                <option value="">Select Current Status</option>
+                                <option value="present">Present</option>
+                                <option value="absent">Absent</option>
+                                <option value="none">None (No record yet)</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="requestedStatus" class="form-label">Requested Status</label>
+                            <select class="form-select" id="requestedStatus" name="requested_status" required>
+                                <option value="">Select Requested Status</option>
+                                <option value="present">Present</option>
+                                <option value="absent">Absent</option>
+                                <option value="dont_care">Don't Care</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="reason" class="form-label">Reason</label>
+                        <textarea class="form-control" id="reason" name="reason" rows="3" required></textarea>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="evidence" class="form-label">Supporting Evidence (if any)</label>
+                        <input type="file" class="form-control" id="evidence" name="evidence">
+                    </div>
+                    
+                    <div class="mb-3 form-check">
+                        <input class="form-check-input" type="checkbox" id="notifyFaculty" name="notify_faculty" checked>
+                        <label class="form-check-label" for="notifyFaculty">
+                            Notify faculty about this exception
+                        </label>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" id="createExceptionSubmitBtn">Create Exception</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Approve/Reject Modal -->
+<div class="modal fade" id="actionModal" tabindex="-1" aria-labelledby="actionModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="actionModalLabel">Approve Exception</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="actionForm">
+                    {% csrf_token %}
+                    <input type="hidden" id="actionExceptionId" name="exception_id">
+                    <input type="hidden" id="actionType" name="action_type">
+                    
+                    <div class="mb-3">
+                        <label for="actionComment" class="form-label">Comment</label>
+                        <textarea class="form-control" id="actionComment" name="comment" rows="3" placeholder="Add a comment (optional)"></textarea>
+                    </div>
+                    
+                    <div class="mb-3" id="rejectReasonContainer" style="display: none;">
+                        <label for="rejectReason" class="form-label">Reason for Rejection</label>
+                        <select class="form-select" id="rejectReason" name="reject_reason">
+                            <option value="">Select a reason</option>
+                            <option value="insufficient_documentation">Insufficient Documentation</option>
+                            <option value="fake_documentation">Suspected Fake Documentation</option>
+                            <option value="past_records">Poor Attendance Record</option>
+                            <option value="pattern_misuse">Pattern of Misuse</option>
+                            <option value="late_request">Request Made Too Late</option>
+                            <option value="other">Other (Please specify in comment)</option>
+                        </select>
+                    </div>
+                    
+                    <div class="mb-3 form-check">
+                        <input type="checkbox" class="form-check-input" id="notifyStudent" name="notify_student" checked>
+                        <label class="form-check-label" for="notifyStudent">Notify student via email</label>
+                    </div>
+                    
+                    <div class="mb-3 form-check">
+                        <input type="checkbox" class="form-check-input" id="notifyFacultyAction" name="notify_faculty" checked>
+                        <label class="form-check-label" for="notifyFacultyAction">Notify faculty via email</label>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-success" id="submitAction">Submit</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block lab_assistant_custom_css %}
+<style>
+    /* Detail items styling */
+    .detail-item {
+        margin-bottom: 15px;
+    }
+    
+    .detail-item h6 {
+        margin-bottom: 5px;
+        font-size: 0.85rem;
+        color: #6c757d;
+    }
+    
+    .detail-item p {
+        margin-bottom: 0;
+        font-weight: 500;
+    }
+    
+    /* Selected students list styling */
+    .selected-students-container {
+        max-height: 200px;
+        overflow-y: auto;
+    }
+    
+    #selectedStudentsList {
+        padding: 0;
+    }
+    
+    #selectedStudentsList li {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0.5rem 1rem;
+    }
+    
+    .remove-student {
+        border: none;
+        background: none;
+        color: #dc3545;
+        padding: 0;
+        cursor: pointer;
+    }
+    
+    /* Submission status icons */
+    .status-icon {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 30px;
+        height: 30px;
+        border-radius: 50%;
+        margin-right: 10px;
+        color: white;
+    }
+    
+    .status-icon.pending {
+        background-color: #f6c23e;
+    }
+    
+    .status-icon.approved {
+        background-color: #1cc88a;
+    }
+    
+    .status-icon.rejected {
+        background-color: #e74a3b;
+    }
+    
+    /* Evidence file links */
+    .evidence-file {
+        display: inline-flex;
+        align-items: center;
+        padding: 8px 12px;
+        background-color: #f8f9fc;
+        border-radius: 5px;
+        margin-right: 10px;
+        margin-bottom: 10px;
+        color: #4e73df;
+        text-decoration: none;
+        transition: all 0.2s ease;
+    }
+    
+    .evidence-file:hover {
+        background-color: #eaecf4;
+        color: #2e59d9;
+    }
+    
+    .evidence-file i {
+        margin-right: 5px;
+    }
+    
+    /* Table hover effect */
+    #allExceptionsTable tbody tr:hover {
+        cursor: pointer;
+    }
+</style>
+{% endblock %}
+
+{% block lab_assistant_custom_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        try {
+            // Log page load
+            logToFile('Attendance exceptions page loaded');
+            
+            // Initialize tooltips
+            var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+            var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+                return new bootstrap.Tooltip(tooltipTriggerEl)
+            });
+            
+            // Initialize DataTable
+            const exceptionsTable = $('#allExceptionsTable').DataTable({
+                paging: false,
+                searching: true,
+                info: false,
+                ordering: true,
+                columnDefs: [
+                    { orderable: false, targets: [11] },
+                ],
+                language: {
+                    search: "_INPUT_",
+                    searchPlaceholder: "Search exceptions..."
+                }
+            });
+            
+            // Initialize department chart
+            const departmentChartCtx = document.getElementById('departmentChart').getContext('2d');
+            const departmentChart = new Chart(departmentChartCtx, {
+                type: 'bar',
+                data: {
+                    labels: [{% for dept in dept_chart_data %}"{{ dept.department_name }}"{% if not forloop.last %}, {% endif %}{% endfor %}],
+                    datasets: [{
+                        label: 'Total Exceptions',
+                        data: [{% for dept in dept_chart_data %}{{ dept.total_count }}{% if not forloop.last %}, {% endif %}{% endfor %}],
+                        backgroundColor: '#4e73df',
+                        borderColor: '#4e73df',
+                        borderWidth: 1
+                    }, {
+                        label: 'Approved',
+                        data: [{% for dept in dept_chart_data %}{{ dept.approved_count }}{% if not forloop.last %}, {% endif %}{% endfor %}],
+                        backgroundColor: '#1cc88a',
+                        borderColor: '#1cc88a',
+                        borderWidth: 1
+                    }, {
+                        label: 'Rejected',
+                        data: [{% for dept in dept_chart_data %}{{ dept.rejected_count }}{% if not forloop.last %}, {% endif %}{% endfor %}],
+                        backgroundColor: '#e74a3b',
+                        borderColor: '#e74a3b',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: 'Number of Exceptions'
+                            }
+                        },
+                        x: {
+                            grid: {
+                                display: false
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                        }
+                    }
+                }
+            });
+            
+            // Initialize type chart
+            const typeChartCtx = document.getElementById('typeChart').getContext('2d');
+            const typeChart = new Chart(typeChartCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Attendance Correction', 'Don\'t Care Status'],
+                    datasets: [{
+                        data: [{{ correction_count }}, {{ dont_care_count }}],
+                        backgroundColor: ['#4e73df', '#36b9cc'],
+                        hoverBackgroundColor: ['#2e59d9', '#2c9faf'],
+                        hoverBorderColor: "rgba(234, 236, 244, 1)",
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'right',
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    const label = context.label || '';
+                                    const value = context.raw;
+                                    const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                                    const percentage = Math.round((value / total) * 100);
+                                    return `${label}: ${value} (${percentage}%)`;
+                                }
+                            }
+                        }
+                    },
+                    cutout: '60%'
+                }
+            });
+            
+            // Date range filter functionality
+            document.getElementById('dateRangeFilter').addEventListener('change', function() {
+                const customDateContainer = document.getElementById('customDateContainer');
+                if (this.value === 'custom') {
+                    customDateContainer.style.display = 'block';
+                } else {
+                    customDateContainer.style.display = 'none';
+                }
+            });
+            
+            // Reset filters button
+            document.getElementById('resetFilters').addEventListener('click', function() {
+                document.getElementById('exceptionTypeFilter').value = '';
+                document.getElementById('statusFilter').value = '';
+                document.getElementById('departmentFilter').value = '';
+                document.getElementById('dateRangeFilter').value = '';
+                document.getElementById('customDateContainer').style.display = 'none';
+                document.getElementById('startDate').value = '';
+                document.getElementById('endDate').value = '';
+                
+                // Submit the form
+                document.getElementById('filterForm').submit();
+            });
+            
+            // Initialize tab content for different exception types
+            document.querySelectorAll('button[data-bs-toggle="tab"]').on('shown.bs.tab', function (e) {
+                const targetId = $(e.target).attr('id');
+                
+                if (targetId === 'correction-tab' && !$('#correctionExceptionsTable').length) {
+                    // Clone the main table for correction tab
+                    const correctionTable = $('#allExceptionsTable').clone().attr('id', 'correctionExceptionsTable');
+                    $('#correction-exceptions').html(correctionTable);
+                    
+                    // Initialize DataTable
+                    $('#correctionExceptionsTable').DataTable({
+                        paging: false,
+                        searching: true,
+                        info: false,
+                        ordering: true,
+                        columnDefs: [
+                            { orderable: false, targets: [11] },
+                        ]
+                    });
+                    
+                    // Filter to show only correction exceptions
+                    $('#correctionExceptionsTable').DataTable().column(5).search('Correction').draw();
+                }
+                
+                if (targetId === 'dont-care-tab' && !$('#dontCareExceptionsTable').length) {
+                    // Clone the main table for don't care tab
+                    const dontCareTable = $('#allExceptionsTable').clone().attr('id', 'dontCareExceptionsTable');
+                    $('#dont-care-exceptions').html(dontCareTable);
+                    
+                    // Initialize DataTable
+                    $('#dontCareExceptionsTable').DataTable({
+                        paging: false,
+                        searching: true,
+                        info: false,
+                        ordering: true,
+                        columnDefs: [
+                            { orderable: false, targets: [11] },
+                        ]
+                    });
+                    
+                    // Filter to show only don't care exceptions
+                    $('#dontCareExceptionsTable').DataTable().column(5).search('Don\'t Care').draw();
+                }
+            });
+            
+            // View exception details
+            function openExceptionDetails(exceptionId) {
+                logToFile(`Opening exception details for ID: ${exceptionId}`);
+                
+                // Show loading indicator
+                document.getElementById('modalLoading').style.display = 'block';
+                document.getElementById('exceptionDetails').style.display = 'none';
+                document.getElementById('modalFooter').style.display = 'none';
+                
+                // Show modal
+                $('#exceptionDetailsModal').modal('show');
+                
+                // Fetch exception details (simulated)
+                setTimeout(() => {
+                    // In a real app, you'd make an AJAX call to get the details
+                    // Simulating data for demonstration purposes
+                    
+                    // Student info
+                    document.getElementById('detailRequestId').textContent = `#EX${exceptionId}`;
+                    document.getElementById('detailStudentName').textContent = 'John Doe';
+                    document.getElementById('detailRollNumber').textContent = 'CE21037';
+                    document.getElementById('detailDepartment').textContent = 'Computer Engineering';
+                    document.getElementById('detailSemester').textContent = 'Semester 4';
+                    document.getElementById('detailContactNumber').textContent = '+91 98765 43210';
+                    document.getElementById('detailEmail').textContent = 'john.doe@mbit.edu.in';
+                    
+                    // Exception info
+                    document.getElementById('detailExceptionType').textContent = 'Attendance Correction';
+                    document.getElementById('detailDate').textContent = 'March 15, 2025';
+                    document.getElementById('detailSubject').textContent = 'Operating Systems (CE406)';
+                    document.getElementById('detailFaculty').textContent = 'Prof. Sharma';
+                    document.getElementById('detailCurrentStatus').textContent = 'Absent';
+                    document.getElementById('detailRequestedStatus').textContent = 'Present';
+                    document.getElementById('detailReason').textContent = 'I was present in the class but marked as absent by mistake. I have signed the attendance register.';
+                    
+                    // Status
+                    const statusContainer = document.getElementById('detailStatusContainer');
+                    statusContainer.innerHTML = '<span class="badge bg-warning">Pending</span>';
+                    
+                    // Evidence
+                    const evidenceContainer = document.getElementById('detailEvidence');
+                    evidenceContainer.innerHTML = `
+                        <a href="#" class="evidence-file">
+                            <i class="fas fa-file-image"></i> Attendance_Register.jpg
+                        </a>
+                    `;
+                    
+                    // Attendance history
+                    const attendanceHistoryTable = document.getElementById('attendanceHistoryTable');
+                    attendanceHistoryTable.innerHTML = `
+                        <tr>
+                            <td>March 15, 2025</td>
+                            <td>Monday</td>
+                            <td><span class="badge bg-danger">Absent</span></td>
+                            <td>Prof. Sharma</td>
+                            <td>March 15, 2025, 11:30 AM</td>
+                        </tr>
+                        <tr>
+                            <td>March 14, 2025</td>
+                            <td>Sunday</td>
+                            <td><span class="badge bg-secondary">No Class</span></td>
+                            <td>-</td>
+                            <td>-</td>
+                        </tr>
+                        <tr>
+                            <td>March 13, 2025</td>
+                            <td>Saturday</td>
+                            <td><span class="badge bg-success">Present</span></td>
+                            <td>Prof. Sharma</td>
+                            <td>March 13, 2025, 10:45 AM</td>
+                        </tr>
+                        <tr>
+                            <td>March 12, 2025</td>
+                            <td>Friday</td>
+                            <td><span class="badge bg-success">Present</span></td>
+                            <td>Prof. Sharma</td>
+                            <td>March 12, 2025, 10:30 AM</td>
+                        </tr>
+                        <tr>
+                            <td>March 11, 2025</td>
+                            <td>Thursday</td>
+                            <td><span class="badge bg-success">Present</span></td>
+                            <td>Prof. Sharma</td>
+                            <td>March 11, 2025, 10:30 AM</td>
+                        </tr>
+                    `;
+                    
+                    // Show exception details
+                    document.getElementById('modalLoading').style.display = 'none';
+                    document.getElementById('exceptionDetails').style.display = 'block';
+                    document.getElementById('modalFooter').style.display = 'flex';
+                    
+                    // Set action buttons
+                    const detailsApproveBtn = document.getElementById('detailsApproveBtn');
+                    const detailsRejectBtn = document.getElementById('detailsRejectBtn');
+                    
+                    // In a real app, you'd check if the exception is in a state where it can be approved/rejected
+                    detailsApproveBtn.style.display = 'block';
+                    detailsRejectBtn.style.display = 'block';
+                    
+                    // Add event listeners for action buttons
+                    detailsApproveBtn.onclick = () => {
+                        $('#exceptionDetailsModal').modal('hide');
+                        showActionModal('approve', exceptionId);
+                    };
+                    
+                    detailsRejectBtn.onclick = () => {
+                        $('#exceptionDetailsModal').modal('hide');
+                        showActionModal('reject', exceptionId);
+                    };
+                    
+                }, 1000);
+            }
+            
+            // Show approve/reject modal
+            function showActionModal(action, exceptionId) {
+                logToFile(`Showing ${action} modal for exception ID: ${exceptionId}`);
+                
+                // Set modal title and button text
+                document.getElementById('actionModalLabel').textContent = 
+                    action === 'approve' ? 'Approve Exception' : 'Reject Exception';
+                
+                const submitButton = document.getElementById('submitAction');
+                submitButton.className = action === 'approve' ? 'btn btn-success' : 'btn btn-danger';
+                submitButton.textContent = action === 'approve' ? 'Approve' : 'Reject';
+                
+                // Set form values
+                document.getElementById('actionExceptionId').value = exceptionId;
+                document.getElementById('actionType').value = action;
+                document.getElementById('actionComment').value = '';
+                
+                // Show/hide reject reason container
+                document.getElementById('rejectReasonContainer').style.display = 
+                    action === 'reject' ? 'block' : 'none';
+                
+                // Show modal
+                $('#actionModal').modal('show');
+            }
+            
+            // Handle view exception click
+            document.querySelectorAll('.view-exception, .view-btn').forEach(button => {
+                button.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    
+                    const exceptionId = this.dataset.id;
+                    openExceptionDetails(exceptionId);
+                });
+            });
+            
+            // Row click to view details
+            document.querySelectorAll('#allExceptionsTable tbody tr').forEach(row => {
+                row.addEventListener('click', function(e) {
+                    // Check if click is on a button or checkbox
+                    if (e.target.closest('button') || e.target.closest('input[type="checkbox"]')) {
+                        return;
+                    }
+                    
+                    const viewButton = this.querySelector('.view-btn');
+                    if (viewButton) {
+                        const exceptionId = viewButton.dataset.id;
+                        openExceptionDetails(exceptionId);
+                    }
+                });
+            });
+            
+            // Handle approve button click
+            document.querySelectorAll('.approve-btn').forEach(button => {
+                button.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    
+                    const exceptionId = this.dataset.id;
+                    showActionModal('approve', exceptionId);
+                });
+            });
+            
+            // Handle reject button click
+            document.querySelectorAll('.reject-btn').forEach(button => {
+                button.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    
+                    const exceptionId = this.dataset.id;
+                    showActionModal('reject', exceptionId);
+                });
+            });
+            
+            // Handle submit action
+            document.getElementById('submitAction').addEventListener('click', function() {
+                const exceptionId = document.getElementById('actionExceptionId').value;
+                const action = document.getElementById('actionType').value;
+                const comment = document.getElementById('actionComment').value;
+                const notifyStudent = document.getElementById('notifyStudent').checked;
+                const notifyFaculty = document.getElementById('notifyFacultyAction').checked;
+                
+                // Additional validation for reject reason
+                if (action === 'reject') {
+                    const rejectReason = document.getElementById('rejectReason').value;
+                    if (!rejectReason) {
+                        Swal.fire({
+                            title: 'Error',
+                            text: 'Please select a reason for rejection',
+                            icon: 'error',
+                            confirmButtonColor: '#4e73df'
+                        });
+                        return;
+                    }
+                }
+                
+                logToFile(`Submitting ${action} for exception ID: ${exceptionId}`);
+                
+                // In a real app, you'd submit the form via AJAX
+                
+                Swal.fire({
+                    title: 'Processing',
+                    html: `${action === 'approve' ? 'Approving' : 'Rejecting'} exception...`,
+                    timer: 1500,
+                    timerProgressBar: true,
+                    didOpen: () => {
+                        Swal.showLoading();
+                    }
+                }).then(() => {
+                    // Close modal
+                    $('#actionModal').modal('hide');
+                    
+                    Swal.fire({
+                        title: 'Success',
+                        text: `Exception has been ${action === 'approve' ? 'approved' : 'rejected'} successfully.`,
+                        icon: 'success',
+                        confirmButtonColor: '#4e73df'
+                    }).then(() => {
+                        // Reload page to reflect changes
+                        window.location.reload();
+                    });
+                });
+            });
+            
+            // Create exception button
+            document.getElementById('createExceptionBtn').addEventListener('click', function() {
+                logToFile('Opening create exception modal');
+                
+                // Reset form
+                document.getElementById('createExceptionForm').reset();
+                
+                // Show modal
+                $('#createExceptionModal').modal('show');
+            });
+            
+            // Select all students checkbox
+            document.getElementById('selectAllStudents').addEventListener('change', function() {
+                const studentsSelect = document.getElementById('studentsSelect');
+                
+                if (this.checked) {
+                    studentsSelect.disabled = true;
+                    document.getElementById('addStudentBtn').disabled = true;
+                    document.getElementById('selectedStudentsList').innerHTML = `
+                        <li class="list-group-item text-success">
+                            <i class="fas fa-users me-2"></i> All students in class will be affected
+                        </li>
+                    `;
+                } else {
+                    studentsSelect.disabled = false;
+                    document.getElementById('addStudentBtn').disabled = false;
+                    document.getElementById('selectedStudentsList').innerHTML = `
+                        <li class="list-group-item text-muted text-center" id="noStudentsSelected">No students selected</li>
+                    `;
+                }
+            });
+            
+            // Department change event
+            document.getElementById('department').addEventListener('change', function() {
+                const departmentId = this.value;
+                if (!departmentId) return;
+                
+                logToFile(`Department changed to ID: ${departmentId}`);
+                
+                // In a real app, you'd make an AJAX call to get class sections
+                // Simulating data for demonstration purposes
+                
+                const classSectionSelect = document.getElementById('classSection');
+                classSectionSelect.innerHTML = '<option value="">Select Class Section</option>';
+                
+                // Add sample data
+                const sections = [
+                    { id: 1, name: 'CE1' },
+                    { id: 2, name: 'CE2' },
+                    { id: 3, name: 'CE3' }
+                ];
+                
+                sections.forEach(section => {
+                    const option = document.createElement('option');
+                    option.value = section.id;
+                    option.textContent = section.name;
+                    classSectionSelect.appendChild(option);
+                });
+            });
+            
+            // Class section change event
+            document.getElementById('classSection').addEventListener('change', function() {
+                const sectionId = this.value;
+                if (!sectionId) return;
+                
+                logToFile(`Class section changed to ID: ${sectionId}`);
+                
+                // In a real app, you'd make an AJAX call to get subjects
+                // Simulating data for demonstration purposes
+                
+                const subjectSelect = document.getElementById('subject');
+                subjectSelect.innerHTML = '<option value="">Select Subject</option>';
+                
+                // Add sample data
+                const subjects = [
+                    { id: 1, name: 'Operating Systems (CE406)' },
+                    { id: 2, name: 'Computer Networks (CE407)' },
+                    { id: 3, name: 'Database Systems (CE408)' }
+                ];
+                
+                subjects.forEach(subject => {
+                    const option = document.createElement('option');
+                    option.value = subject.id;
+                    option.textContent = subject.name;
+                    subjectSelect.appendChild(option);
+                });
+                
+                // Also update students list
+                const studentsSelect = document.getElementById('studentsSelect');
+                studentsSelect.innerHTML = '<option value="">Select Student</option>';
+                
+                // Add sample data
+                const students = [
+                    { id: 1, name: 'John Doe', rollNumber: 'CE21037' },
+                    { id: 2, name: 'Jane Smith', rollNumber: 'CE21038' },
+                    { id: 3, name: 'Mike Johnson', rollNumber: 'CE21039' },
+                    { id: 4, name: 'Sarah Williams', rollNumber: 'CE21040' }
+                ];
+                
+                students.forEach(student => {
+                    const option = document.createElement('option');
+                    option.value = student.id;
+                    option.textContent = `${student.name} (${student.rollNumber})`;
+                    option.dataset.name = student.name;
+                    option.dataset.roll = student.rollNumber;
+                    studentsSelect.appendChild(option);
+                });
+            });
+            
+            // Subject change event
+            document.getElementById('subject').addEventListener('change', function() {
+                const subjectId = this.value;
+                if (!subjectId) return;
+                
+                logToFile(`Subject changed to ID: ${subjectId}`);
+                
+                // In a real app, you'd make an AJAX call to get faculty
+                // Simulating data for demonstration purposes
+                
+                const facultySelect = document.getElementById('faculty');
+                facultySelect.innerHTML = '<option value="">Select Faculty</option>';
+                
+                // Add sample data
+                const faculty = [
+                    { id: 1, name: 'Prof. Sharma' },
+                    { id: 2, name: 'Prof. Patel' }
+                ];
+                
+                faculty.forEach(fac => {
+                    const option = document.createElement('option');
+                    option.value = fac.id;
+                    option.textContent = fac.name;
+                    facultySelect.appendChild(option);
+                });
+            });
+            
+            // Add student button
+            document.getElementById('addStudentBtn').addEventListener('click', function() {
+                const studentsSelect = document.getElementById('studentsSelect');
+                const selectedOption = studentsSelect.options[studentsSelect.selectedIndex];
+                
+                if (!studentsSelect.value) return;
+                
+                const studentId = studentsSelect.value;
+                const studentName = selectedOption.dataset.name;
+                const studentRoll = selectedOption.dataset.roll;
+                
+                logToFile(`Adding student to selected list: ${studentName} (${studentRoll})`);
+                
+                // Check if student is already added
+                const existingStudent = document.querySelector(`[data-student-id="${studentId}"]`);
+                if (existingStudent) return;
+                
+                // Remove "no students selected" message if present
+                const noStudentsMsg = document.getElementById('noStudentsSelected');
+                if (noStudentsMsg) {
+                    noStudentsMsg.remove();
+                }
+                
+                // Add student to list
+                const studentsList = document.getElementById('selectedStudentsList');
+                const listItem = document.createElement('li');
+                listItem.className = 'list-group-item';
+                listItem.dataset.studentId = studentId;
+                listItem.innerHTML = `
+                    <span>${studentName} <small class="text-muted">${studentRoll}</small></span>
+                    <button type="button" class="remove-student" data-student-id="${studentId}">
+                        <i class="fas fa-times"></i>
+                    </button>
+                    <input type="hidden" name="selected_students[]" value="${studentId}">
+                `;
+                
+                studentsList.appendChild(listItem);
+            });
+            
+            // Remove student button
+            document.addEventListener('click', function(e) {
+                if (e.target.closest('.remove-student')) {
+                    const button = e.target.closest('.remove-student');
+                    const studentId = button.dataset.studentId;
+                    const listItem = document.querySelector(`li[data-student-id="${studentId}"]`);
+                    
+                    logToFile(`Removing student from selected list: ${studentId}`);
+                    
+                    listItem.remove();
+                    
+                    // Check if list is empty
+                    const studentsList = document.getElementById('selectedStudentsList');
+                    if (studentsList.children.length === 0) {
+                        studentsList.innerHTML = `
+                            <li class="list-group-item text-muted text-center" id="noStudentsSelected">No students selected</li>
+                        `;
+                    }
+                }
+            });
+            
+            // Exception type change event
+            document.getElementById('exceptionType').addEventListener('change', function() {
+                const exceptionType = this.value;
+                const currentStatusField = document.getElementById('currentStatus');
+                const requestedStatusField = document.getElementById('requestedStatus');
+                
+                if (exceptionType === 'correction') {
+                    // Show current status field
+                    currentStatusField.parentElement.style.display = 'block';
+                    
+                    // Update requested status options
+                    requestedStatusField.innerHTML = `
+                        <option value="">Select Requested Status</option>
+                        <option value="present">Present</option>
+                        <option value="absent">Absent</option>
+                    `;
+                } else if (exceptionType === 'dont_care') {
+                    // Hide current status field
+                    currentStatusField.parentElement.style.display = 'none';
+                    
+                    // Update requested status options
+                    requestedStatusField.innerHTML = `
+                        <option value="">Select Requested Status</option>
+                        <option value="dont_care">Don't Care</option>
+                    `;
+                }
+            });
+            
+            // Create exception submit button
+            document.getElementById('createExceptionSubmitBtn').addEventListener('click', function() {
+                const form = document.getElementById('createExceptionForm');
+                
+                // Validate form
+                if (!form.checkValidity()) {
+                    form.reportValidity();
+                    return;
+                }
+                
+                // Check if at least one student is selected
+                const selectAllStudents = document.getElementById('selectAllStudents').checked;
+                const selectedStudents = document.querySelectorAll('input[name="selected_students[]"]');
+                
+                if (!selectAllStudents && selectedStudents.length === 0) {
+                    Swal.fire({
+                        title: 'Error',
+                        text: 'Please select at least one student or check "Apply to all students in the class"',
+                        icon: 'error',
+                        confirmButtonColor: '#4e73df'
+                    });
+                    return;
+                }
+                
+                logToFile('Submitting create exception form');
+                
+                // In a real app, you'd submit the form via AJAX
+                
+                Swal.fire({
+                    title: 'Creating Exception',
+                    html: 'Please wait...',
+                    timer: 2000,
+                    timerProgressBar: true,
+                    didOpen: () => {
+                        Swal.showLoading();
+                    }
+                }).then(() => {
+                    // Close modal
+                    $('#createExceptionModal').modal('hide');
+                    
+                    Swal.fire({
+                        title: 'Success',
+                        text: 'Exception has been created successfully.',
+                        icon: 'success',
+                        confirmButtonColor: '#4e73df'
+                    }).then(() => {
+                        // Reload page to reflect changes
+                        window.location.reload();
+                    });
+                });
+            });
+            
+            // Handle download details button
+            document.getElementById('detailsDownloadBtn').addEventListener('click', function() {
+                const exceptionId = document.getElementById('detailRequestId').textContent;
+                
+                logToFile(`Downloading details for exception: ${exceptionId}`);
+                
+                Swal.fire({
+                    title: 'Downloading',
+                    html: 'Preparing PDF...',
+                    timer: 2000,
+                    timerProgressBar: true,
+                    didOpen: () => {
+                        Swal.showLoading();
+                    }
+                }).then(() => {
+                    Swal.fire({
+                        title: 'Download Complete',
+                        text: 'Exception details have been downloaded as PDF.',
+                        icon: 'success',
+                        confirmButtonColor: '#4e73df'
+                    });
+                });
+            });
+            
+            // Handle export report button
+            document.getElementById('exportReportBtn').addEventListener('click', function() {
+                logToFile('Exporting exceptions report');
+                
+                Swal.fire({
+                    title: 'Export Report',
+                    text: 'Choose your preferred format:',
+                    icon: 'question',
+                    showCancelButton: true,
+                    confirmButtonText: 'PDF',
+                    cancelButtonText: 'Excel',
+                    showCloseButton: true,
+                    confirmButtonColor: '#4e73df',
+                    cancelButtonColor: '#1cc88a'
+                }).then((result) => {
+                    if (result.isConfirmed || result.dismiss === Swal.DismissReason.cancel) {
+                        const format = result.isConfirmed ? 'PDF' : 'Excel';
+                        
+                        // In a real app, you'd make an AJAX call to generate the file
+                        
+                        Swal.fire({
+                            title: 'Generating Report',
+                            html: `Preparing ${format} file...`,
+                            timer: 2000,
+                            timerProgressBar: true,
+                            didOpen: () => {
+                                Swal.showLoading();
+                            }
+                        }).then(() => {
+                            Swal.fire({
+                                title: 'Export Complete',
+                                text: `Your ${format} report has been generated successfully.`,
+                                icon: 'success',
+                                confirmButtonColor: '#4e73df'
+                            });
+                        });
+                    }
+                });
+            });
+            
+        } catch (error) {
+            logToFile(`Error in attendance exceptions page: ${error.message}`, 'error');
+            console.error("An error occurred:", error);
+        }
+    });
+</script>
+{% endblock %}

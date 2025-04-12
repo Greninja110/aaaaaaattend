@@ -1,0 +1,185 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{% block admin_title %}Admin Portal{% endblock %} - MBIT Attendance System{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.min.css">
+<style>
+/* Admin portal specific styles */
+.admin-sidebar {
+    min-height: calc(100vh - 56px);
+    background-color: #343a40;
+    border-right: 1px solid rgba(0, 0, 0, 0.2);
+    box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+    padding-top: 1rem;
+}
+
+.sidebar-sticky {
+    position: sticky;
+    top: 0;
+    height: calc(100vh - 56px);
+    padding-top: 0.5rem;
+    overflow-x: hidden;
+    overflow-y: auto;
+}
+
+.sidebar-heading {
+    color: #adb5bd;
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    padding-left: 1rem;
+    margin-bottom: 0.5rem;
+}
+
+.admin-nav-link {
+    padding: 0.75rem 1rem;
+    display: block;
+    color: #e9ecef;
+    text-decoration: none;
+    border-radius: 0;
+    margin-bottom: 2px;
+    transition: all 0.2s ease;
+    border-left: 3px solid transparent;
+}
+
+.admin-nav-link:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+    color: #fff;
+    border-left: 3px solid #6c757d;
+}
+
+.admin-nav-link.active {
+    background-color: rgba(0, 123, 255, 0.2);
+    color: #fff;
+    border-left: 3px solid #007bff;
+}
+
+.admin-nav-link i {
+    margin-right: 10px;
+    width: 20px;
+    text-align: center;
+    opacity: 0.75;
+}
+
+.admin-nav-link.active i {
+    opacity: 1;
+    color: #007bff;
+}
+
+.admin-content {
+    padding: 1.5rem;
+    background-color: #f8f9fa;
+}
+
+/* Additional custom styles */
+.stats-card {
+    transition: transform 0.3s, box-shadow 0.3s;
+    border-radius: 0.5rem;
+    overflow: hidden;
+}
+
+.stats-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+}
+
+.border-left-primary { border-left: 0.25rem solid #007bff; }
+.border-left-success { border-left: 0.25rem solid #28a745; }
+.border-left-info { border-left: 0.25rem solid #17a2b8; }
+.border-left-warning { border-left: 0.25rem solid #ffc107; }
+.border-left-danger { border-left: 0.25rem solid #dc3545; }
+
+/* Additional custom styles */
+{% block admin_custom_css %}{% endblock %}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <!-- Replace your sidebar navigation in base_admin.html with this fixed version -->
+<nav class="col-md-2 d-none d-md-block admin-sidebar py-3">
+    <div class="sidebar-sticky">
+        <h6 class="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-1 text-muted">
+            <span>Admin Menu</span>
+        </h6>
+        <ul class="nav flex-column">
+            <li class="nav-item">
+                <a class="admin-nav-link {% if active_page == 'dashboard' %}active{% endif %}" href="{% url 'admin_portal:dashboard' %}">
+                    <i class="fas fa-tachometer-alt"></i> Dashboard
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="admin-nav-link {% if active_page == 'users' %}active{% endif %}" href="{% url 'admin_portal:user_list' %}">
+                    <i class="fas fa-users"></i> User Management
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="admin-nav-link {% if active_page == 'departments' %}active{% endif %}" href="{% url 'admin_portal:department_list' %}">
+                    <i class="fas fa-building"></i> Departments
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="admin-nav-link {% if active_page == 'academic' %}active{% endif %}" href="{% url 'admin_portal:academic_year_list' %}">
+                    <i class="fas fa-calendar-alt"></i> Academic Years
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="admin-nav-link {% if active_page == 'subjects' %}active{% endif %}" href="{% url 'admin_portal:subject_list' %}">
+                    <i class="fas fa-book"></i> Subjects
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="admin-nav-link {% if active_page == 'faculty' %}active{% endif %}" href="{% url 'admin_portal:faculty_assignment_list' %}">
+                    <i class="fas fa-chalkboard-teacher"></i> Faculty Assignment
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="admin-nav-link {% if active_page == 'timetable' %}active{% endif %}" href="{% url 'admin_portal:timetable' %}">
+                    <i class="fas fa-clock"></i> Timetable
+                </a>
+            </li>
+            <h6 class="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-1 text-muted">
+                <span>Reports & Tools</span>
+            </h6>
+            <li class="nav-item">
+                <a class="admin-nav-link {% if active_page == 'reports' %}active{% endif %}" href="{% url 'admin_portal:report_dashboard' %}">
+                    <i class="fas fa-chart-bar"></i> Reports
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="admin-nav-link {% if active_page == 'import' %}active{% endif %}" href="{% url 'admin_portal:bulk_import_users' %}">
+                    <i class="fas fa-file-import"></i> Import Data
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="admin-nav-link {% if active_page == 'logs' %}active{% endif %}" href="{% url 'admin_portal:system_logs' %}">
+                    <i class="fas fa-history"></i> System Logs
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="admin-nav-link {% if active_page == 'settings' %}active{% endif %}" href="{% url 'admin_portal:settings' %}">
+                    <i class="fas fa-cog"></i> Settings
+                </a>
+            </li>
+        </ul>
+    </div>
+</nav>
+        
+        <main role="main" class="col-md-10 ml-sm-auto col-lg-10 px-4 admin-content">
+            {% block admin_content %}{% endblock %}
+        </main>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<!-- Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<!-- DataTables JS -->
+<script type="text/javascript" src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
+<!-- Additional JS files -->
+{% block admin_custom_js %}{% endblock %}
+{% endblock %}
