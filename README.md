@@ -1,4 +1,4 @@
-# MBIT College Attendance Management System
+# College Attendance Management System
 
 A full-stack, role-based web application built with Django and PostgreSQL that digitizes and automates the complete attendance management workflow for an engineering college — covering everything from timetable scheduling and real-time attendance recording to leave approvals, exception handling, department analytics, and student progression decisions.
 
