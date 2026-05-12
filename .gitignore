@@ -1,1 +1,41 @@
 .venv/
+CLAUDE.md
+.gitignore
+attendance_system/.venv/
+readme
+
+# ── Python bytecode ───────────────────────────────────────────────────────────
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+
+# ── Django runtime files ──────────────────────────────────────────────────────
+attendance_system/debug.log
+attendance_system/db.sqlite3
+attendance_system/staticfiles/
+
+# ── Log files ─────────────────────────────────────────────────────────────────
+*.log
+attendance_system/logs/
+attendance_system/lab_assistant_portal.log
+attendance_system/student_portal/student_portal.log
+
+# ── User-uploaded media (never commit user files) ─────────────────────────────
+attendance_system/media/
+
+# ── Environment / secrets ─────────────────────────────────────────────────────
+.env
+.env.*
+*.env
+attendance_system/attendance_system/local_settings.py
+
+# ── VS Code / IDE ─────────────────────────────────────────────────────────────
+.vscode/
+launch.json
+*.code-workspace
+
+# ── OS generated ──────────────────────────────────────────────────────────────
+.DS_Store
+Thumbs.db
+desktop.ini
