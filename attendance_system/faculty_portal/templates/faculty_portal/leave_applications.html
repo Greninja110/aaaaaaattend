@@ -1,0 +1,216 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Leave Applications - Faculty Portal{% endblock %}
+
+{% block nav_items %}
+<li class="nav-item">
+    <a class="nav-link" href="{% url 'faculty_portal:index' %}">Dashboard</a>
+</li>
+<li class="nav-item">
+    <a class="nav-link" href="{% url 'faculty_portal:attendance_record' %}">Attendance</a>
+</li>
+<li class="nav-item">
+    <a class="nav-link" href="{% url 'faculty_portal:timetable' %}">Timetable</a>
+</li>
+<li class="nav-item">
+    <a class="nav-link active" href="{% url 'faculty_portal:leave_applications' %}">Leave Applications</a>
+</li>
+<li class="nav-item">
+    <a class="nav-link" href="{% url 'faculty_portal:reports' %}">Reports</a>
+</li>
+<li class="nav-item">
+    <a class="nav-link" href="{% url 'faculty_portal:bulk_attendance' %}">Bulk Upload</a>
+</li>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <div class="row mb-4">
+        <div class="col-md-12">
+            <h2 class="mb-4">Leave Applications - {{ faculty.user.full_name }}</h2>
+            
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                {% endfor %}
+            {% endif %}
+            
+            <div class="alert alert-info">
+                <h6><i class="fas fa-info-circle"></i> Department: {{ faculty.department.department_name }}</h6>
+                <p class="mb-0">Review and process leave applications from students in your department.</p>
+            </div>
+            
+            <!-- Filter Form -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h6 class="m-0 font-weight-bold text-primary">Filter Applications</h6>
+                </div>
+                <div class="card-body">
+                    <form method="get" class="row g-3">
+                        <div class="col-md-3">
+                            <label class="form-label">Status</label>
+                            <select name="status" class="form-select">
+                                <option value="">All Applications</option>
+                                <option value="pending" {% if status_filter == 'pending' %}selected{% endif %}>Pending</option>
+                                <option value="faculty_approved" {% if status_filter == 'faculty_approved' %}selected{% endif %}>Faculty Approved</option>
+                                <option value="lab_approved" {% if status_filter == 'lab_approved' %}selected{% endif %}>Lab Approved</option>
+                                <option value="rejected" {% if status_filter == 'rejected' %}selected{% endif %}>Rejected</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label">&nbsp;</label>
+                            <div>
+                                <button type="submit" class="btn btn-primary">Filter</button>
+                                <a href="{% url 'faculty_portal:leave_applications' %}" class="btn btn-secondary">Clear</a>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            
+            <!-- Leave Applications -->
+            <div class="card">
+                <div class="card-header">
+                    <h6 class="m-0 font-weight-bold text-primary">Leave Applications</h6>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-bordered">
+                            <thead>
+                                <tr>
+                                    <th>Student Name</th>
+                                    <th>Roll Number</th>
+                                    <th>Leave Period</th>
+                                    <th>Duration</th>
+                                    <th>Reason</th>
+                                    <th>Status</th>
+                                    <th>Applied On</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for leave in page_obj %}
+                                    <tr>
+                                        <td>{{ leave.student.user.full_name }}</td>
+                                        <td>{{ leave.student.roll_number }}</td>
+                                        <td>
+                                            <strong>From:</strong> {{ leave.start_date|date:"d M Y" }}<br>
+                                            <strong>To:</strong> {{ leave.end_date|date:"d M Y" }}
+                                        </td>
+                                        <td>
+                                            {% with days=leave.end_date|timesince:leave.start_date %}
+                                                {{ days|cut:" ago" }}
+                                            {% endwith %}
+                                        </td>
+                                        <td>
+                                            <span data-bs-toggle="tooltip" title="{{ leave.reason }}">
+                                                {{ leave.reason|truncatewords:10 }}
+                                            </span>
+                                        </td>
+                                        <td>
+                                            {% if leave.status == 'pending' %}
+                                                <span class="badge badge-warning">Pending</span>
+                                            {% elif leave.status == 'faculty_approved' %}
+                                                <span class="badge badge-info">Faculty Approved</span>
+                                            {% elif leave.status == 'lab_approved' %}
+                                                <span class="badge badge-success">Lab Approved</span>
+                                            {% else %}
+                                                <span class="badge badge-danger">Rejected</span>
+                                            {% endif %}
+                                        </td>
+                                        <td>{{ leave.created_at|date:"d M Y" }}</td>
+                                        <td>
+                                            {% if leave.status == 'pending' %}
+                                                <div class="btn-group" role="group">
+                                                    <a href="{% url 'faculty_portal:approve_leave' leave.leave_id %}" 
+                                                       class="btn btn-sm btn-success"
+                                                       onclick="return confirm('Are you sure you want to approve this leave application?')">
+                                                        <i class="fas fa-check"></i> Approve
+                                                    </a>
+                                                    <a href="{% url 'faculty_portal:reject_leave' leave.leave_id %}" 
+                                                       class="btn btn-sm btn-danger">
+                                                        <i class="fas fa-times"></i> Reject
+                                                    </a>
+                                                </div>
+                                            {% else %}
+                                                <span class="text-muted">{{ leave.get_status_display }}</span>
+                                                {% if leave.faculty_approval %}
+                                                    <br><small>By: {{ leave.faculty_approval.user.full_name }}</small>
+                                                {% endif %}
+                                            {% endif %}
+                                        </td>
+                                    </tr>
+                                {% empty %}
+                                    <tr>
+                                        <td colspan="8" class="text-center">No leave applications found</td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <!-- Pagination -->
+                    {% if page_obj.has_other_pages %}
+                        <nav class="mt-3">
+                            <ul class="pagination justify-content-center">
+                                {% if page_obj.has_previous %}
+                                    <li class="page-item">
+                                        <a class="page-link" href="?page={{ page_obj.previous_page_number }}{% if status_filter %}&status={{ status_filter }}{% endif %}">Previous</a>
+                                    </li>
+                                {% endif %}
+                                
+                                <li class="page-item active">
+                                    <span class="page-link">
+                                        Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}
+                                    </span>
+                                </li>
+                                
+                                {% if page_obj.has_next %}
+                                    <li class="page-item">
+                                        <a class="page-link" href="?page={{ page_obj.next_page_number }}{% if status_filter %}&status={{ status_filter }}{% endif %}">Next</a>
+                                    </li>
+                                {% endif %}
+                            </ul>
+                        </nav>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+    .card {
+        border: none;
+        box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.15);
+    }
+    .card-header {
+        background-color: #f8f9fc;
+        border-bottom: 1px solid #e3e6f0;
+    }
+    .btn-group .btn {
+        margin-right: 2px;
+    }
+    .tooltip {
+        font-size: 0.875rem;
+    }
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Initialize tooltips
+document.addEventListener('DOMContentLoaded', function() {
+    var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+    var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+        return new bootstrap.Tooltip(tooltipTriggerEl);
+    });
+});
+</script>
+{% endblock %}

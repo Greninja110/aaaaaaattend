@@ -1,0 +1,400 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Attendance Analytics - HOD Portal{% endblock %}
+
+{% block nav_items %}
+<li class="nav-item">
+    <a class="nav-link" href="{% url 'hod_portal:index' %}">Dashboard</a>
+</li>
+<li class="nav-item">
+    <a class="nav-link" href="{% url 'hod_portal:department_reports' %}">Reports</a>
+</li>
+<li class="nav-item">
+    <a class="nav-link" href="{% url 'hod_portal:student_progression' %}">Student Progression</a>
+</li>
+<li class="nav-item">
+    <a class="nav-link" href="{% url 'hod_portal:elective_management' %}">Electives</a>
+</li>
+<li class="nav-item">
+    <a class="nav-link" href="{% url 'hod_portal:faculty_performance' %}">Faculty Performance</a>
+</li>
+<li class="nav-item">
+    <a class="nav-link active" href="{% url 'hod_portal:attendance_analytics' %}">Analytics</a>
+</li>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <div class="row mb-4">
+        <div class="col-md-12">
+            <h2 class="mb-4">Attendance Analytics - {{ department.department_name }}</h2>
+            
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                {% endfor %}
+            {% endif %}
+            
+            <div class="alert alert-info">
+                <h6><i class="fas fa-chart-pie"></i> Advanced Attendance Analytics</h6>
+                <p class="mb-0">Deep insights into attendance patterns, trends, and predictions for {{ department.department_name }} department.</p>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Analytics Filter -->
+    <div class="card mb-4">
+        <div class="card-header">
+            <h6 class="m-0 font-weight-bold text-primary">Analytics Filters</h6>
+        </div>
+        <div class="card-body">
+            <form method="get" class="row g-3">
+                <div class="col-md-3">
+                    <label class="form-label">Time Period</label>
+                    <select name="period" class="form-select">
+                        <option value="month" {% if period == 'month' %}selected{% endif %}>Last Month</option>
+                        <option value="semester" {% if period == 'semester' %}selected{% endif %}>Current Semester</option>
+                        <option value="year" {% if period == 'year' %}selected{% endif %}>Academic Year</option>
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">Semester</label>
+                    <select name="semester" class="form-select">
+                        <option value="">All Semesters</option>
+                        {% for i in "12345678" %}
+                            <option value="{{ forloop.counter }}" {% if semester == forloop.counter|stringformat:"s" %}selected{% endif %}>
+                                Semester {{ forloop.counter }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">Subject</label>
+                    <select name="subject" class="form-select">
+                        <option value="">All Subjects</option>
+                        {% for subject in department_subjects %}
+                            <option value="{{ subject.subject_id }}" {% if selected_subject == subject.subject_id|stringformat:"s" %}selected{% endif %}>
+                                {{ subject.subject_name }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">&nbsp;</label>
+                    <div>
+                        <button type="submit" class="btn btn-primary">Update Analytics</button>
+                        <a href="{% url 'hod_portal:attendance_analytics' %}" class="btn btn-secondary">Reset</a>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <!-- Key Metrics -->
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="card bg-primary text-white">
+                <div class="card-body text-center">
+                    <h4>{{ overall_attendance|floatformat:1 }}%</h4>
+                    <p class="mb-0">Overall Attendance</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-success text-white">
+                <div class="card-body text-center">
+                    <h4>{{ students_above_threshold }}</h4>
+                    <p class="mb-0">Above 75%</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-warning text-white">
+                <div class="card-body text-center">
+                    <h4>{{ students_below_threshold }}</h4>
+                    <p class="mb-0">Below 75%</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-info text-white">
+                <div class="card-body text-center">
+                    <h4>{{ total_classes_conducted }}</h4>
+                    <p class="mb-0">Classes Conducted</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Charts Row 1 -->
+    <div class="row mb-4">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header">
+                    <h6 class="m-0 font-weight-bold text-primary">Attendance Trends Over Time</h6>
+                </div>
+                <div class="card-body">
+                    <canvas id="attendanceTrendChart" width="400" height="150"></canvas>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-header">
+                    <h6 class="m-0 font-weight-bold text-primary">Attendance Distribution</h6>
+                </div>
+                <div class="card-body">
+                    <canvas id="attendanceDistributionChart" width="400" height="150"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Charts Row 2 -->
+    <div class="row mb-4">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h6 class="m-0 font-weight-bold text-primary">Subject-wise Attendance</h6>
+                </div>
+                <div class="card-body">
+                    <canvas id="subjectAttendanceChart" width="400" height="200"></canvas>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h6 class="m-0 font-weight-bold text-primary">Semester-wise Comparison</h6>
+                </div>
+                <div class="card-body">
+                    <canvas id="semesterComparisonChart" width="400" height="200"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Analytics Tables -->
+    <div class="row">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h6 class="m-0 font-weight-bold text-primary">Critical Attendance Students</h6>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-sm">
+                            <thead>
+                                <tr>
+                                    <th>Student</th>
+                                    <th>Semester</th>
+                                    <th>Attendance %</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for student in critical_students %}
+                                    <tr>
+                                        <td>{{ student.student.user.full_name }}</td>
+                                        <td>{{ student.student.current_semester }}</td>
+                                        <td>
+                                            <span class="text-danger">{{ student.attendance_percentage }}%</span>
+                                        </td>
+                                        <td>
+                                            <span class="badge badge-danger">Critical</span>
+                                        </td>
+                                    </tr>
+                                {% empty %}
+                                    <tr>
+                                        <td colspan="4" class="text-center">No critical attendance cases</td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h6 class="m-0 font-weight-bold text-primary">Best Performing Subjects</h6>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-sm">
+                            <thead>
+                                <tr>
+                                    <th>Subject</th>
+                                    <th>Semester</th>
+                                    <th>Attendance %</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for subject in top_subjects %}
+                                    <tr>
+                                        <td>{{ subject.subject.subject_name }}</td>
+                                        <td>{{ subject.subject.semester }}</td>
+                                        <td>
+                                            <span class="text-success">{{ subject.attendance_percentage }}%</span>
+                                        </td>
+                                        <td>
+                                            <span class="badge badge-success">Excellent</span>
+                                        </td>
+                                    </tr>
+                                {% empty %}
+                                    <tr>
+                                        <td colspan="4" class="text-center">No subject data available</td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+    .card {
+        border: none;
+        box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.15);
+    }
+    .card-header {
+        background-color: #f8f9fc;
+        border-bottom: 1px solid #e3e6f0;
+    }
+    .table-sm th,
+    .table-sm td {
+        padding: 0.5rem;
+    }
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Attendance Trend Chart
+    const trendCtx = document.getElementById('attendanceTrendChart').getContext('2d');
+    new Chart(trendCtx, {
+        type: 'line',
+        data: {
+            labels: {{ trend_labels|safe }},
+            datasets: [{
+                label: 'Attendance %',
+                data: {{ trend_data|safe }},
+                borderColor: 'rgb(75, 192, 192)',
+                backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                tension: 0.1
+            }]
+        },
+        options: {
+            responsive: true,
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    max: 100
+                }
+            }
+        }
+    });
+    
+    // Attendance Distribution Chart
+    const distributionCtx = document.getElementById('attendanceDistributionChart').getContext('2d');
+    new Chart(distributionCtx, {
+        type: 'doughnut',
+        data: {
+            labels: ['Above 75%', 'Below 75%'],
+            datasets: [{
+                data: [{{ students_above_threshold }}, {{ students_below_threshold }}],
+                backgroundColor: ['#28a745', '#dc3545'],
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: {
+                    position: 'bottom'
+                }
+            }
+        }
+    });
+    
+    // Subject-wise Attendance Chart
+    const subjectCtx = document.getElementById('subjectAttendanceChart').getContext('2d');
+    new Chart(subjectCtx, {
+        type: 'bar',
+        data: {
+            labels: [
+                {% for subject in subject_analytics %}
+                    '{{ subject.subject.subject_name|truncatechars:15 }}'{% if not forloop.last %},{% endif %}
+                {% endfor %}
+            ],
+            datasets: [{
+                label: 'Attendance %',
+                data: [
+                    {% for subject in subject_analytics %}
+                        {{ subject.attendance_percentage }}{% if not forloop.last %},{% endif %}
+                    {% endfor %}
+                ],
+                backgroundColor: 'rgba(54, 162, 235, 0.6)',
+                borderColor: 'rgba(54, 162, 235, 1)',
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    max: 100
+                }
+            }
+        }
+    });
+    
+    // Semester Comparison Chart
+    const semesterCtx = document.getElementById('semesterComparisonChart').getContext('2d');
+    new Chart(semesterCtx, {
+        type: 'bar',
+        data: {
+            labels: [
+                {% for sem in semester_analytics %}
+                    'Semester {{ sem.semester }}'{% if not forloop.last %},{% endif %}
+                {% endfor %}
+            ],
+            datasets: [{
+                label: 'Attendance %',
+                data: [
+                    {% for sem in semester_analytics %}
+                        {{ sem.attendance_percentage }}{% if not forloop.last %},{% endif %}
+                    {% endfor %}
+                ],
+                backgroundColor: 'rgba(255, 206, 86, 0.6)',
+                borderColor: 'rgba(255, 206, 86, 1)',
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    max: 100
+                }
+            }
+        }
+    });
+});
+</script>
+{% endblock %}

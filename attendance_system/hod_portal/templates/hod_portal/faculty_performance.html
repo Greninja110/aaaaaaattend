@@ -1,0 +1,314 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Faculty Performance - HOD Portal{% endblock %}
+
+{% block nav_items %}
+<li class="nav-item">
+    <a class="nav-link" href="{% url 'hod_portal:index' %}">Dashboard</a>
+</li>
+<li class="nav-item">
+    <a class="nav-link" href="{% url 'hod_portal:department_reports' %}">Reports</a>
+</li>
+<li class="nav-item">
+    <a class="nav-link" href="{% url 'hod_portal:student_progression' %}">Student Progression</a>
+</li>
+<li class="nav-item">
+    <a class="nav-link" href="{% url 'hod_portal:elective_management' %}">Electives</a>
+</li>
+<li class="nav-item">
+    <a class="nav-link active" href="{% url 'hod_portal:faculty_performance' %}">Faculty Performance</a>
+</li>
+<li class="nav-item">
+    <a class="nav-link" href="{% url 'hod_portal:attendance_analytics' %}">Analytics</a>
+</li>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <div class="row mb-4">
+        <div class="col-md-12">
+            <h2 class="mb-4">Faculty Performance Analysis - {{ department.department_name }}</h2>
+            
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                {% endfor %}
+            {% endif %}
+            
+            <div class="alert alert-info">
+                <h6><i class="fas fa-chart-line"></i> Faculty Performance Overview</h6>
+                <p class="mb-0">Analyze teaching effectiveness, workload distribution, and performance metrics for department faculty.</p>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Performance Summary Cards -->
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="card bg-primary text-white">
+                <div class="card-body text-center">
+                    <h4>{{ faculty_performance|length }}</h4>
+                    <p class="mb-0">Active Faculty</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-success text-white">
+                <div class="card-body text-center">
+                    <h4>
+                        {% for perf in faculty_performance %}
+                            {% if perf.performance_rating >= 4.0 %}{{ forloop.counter0|add:1 }}{% endif %}
+                        {% endfor %}
+                    </h4>
+                    <p class="mb-0">High Performers</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-warning text-white">
+                <div class="card-body text-center">
+                    <h4>
+                        {% for perf in faculty_performance %}
+                            {% if perf.avg_workload > 80 %}{{ forloop.counter0|add:1 }}{% endif %}
+                        {% endfor %}
+                    </h4>
+                    <p class="mb-0">High Workload</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-info text-white">
+                <div class="card-body text-center">
+                    <h4>
+                        {% for perf in faculty_performance %}
+                            {{ perf.total_subjects|add:0 }}
+                        {% empty %}
+                            0
+                        {% endfor %}
+                    </h4>
+                    <p class="mb-0">Avg Subjects</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Faculty Performance Table -->
+    <div class="card">
+        <div class="card-header">
+            <h6 class="m-0 font-weight-bold text-primary">Faculty Performance Metrics</h6>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-bordered table-hover" id="performanceTable">
+                    <thead>
+                        <tr>
+                            <th>Faculty Name</th>
+                            <th>Employee ID</th>
+                            <th>Subjects Assigned</th>
+                            <th>Weekly Hours</th>
+                            <th>Workload %</th>
+                            <th>Classes Conducted</th>
+                            <th>Avg Attendance %</th>
+                            <th>Performance Rating</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for perf in faculty_performance %}
+                            <tr>
+                                <td>{{ perf.faculty.user.full_name }}</td>
+                                <td>{{ perf.faculty.employee_id }}</td>
+                                <td class="text-center">{{ perf.total_subjects }}</td>
+                                <td class="text-center">{{ perf.weekly_hours }}</td>
+                                <td class="text-center">
+                                    <div class="d-flex align-items-center">
+                                        <span class="me-2">{{ perf.workload_percentage }}%</span>
+                                        <div class="progress flex-grow-1" style="height: 8px;">
+                                            <div class="progress-bar {% if perf.workload_percentage > 80 %}bg-danger{% elif perf.workload_percentage > 60 %}bg-warning{% else %}bg-success{% endif %}" 
+                                                 style="width: {{ perf.workload_percentage }}%"></div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="text-center">{{ perf.classes_conducted }}</td>
+                                <td class="text-center">
+                                    <span class="{% if perf.avg_attendance < 75 %}text-danger{% elif perf.avg_attendance < 85 %}text-warning{% else %}text-success{% endif %}">
+                                        {{ perf.avg_attendance }}%
+                                    </span>
+                                </td>
+                                <td class="text-center">
+                                    <div class="d-flex align-items-center">
+                                        <span class="me-2">{{ perf.performance_rating|floatformat:1 }}</span>
+                                        <div class="rating-stars">
+                                            {% for i in "12345" %}
+                                                {% if forloop.counter <= perf.performance_rating %}
+                                                    <i class="fas fa-star text-warning"></i>
+                                                {% else %}
+                                                    <i class="far fa-star text-muted"></i>
+                                                {% endif %}
+                                            {% endfor %}
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    {% if perf.performance_rating >= 4.0 %}
+                                        <span class="badge badge-success">Excellent</span>
+                                    {% elif perf.performance_rating >= 3.5 %}
+                                        <span class="badge badge-info">Good</span>
+                                    {% elif perf.performance_rating >= 3.0 %}
+                                        <span class="badge badge-warning">Average</span>
+                                    {% else %}
+                                        <span class="badge badge-danger">Needs Improvement</span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                        {% empty %}
+                            <tr>
+                                <td colspan="9" class="text-center">No faculty performance data available</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Performance Charts -->
+    <div class="row mt-4">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h6 class="m-0 font-weight-bold text-primary">Workload Distribution</h6>
+                </div>
+                <div class="card-body">
+                    <canvas id="workloadChart" width="400" height="200"></canvas>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h6 class="m-0 font-weight-bold text-primary">Performance Ratings</h6>
+                </div>
+                <div class="card-body">
+                    <canvas id="performanceChart" width="400" height="200"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+    .card {
+        border: none;
+        box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.15);
+    }
+    .card-header {
+        background-color: #f8f9fc;
+        border-bottom: 1px solid #e3e6f0;
+    }
+    .table-hover tbody tr:hover {
+        background-color: rgba(0, 123, 255, 0.05);
+    }
+    .progress {
+        background-color: #e9ecef;
+    }
+    .rating-stars {
+        font-size: 0.8rem;
+    }
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Initialize DataTable
+    $('#performanceTable').DataTable({
+        "order": [[ 7, "desc" ]], // Sort by performance rating
+        "pageLength": 25,
+        "responsive": true,
+        "language": {
+            "search": "Search faculty:",
+            "lengthMenu": "Show _MENU_ faculty per page",
+            "info": "Showing _START_ to _END_ of _TOTAL_ faculty"
+        }
+    });
+    
+    // Workload Distribution Chart
+    const workloadCtx = document.getElementById('workloadChart').getContext('2d');
+    const workloadData = {
+        labels: [
+            {% for perf in faculty_performance %}
+                '{{ perf.faculty.user.full_name|truncatechars:15 }}'{% if not forloop.last %},{% endif %}
+            {% endfor %}
+        ],
+        datasets: [{
+            label: 'Workload %',
+            data: [
+                {% for perf in faculty_performance %}
+                    {{ perf.workload_percentage }}{% if not forloop.last %},{% endif %}
+                {% endfor %}
+            ],
+            backgroundColor: 'rgba(54, 162, 235, 0.6)',
+            borderColor: 'rgba(54, 162, 235, 1)',
+            borderWidth: 1
+        }]
+    };
+    
+    new Chart(workloadCtx, {
+        type: 'bar',
+        data: workloadData,
+        options: {
+            responsive: true,
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    max: 100
+                }
+            }
+        }
+    });
+    
+    // Performance Ratings Chart
+    const performanceCtx = document.getElementById('performanceChart').getContext('2d');
+    const performanceData = {
+        labels: [
+            {% for perf in faculty_performance %}
+                '{{ perf.faculty.user.full_name|truncatechars:15 }}'{% if not forloop.last %},{% endif %}
+            {% endfor %}
+        ],
+        datasets: [{
+            label: 'Rating',
+            data: [
+                {% for perf in faculty_performance %}
+                    {{ perf.performance_rating }}{% if not forloop.last %},{% endif %}
+                {% endfor %}
+            ],
+            backgroundColor: 'rgba(255, 206, 86, 0.6)',
+            borderColor: 'rgba(255, 206, 86, 1)',
+            borderWidth: 1
+        }]
+    };
+    
+    new Chart(performanceCtx, {
+        type: 'radar',
+        data: performanceData,
+        options: {
+            responsive: true,
+            scales: {
+                r: {
+                    beginAtZero: true,
+                    max: 5
+                }
+            }
+        }
+    });
+});
+</script>
+{% endblock %}

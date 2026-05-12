@@ -1,0 +1,220 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Faculty Timetable - Faculty Portal{% endblock %}
+
+{% block nav_items %}
+<li class="nav-item">
+    <a class="nav-link" href="{% url 'faculty_portal:index' %}">Dashboard</a>
+</li>
+<li class="nav-item">
+    <a class="nav-link" href="{% url 'faculty_portal:attendance_record' %}">Attendance</a>
+</li>
+<li class="nav-item">
+    <a class="nav-link active" href="{% url 'faculty_portal:timetable' %}">Timetable</a>
+</li>
+<li class="nav-item">
+    <a class="nav-link" href="{% url 'faculty_portal:leave_applications' %}">Leave Applications</a>
+</li>
+<li class="nav-item">
+    <a class="nav-link" href="{% url 'faculty_portal:reports' %}">Reports</a>
+</li>
+<li class="nav-item">
+    <a class="nav-link" href="{% url 'faculty_portal:bulk_attendance' %}">Bulk Upload</a>
+</li>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <div class="row mb-4">
+        <div class="col-md-12">
+            <h2 class="mb-4">My Timetable - {{ faculty.user.full_name }}</h2>
+            
+            <div class="alert alert-info">
+                <h6><i class="fas fa-info-circle"></i> Academic Year: {{ academic_year }}</h6>
+                <p class="mb-0">Department: {{ faculty.department.department_name }}</p>
+            </div>
+            
+            <!-- Weekly Timetable -->
+            <div class="card">
+                <div class="card-header">
+                    <h6 class="m-0 font-weight-bold text-primary">Weekly Schedule</h6>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-bordered timetable-table">
+                            <thead>
+                                <tr>
+                                    <th width="15%">Time</th>
+                                    {% for day in days %}
+                                        <th width="14%">{{ day }}</th>
+                                    {% endfor %}
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for time_slot in time_slots %}
+                                    <tr>
+                                        <td class="time-slot">{{ time_slot }}</td>
+                                        {% for day in days %}
+                                            <td class="timetable-cell">
+                                                {% for entry in timetable_by_day.items %}
+                                                    {% if entry.0 == day %}
+                                                        {% for class_entry in entry.1 %}
+                                                            <div class="class-entry">
+                                                                <strong>{{ class_entry.faculty_subject.subject.subject_name }}</strong>
+                                                                <br>
+                                                                <small>
+                                                                    {% if class_entry.faculty_subject.class_section %}
+                                                                        {{ class_entry.faculty_subject.class_section.section_name }}
+                                                                    {% endif %}
+                                                                    {% if class_entry.faculty_subject.batch %}
+                                                                        - {{ class_entry.faculty_subject.batch.batch_name }}
+                                                                    {% endif %}
+                                                                </small>
+                                                                <br>
+                                                                <small class="text-muted">{{ class_entry.room_number }}</small>
+                                                                <br>
+                                                                <small class="text-muted">{{ class_entry.start_time|time:"g:i A" }} - {{ class_entry.end_time|time:"g:i A" }}</small>
+                                                            </div>
+                                                        {% endfor %}
+                                                    {% endif %}
+                                                {% endfor %}
+                                            </td>
+                                        {% endfor %}
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Class Summary -->
+            <div class="row mt-4">
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-header">
+                            <h6 class="m-0 font-weight-bold text-primary">Class Summary</h6>
+                        </div>
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="table table-sm">
+                                    <thead>
+                                        <tr>
+                                            <th>Subject</th>
+                                            <th>Class</th>
+                                            <th>Type</th>
+                                            <th>Hours/Week</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for day, entries in timetable_by_day.items %}
+                                            {% for entry in entries %}
+                                                <tr>
+                                                    <td>{{ entry.faculty_subject.subject.subject_name }}</td>
+                                                    <td>
+                                                        {% if entry.faculty_subject.class_section %}
+                                                            {{ entry.faculty_subject.class_section.section_name }}
+                                                        {% endif %}
+                                                        {% if entry.faculty_subject.batch %}
+                                                            - {{ entry.faculty_subject.batch.batch_name }}
+                                                        {% endif %}
+                                                    </td>
+                                                    <td>
+                                                        {% if entry.faculty_subject.is_lab %}
+                                                            <span class="badge badge-warning">Lab</span>
+                                                        {% else %}
+                                                            <span class="badge badge-info">Theory</span>
+                                                        {% endif %}
+                                                    </td>
+                                                    <td>1 Hour</td>
+                                                </tr>
+                                            {% endfor %}
+                                        {% empty %}
+                                            <tr>
+                                                <td colspan="4" class="text-center">No classes scheduled</td>
+                                            </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-header">
+                            <h6 class="m-0 font-weight-bold text-primary">Quick Actions</h6>
+                        </div>
+                        <div class="card-body">
+                            <div class="list-group">
+                                <a href="{% url 'faculty_portal:attendance_record' %}" class="list-group-item list-group-item-action">
+                                    <i class="fas fa-clipboard-check"></i> Record Attendance
+                                </a>
+                                <a href="{% url 'faculty_portal:reports' %}" class="list-group-item list-group-item-action">
+                                    <i class="fas fa-chart-bar"></i> View Reports
+                                </a>
+                                <a href="{% url 'faculty_portal:bulk_attendance' %}" class="list-group-item list-group-item-action">
+                                    <i class="fas fa-upload"></i> Bulk Upload Attendance
+                                </a>
+                                <a href="{% url 'faculty_portal:leave_applications' %}" class="list-group-item list-group-item-action">
+                                    <i class="fas fa-calendar-times"></i> Leave Applications
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+    .timetable-table {
+        font-size: 0.9rem;
+    }
+    .time-slot {
+        font-weight: bold;
+        background-color: #f8f9fc;
+        text-align: center;
+        vertical-align: middle;
+    }
+    .timetable-cell {
+        height: 80px;
+        vertical-align: top;
+        padding: 8px;
+    }
+    .class-entry {
+        background-color: #e3f2fd;
+        border-radius: 4px;
+        padding: 4px;
+        margin-bottom: 2px;
+        border-left: 3px solid #2196f3;
+    }
+    .class-entry:hover {
+        background-color: #bbdefb;
+    }
+    .card {
+        border: none;
+        box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.15);
+    }
+    .card-header {
+        background-color: #f8f9fc;
+        border-bottom: 1px solid #e3e6f0;
+    }
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Generate time slots for the timetable
+const timeSlots = [
+    '09:00', '10:00', '11:00', '12:00', '13:00', '14:00', '15:00', '16:00', '17:00'
+];
+
+// You can add more JavaScript functionality here if needed
+</script>
+{% endblock %}

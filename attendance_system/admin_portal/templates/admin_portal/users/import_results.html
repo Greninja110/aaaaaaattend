@@ -1,0 +1,155 @@
+{% extends 'admin_portal/base_admin.html' %}
+{% load static %}
+
+{% block admin_title %}Import Results{% endblock %}
+
+{% block admin_content %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2"><i class="fas fa-clipboard-check"></i> Import Results</h1>
+    <div class="btn-toolbar mb-2 mb-md-0">
+        <a href="{% url 'admin_portal:bulk_import_users' %}" class="btn btn-sm btn-secondary">
+            <i class="fas fa-arrow-left"></i> Back to Import
+        </a>
+    </div>
+</div>
+
+{% if messages %}
+    {% for message in messages %}
+        <div class="alert {{ message.tags }} alert-dismissible fade show" role="alert">
+            {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    {% endfor %}
+{% endif %}
+
+<div class="card shadow mb-4">
+    <div class="card-header py-3">
+        <h6 class="m-0 font-weight-bold text-primary">Import Summary</h6>
+    </div>
+    <div class="card-body">
+        <div class="row">
+            <div class="col-md-6">
+                <table class="table table-bordered">
+                    <tr>
+                        <th>Import ID:</th>
+                        <td>{{ import_log.import_id }}</td>
+                    </tr>
+                    <tr>
+                        <th>Import Type:</th>
+                        <td><span class="badge bg-primary">{{ import_log.import_type|title }}</span></td>
+                    </tr>
+                    <tr>
+                        <th>File Name:</th>
+                        <td>{{ import_log.file_name }}</td>
+                    </tr>
+                    <tr>
+                        <th>Imported On:</th>
+                        <td>{{ import_log.created_at|date:"F d, Y H:i:s" }}</td>
+                    </tr>
+                    <tr>
+                        <th>Imported By:</th>
+                        <td>{{ import_log.user.full_name }}</td>
+                    </tr>
+                </table>
+            </div>
+            <div class="col-md-6">
+                <div class="card bg-light">
+                    <div class="card-body">
+                        <h5 class="card-title">Results</h5>
+                        <div class="row text-center mt-4">
+                            <div class="col-md-4">
+                                <h2 class="text-primary">{{ import_log.total_records }}</h2>
+                                <p>Total Records</p>
+                            </div>
+                            <div class="col-md-4">
+                                <h2 class="text-success">{{ import_log.successful_records }}</h2>
+                                <p>Successfully Imported</p>
+                            </div>
+                            <div class="col-md-4">
+                                <h2 class="text-danger">{{ import_log.failed_records }}</h2>
+                                <p>Failed Records</p>
+                            </div>
+                        </div>
+                        
+                        {% if import_log.successful_records == import_log.total_records %}
+                            <div class="alert alert-success mt-3 mb-0">
+                                <i class="fas fa-check-circle"></i> All records imported successfully!
+                            </div>
+                        {% elif import_log.failed_records == import_log.total_records %}
+                            <div class="alert alert-danger mt-3 mb-0">
+                                <i class="fas fa-exclamation-circle"></i> Import failed for all records.
+                            </div>
+                        {% else %}
+                            <div class="alert alert-warning mt-3 mb-0">
+                                <i class="fas fa-exclamation-triangle"></i> {{ import_log.successful_records }} records imported successfully, {{ import_log.failed_records }} records failed.
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% if import_log.error_details %}
+<div class="card shadow mb-4">
+    <div class="card-header py-3">
+        <h6 class="m-0 font-weight-bold text-danger">Error Details</h6>
+    </div>
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-bordered table-hover" id="errorTable">
+                <thead>
+                    <tr>
+                        <th>Row</th>
+                        <th>Error</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for error in import_log.error_details.split|dictsort:"0" %}
+                        {% if error %}
+                        <tr>
+                            {% if "Row" in error %}
+                                {% with row=error.split:':' %}
+                                    <td>{{ row.0 }}</td>
+                                    <td>{{ row.1 }}</td>
+                                {% endwith %}
+                            {% else %}
+                                <td>-</td>
+                                <td>{{ error }}</td>
+                            {% endif %}
+                        </tr>
+                        {% endif %}
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+<div class="text-center mb-4">
+    <a href="{% url 'admin_portal:user_list' %}" class="btn btn-primary">
+        <i class="fas fa-users"></i> Go to User Management
+    </a>
+    <a href="{% url 'admin_portal:bulk_import_users' %}" class="btn btn-success">
+        <i class="fas fa-file-import"></i> Import More Users
+    </a>
+</div>
+{% endblock %}
+
+{% block admin_custom_js %}
+<script>
+    $(document).ready(function() {
+        // Initialize DataTable for error details
+        $('#errorTable').DataTable({
+            "paging": true,
+            "searching": true,
+            "ordering": true,
+            "info": true,
+            "autoWidth": false,
+            "lengthMenu": [[10, 25, 50, -1], [10, 25, 50, "All"]]
+        });
+    });
+</script>
+{% endblock %}

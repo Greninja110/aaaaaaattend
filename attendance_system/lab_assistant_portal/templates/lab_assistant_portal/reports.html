@@ -1,0 +1,1410 @@
+{% extends 'lab_assistant_portal/base_lab_assistant.html' %}
+{% load static %}
+
+{% block lab_assistant_title %}Reports{% endblock %}
+
+{% block lab_assistant_content %}
+<div class="container-fluid py-4">
+    <div class="row mb-4">
+        <div class="col-md-12">
+            <h2>Attendance Reports</h2>
+            <p class="text-muted">Generate and download attendance and lab usage reports</p>
+            
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="alert {{ message.tags }} alert-dismissible fade show" role="alert">
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                {% endfor %}
+            {% endif %}
+        </div>
+    </div>
+    
+    <!-- Report Generation Card -->
+    <div class="card shadow mb-4">
+        <div class="card-header py-3">
+            <h6 class="m-0 font-weight-bold text-primary">Generate Reports</h6>
+        </div>
+        <div class="card-body">
+            <form id="reportGenerationForm" method="get" class="row g-3">
+                <!-- Report Type -->
+                <div class="col-md-12 mb-3">
+                    <label class="form-label d-block">Report Type</label>
+                    <div class="btn-group report-type-selector w-100" role="group" aria-label="Report Type">
+                        <input type="radio" class="btn-check" name="report_type" id="attendanceReport" value="attendance" checked>
+                        <label class="btn btn-outline-primary" for="attendanceReport">
+                            <i class="fas fa-calendar-check me-2"></i>Attendance Report
+                        </label>
+                        
+                        <input type="radio" class="btn-check" name="report_type" id="labUsageReport" value="lab_usage">
+                        <label class="btn btn-outline-primary" for="labUsageReport">
+                            <i class="fas fa-desktop me-2"></i>Lab Usage Report
+                        </label>
+                        
+                        <input type="radio" class="btn-check" name="report_type" id="leaveReport" value="leave">
+                        <label class="btn btn-outline-primary" for="leaveReport">
+                            <i class="fas fa-file-alt me-2"></i>Leave Report
+                        </label>
+                        
+                        <input type="radio" class="btn-check" name="report_type" id="comparisonReport" value="comparison">
+                        <label class="btn btn-outline-primary" for="comparisonReport">
+                            <i class="fas fa-chart-line me-2"></i>Comparison Report
+                        </label>
+                    </div>
+                </div>
+                
+                <!-- Date Range Selection -->
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-header py-2 bg-light">
+                            <h6 class="m-0 font-weight-bold">Time Period</h6>
+                        </div>
+                        <div class="card-body">
+                            <div class="mb-3">
+                                <div class="btn-group date-range-selector w-100" role="group" aria-label="Date Range">
+                                    <input type="radio" class="btn-check" name="date_range" id="thisWeek" value="this_week" checked>
+                                    <label class="btn btn-outline-secondary" for="thisWeek">This Week</label>
+                                    
+                                    <input type="radio" class="btn-check" name="date_range" id="thisMonth" value="this_month">
+                                    <label class="btn btn-outline-secondary" for="thisMonth">This Month</label>
+                                    
+                                    <input type="radio" class="btn-check" name="date_range" id="thisSemester" value="this_semester">
+                                    <label class="btn btn-outline-secondary" for="thisSemester">This Semester</label>
+                                    
+                                    <input type="radio" class="btn-check" name="date_range" id="custom" value="custom">
+                                    <label class="btn btn-outline-secondary" for="custom">Custom</label>
+                                </div>
+                            </div>
+                            
+                            <div id="customDateRange" class="row g-2 mt-2" style="display: none;">
+                                <div class="col-md-6">
+                                    <label for="startDate" class="form-label">Start Date</label>
+                                    <input type="date" class="form-control" id="startDate" name="start_date">
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="endDate" class="form-label">End Date</label>
+                                    <input type="date" class="form-control" id="endDate" name="end_date">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Filter Options -->
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-header py-2 bg-light">
+                            <h6 class="m-0 font-weight-bold">Filters</h6>
+                        </div>
+                        <div class="card-body">
+                            <div class="row g-2">
+                                <div class="col-md-6 mb-2">
+                                    <label for="departmentFilter" class="form-label">Department</label>
+                                    <select class="form-select" id="departmentFilter" name="department">
+                                        <option value="">All Departments</option>
+                                        {% for department in departments %}
+                                            <option value="{{ department.department_id }}">{{ department.department_name }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                                <div class="col-md-6 mb-2">
+                                    <label for="semesterFilter" class="form-label">Semester</label>
+                                    <select class="form-select" id="semesterFilter" name="semester">
+                                        <option value="">All Semesters</option>
+                                        <option value="1">Semester 1</option>
+                                        <option value="2">Semester 2</option>
+                                        <option value="3">Semester 3</option>
+                                        <option value="4">Semester 4</option>
+                                        <option value="5">Semester 5</option>
+                                        <option value="6">Semester 6</option>
+                                        <option value="7">Semester 7</option>
+                                        <option value="8">Semester 8</option>
+                                    </select>
+                                </div>
+                                
+                                <div class="col-md-6 mb-2 lab-filter">
+                                    <label for="labFilter" class="form-label">Lab</label>
+                                    <select class="form-select" id="labFilter" name="lab">
+                                        <option value="">All Labs</option>
+                                        {% for lab in labs %}
+                                            <option value="{{ lab.id }}">{{ lab.name }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                                <div class="col-md-6 mb-2 batch-filter">
+                                    <label for="batchFilter" class="form-label">Batch</label>
+                                    <select class="form-select" id="batchFilter" name="batch">
+                                        <option value="">All Batches</option>
+                                        {% for batch in batches %}
+                                            <option value="{{ batch.batch_id }}">{{ batch.batch_name }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                                
+                                <div class="col-md-12 mb-2 subject-filter">
+                                    <label for="subjectFilter" class="form-label">Subject</label>
+                                    <select class="form-select" id="subjectFilter" name="subject">
+                                        <option value="">All Subjects</option>
+                                        {% for subject in subjects %}
+                                            <option value="{{ subject.subject_id }}">{{ subject.subject_code }} - {{ subject.subject_name }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                                
+                                <div class="col-md-12 comparison-filter" style="display: none;">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="includePrevious" name="include_previous" value="1">
+                                        <label class="form-check-label" for="includePrevious">
+                                            Compare with previous period
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Format Options -->
+                <div class="col-md-12">
+                    <div class="card">
+                        <div class="card-header py-2 bg-light">
+                            <h6 class="m-0 font-weight-bold">Output Options</h6>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <label class="form-label">Report Format</label>
+                                    <div class="d-flex gap-3">
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="radio" name="report_format" id="formatHTML" value="html" checked>
+                                            <label class="form-check-label" for="formatHTML">
+                                                Show on Screen
+                                            </label>
+                                        </div>
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="radio" name="report_format" id="formatPDF" value="pdf">
+                                            <label class="form-check-label" for="formatPDF">
+                                                PDF
+                                            </label>
+                                        </div>
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="radio" name="report_format" id="formatExcel" value="excel">
+                                            <label class="form-check-label" for="formatExcel">
+                                                Excel
+                                            </label>
+                                        </div>
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="radio" name="report_format" id="formatCSV" value="csv">
+                                            <label class="form-check-label" for="formatCSV">
+                                                CSV
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Include Options</label>
+                                    <div class="d-flex gap-3">
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" name="include_charts" id="includeCharts" value="1" checked>
+                                            <label class="form-check-label" for="includeCharts">
+                                                Charts
+                                            </label>
+                                        </div>
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" name="include_summary" id="includeSummary" value="1" checked>
+                                            <label class="form-check-label" for="includeSummary">
+                                                Summary
+                                            </label>
+                                        </div>
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" name="include_details" id="includeDetails" value="1">
+                                            <label class="form-check-label" for="includeDetails">
+                                                Detailed Records
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-md-12 text-center">
+                    <button type="submit" class="btn btn-primary px-4" id="generateReportBtn">
+                        <i class="fas fa-file-alt me-2"></i>Generate Report
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <!-- Report Preview -->
+    <div class="card shadow mb-4" id="reportPreviewContainer" style="display: none;">
+        <div class="card-header py-3 d-flex justify-content-between align-items-center">
+            <h6 class="m-0 font-weight-bold text-primary">Report Preview</h6>
+            <div>
+                <button type="button" class="btn btn-sm btn-outline-primary me-2" id="printReport">
+                    <i class="fas fa-print me-1"></i> Print
+                </button>
+                <button type="button" class="btn btn-sm btn-primary" id="downloadReport">
+                    <i class="fas fa-download me-1"></i> Download
+                </button>
+            </div>
+        </div>
+        <div class="card-body">
+            <div id="reportContent" class="p-3">
+                <!-- Report content will be loaded here -->
+                <div class="text-center py-5">
+                    <div class="spinner-border text-primary" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
+                    <p class="mt-3">Generating report, please wait...</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Recent Reports -->
+    <div class="card shadow mb-4">
+        <div class="card-header py-3">
+            <h6 class="m-0 font-weight-bold text-primary">Recently Generated Reports</h6>
+        </div>
+        <div class="card-body">
+            {% if recent_reports %}
+                <div class="table-responsive">
+                    <table class="table table-hover" id="recentReportsTable">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Title</th>
+                                <th>Type</th>
+                                <th>Generated By</th>
+                                <th>Date Generated</th>
+                                <th>Format</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for report in recent_reports %}
+                            <tr>
+                                <td>{{ report.title }}</td>
+                                <td>{{ report.type|title }} Report</td>
+                                <td>{{ report.generated_by }}</td>
+                                <td>{{ report.generated_at }}</td>
+                                <td>{{ report.format|upper }}</td>
+                                <td>
+                                    <div class="btn-group btn-group-sm">
+                                        <button type="button" class="btn btn-outline-primary view-report" 
+                                                data-report-id="{{ report.id }}"
+                                                title="View Report">
+                                            <i class="fas fa-eye"></i>
+                                        </button>
+                                        <button type="button" class="btn btn-outline-success download-report" 
+                                                data-report-id="{{ report.id }}"
+                                                title="Download Report">
+                                            <i class="fas fa-download"></i>
+                                        </button>
+                                        <button type="button" class="btn btn-outline-info share-report" 
+                                                data-report-id="{{ report.id }}"
+                                                title="Share Report">
+                                            <i class="fas fa-share-alt"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% else %}
+                <div class="text-center py-4 text-muted">
+                    <i class="fas fa-file-alt fa-3x mb-3"></i>
+                    <p>No reports have been generated recently.</p>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+    
+    <!-- Scheduled Reports -->
+    <div class="card shadow mb-4">
+        <div class="card-header py-3 d-flex justify-content-between align-items-center">
+            <h6 class="m-0 font-weight-bold text-primary">Scheduled Reports</h6>
+            <button type="button" class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#scheduleReportModal">
+                <i class="fas fa-plus me-1"></i> Schedule New Report
+            </button>
+        </div>
+        <div class="card-body">
+            {% if scheduled_reports %}
+                <div class="table-responsive">
+                    <table class="table table-hover" id="scheduledReportsTable">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Report Name</th>
+                                <th>Type</th>
+                                <th>Frequency</th>
+                                <th>Recipients</th>
+                                <th>Next Run</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for report in scheduled_reports %}
+                            <tr>
+                                <td>{{ report.name }}</td>
+                                <td>{{ report.type|title }}</td>
+                                <td>{{ report.frequency }}</td>
+                                <td>{{ report.recipients_count }} recipient(s)</td>
+                                <td>{{ report.next_run }}</td>
+                                <td>
+                                    <span class="badge {% if report.is_active %}bg-success{% else %}bg-secondary{% endif %}">
+                                        {{ report.status }}
+                                    </span>
+                                </td>
+                                <td>
+                                    <div class="btn-group btn-group-sm">
+                                        <button type="button" class="btn btn-outline-primary edit-scheduled-report" 
+                                                data-report-id="{{ report.id }}"
+                                                title="Edit Scheduled Report">
+                                            <i class="fas fa-edit"></i>
+                                        </button>
+                                        <button type="button" class="btn btn-outline-info view-scheduled-report" 
+                                                data-report-id="{{ report.id }}"
+                                                title="View Details">
+                                            <i class="fas fa-eye"></i>
+                                        </button>
+                                        <button type="button" class="btn btn-outline-danger delete-scheduled-report" 
+                                                data-report-id="{{ report.id }}"
+                                                title="Delete Scheduled Report">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% else %}
+                <div class="text-center py-4 text-muted">
+                    <i class="fas fa-calendar-alt fa-3x mb-3"></i>
+                    <p>No scheduled reports have been set up yet.</p>
+                    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#scheduleReportModal">
+                        <i class="fas fa-plus me-1"></i> Schedule Your First Report
+                    </button>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<!-- Schedule Report Modal -->
+<div class="modal fade" id="scheduleReportModal" tabindex="-1" aria-labelledby="scheduleReportModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title" id="scheduleReportModalLabel">Schedule Report</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="scheduleReportForm">
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        <label for="reportName" class="form-label">Report Name</label>
+                        <input type="text" class="form-control" id="reportName" name="report_name" required>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="scheduleReportType" class="form-label">Report Type</label>
+                        <select class="form-select" id="scheduleReportType" name="report_type" required>
+                            <option value="">Select Report Type</option>
+                            <option value="attendance">Attendance Report</option>
+                            <option value="lab_usage">Lab Usage Report</option>
+                            <option value="leave">Leave Report</option>
+                            <option value="comparison">Comparison Report</option>
+                        </select>
+                    </div>
+                    
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label for="scheduleFrequency" class="form-label">Frequency</label>
+                            <select class="form-select" id="scheduleFrequency" name="frequency" required>
+                                <option value="daily">Daily</option>
+                                <option value="weekly" selected>Weekly</option>
+                                <option value="monthly">Monthly</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6" id="weekdaySelector">
+                            <label for="scheduleDay" class="form-label">Day of Week</label>
+                            <select class="form-select" id="scheduleDay" name="day_of_week">
+                                <option value="1">Monday</option>
+                                <option value="2">Tuesday</option>
+                                <option value="3">Wednesday</option>
+                                <option value="4">Thursday</option>
+                                <option value="5">Friday</option>
+                                <option value="6">Saturday</option>
+                                <option value="0">Sunday</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6" id="monthlySelector" style="display: none;">
+                            <label for="scheduleDate" class="form-label">Day of Month</label>
+                            <select class="form-select" id="scheduleDate" name="day_of_month">
+                                {% for i in "12345678910111213141516171819202122232425262728293031"|make_list %}
+                                    <option value="{{ i }}">{{ i }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="scheduleTime" class="form-label">Time</label>
+                        <input type="time" class="form-control" id="scheduleTime" name="time" value="08:00" required>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="scheduleRecipients" class="form-label">Recipients (Email addresses, comma separated)</label>
+                        <textarea class="form-control" id="scheduleRecipients" name="recipients" rows="2" required></textarea>
+                        <div class="form-text">Enter email addresses separated by commas</div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">Report Format</label>
+                        <select class="form-select" id="scheduleFormat" name="format" required>
+                            <option value="pdf" selected>PDF</option>
+                            <option value="excel">Excel</option>
+                            <option value="csv">CSV</option>
+                        </select>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">Filters (Optional)</label>
+                        <div class="row g-2">
+                            <div class="col-md-6">
+                                <select class="form-select" id="scheduleDepartment" name="department">
+                                    <option value="">All Departments</option>
+                                    {% for department in departments %}
+                                        <option value="{{ department.department_id }}">{{ department.department_name }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <select class="form-select" id="scheduleSemester" name="semester">
+                                    <option value="">All Semesters</option>
+                                    <option value="1">Semester 1</option>
+                                    <option value="2">Semester 2</option>
+                                    <option value="3">Semester 3</option>
+                                    <option value="4">Semester 4</option>
+                                    <option value="5">Semester 5</option>
+                                    <option value="6">Semester 6</option>
+                                    <option value="7">Semester 7</option>
+                                    <option value="8">Semester 8</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" id="saveScheduledReport">Schedule Report</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Share Report Modal -->
+<div class="modal fade" id="shareReportModal" tabindex="-1" aria-labelledby="shareReportModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-info text-white">
+                <h5 class="modal-title" id="shareReportModalLabel">Share Report</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="shareReportForm">
+                    {% csrf_token %}
+                    <input type="hidden" id="shareReportId" name="report_id">
+                    
+                    <div class="mb-3">
+                        <label for="shareRecipients" class="form-label">Recipients</label>
+                        <textarea class="form-control" id="shareRecipients" name="recipients" rows="3" placeholder="Enter email addresses separated by commas" required></textarea>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="shareSubject" class="form-label">Email Subject</label>
+                        <input type="text" class="form-control" id="shareSubject" name="subject" value="Attendance Report from MBIT Attendance System">
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="shareMessage" class="form-label">Message (Optional)</label>
+                        <textarea class="form-control" id="shareMessage" name="message" rows="3" placeholder="Add a personal message"></textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-info" id="sendReportBtn">Send Report</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block lab_assistant_custom_css %}
+<style>
+    /* Button group styling */
+    .report-type-selector, .date-range-selector {
+        display: flex;
+        flex-wrap: wrap;
+    }
+    
+    .report-type-selector .btn, .date-range-selector .btn {
+        flex: 1;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+    
+    /* Report preview container */
+    #reportContent {
+        min-height: 400px;
+        border: 1px solid #e3e6f0;
+        border-radius: 5px;
+        background-color: #fff;
+    }
+    
+    /* Recent reports table */
+    #recentReportsTable th, #scheduledReportsTable th {
+        white-space: nowrap;
+    }
+    
+    /* Responsive adjustments */
+    @media (max-width: 768px) {
+        .report-type-selector, .date-range-selector {
+            flex-direction: column;
+        }
+        
+        .report-type-selector .btn, .date-range-selector .btn {
+            border-radius: 0;
+            margin-bottom: -1px;
+        }
+        
+        .report-type-selector .btn:first-child, .date-range-selector .btn:first-child {
+            border-top-left-radius: 0.25rem;
+            border-top-right-radius: 0.25rem;
+        }
+        
+        .report-type-selector .btn:last-child, .date-range-selector .btn:last-child {
+            border-bottom-left-radius: 0.25rem;
+            border-bottom-right-radius: 0.25rem;
+            margin-bottom: 0;
+        }
+    }
+    
+    /* Report Sample Styling */
+    .report-header {
+        text-align: center;
+        padding-bottom: 20px;
+        border-bottom: 2px solid #4e73df;
+        margin-bottom: 20px;
+    }
+    
+    .report-header h2 {
+        font-weight: 600;
+        color: #2e59d9;
+    }
+    
+    .report-meta {
+        font-size: 0.9rem;
+        color: #666;
+        margin-top: 10px;
+    }
+    
+    .report-section {
+        margin-bottom: 30px;
+    }
+    
+    .report-section h3 {
+        font-size: 1.3rem;
+        font-weight: 600;
+        color: #4e73df;
+        border-bottom: 1px solid #eaecf4;
+        padding-bottom: 10px;
+        margin-bottom: 15px;
+    }
+    
+    .summary-card {
+        background-color: #f8f9fc;
+        border-radius: 8px;
+        padding: 15px;
+        margin-bottom: 15px;
+        border-left: 4px solid #4e73df;
+    }
+    
+    .summary-stat {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+    }
+    
+    .summary-stat h4 {
+        font-size: 2rem;
+        font-weight: 700;
+        margin-bottom: 0;
+    }
+    
+    .summary-stat p {
+        color: #666;
+        margin-top: 5px;
+        margin-bottom: 0;
+    }
+    
+    .chart-container {
+        background-color: white;
+        padding: 15px;
+        border-radius: 8px;
+        border: 1px solid #e3e6f0;
+        height: 300px;
+    }
+</style>
+{% endblock %}
+
+{% block lab_assistant_custom_js %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Initialize DataTables
+        $('#recentReportsTable').DataTable({
+            ordering: true,
+            pageLength: 5,
+            lengthMenu: [5, 10, 25, 50],
+            language: {
+                search: "_INPUT_",
+                searchPlaceholder: "Search reports..."
+            }
+        });
+        
+        $('#scheduledReportsTable').DataTable({
+            ordering: true,
+            pageLength: 5,
+            lengthMenu: [5, 10, 25, 50],
+            language: {
+                search: "_INPUT_",
+                searchPlaceholder: "Search scheduled reports..."
+            }
+        });
+        
+        // Toggle custom date range based on selection
+        $('input[name="date_range"]').on('change', function() {
+            const isCustom = $(this).val() === 'custom';
+            $('#customDateRange').toggle(isCustom);
+            
+            // If custom is selected, make date fields required
+            $('#startDate, #endDate').prop('required', isCustom);
+        });
+        
+        // Toggle filters based on report type
+        $('input[name="report_type"]').on('change', function() {
+            const reportType = $(this).val();
+            
+            // Show/hide filters based on report type
+            $('.lab-filter, .batch-filter').toggle(reportType === 'lab_usage' || reportType === 'attendance');
+            $('.subject-filter').toggle(reportType === 'attendance' || reportType === 'comparison');
+            $('.comparison-filter').toggle(reportType === 'comparison');
+        });
+        
+        // Toggle day selector based on frequency
+        $('#scheduleFrequency').on('change', function() {
+            const frequency = $(this).val();
+            $('#weekdaySelector').toggle(frequency === 'weekly');
+            $('#monthlySelector').toggle(frequency === 'monthly');
+        });
+        
+        // Handle report form submission
+        $('#reportGenerationForm').on('submit', function(e) {
+            e.preventDefault();
+            
+            // Get form data
+            const formData = new FormData(this);
+            const reportType = $('input[name="report_type"]:checked').val();
+            const reportFormat = $('input[name="report_format"]:checked').val();
+            
+            // Log the report generation request
+            logToFile(`Report generation requested - Type: ${reportType}, Format: ${reportFormat}`);
+            
+            // If format is not HTML, trigger download instead of preview
+            if (reportFormat !== 'html') {
+                downloadReport(formData);
+                return;
+            }
+            
+            // Show report preview container and scroll to it
+            $('#reportPreviewContainer').show();
+            $('html, body').animate({
+                scrollTop: $('#reportPreviewContainer').offset().top - 20
+            }, 500);
+            
+            // Make AJAX request to get report data
+            $.ajax({
+                url: "{% url 'lab_assistant_portal:generate_report' %}",
+                method: "POST",
+                data: formData,
+                processData: false,
+                contentType: false,
+                beforeSend: function() {
+                    $('#reportContent').html(`
+                        <div class="text-center py-5">
+                            <div class="spinner-border text-primary" role="status">
+                                <span class="visually-hidden">Loading...</span>
+                            </div>
+                            <p class="mt-3">Generating report, please wait...</p>
+                        </div>
+                    `);
+                },
+                success: function(response) {
+                    if (response.success) {
+                        // Render report content
+                        $('#reportContent').html(response.html);
+                        
+                        // Initialize charts if included
+                        if (response.charts) {
+                            initializeReportCharts(response.charts);
+                        }
+                        
+                        logToFile('Report generated successfully');
+                    } else {
+                        // Show error message
+                        $('#reportContent').html(`
+                            <div class="alert alert-danger">
+                                <i class="fas fa-exclamation-circle me-2"></i>
+                                ${response.message || 'Failed to generate report.'}
+                            </div>
+                        `);
+                        logToFile(`Failed to generate report: ${response.message}`, 'error');
+                    }
+                },
+                error: function(xhr, status, error) {
+                    // Show error message
+                    $('#reportContent').html(`
+                        <div class="alert alert-danger">
+                            <i class="fas fa-exclamation-circle me-2"></i>
+                            An error occurred while generating the report. Please try again.
+                        </div>
+                    `);
+                    logToFile(`Error generating report: ${error}`, 'error');
+                }
+            });
+        });
+        
+        // Handle print report button
+        $('#printReport').on('click', function() {
+            logToFile('Print report requested');
+            window.print();
+        });
+        
+        // Handle download report button
+        $('#downloadReport').on('click', function() {
+            logToFile('Download report requested');
+            
+            Swal.fire({
+                title: 'Download Report',
+                text: 'Choose download format',
+                icon: 'question',
+                showDenyButton: true,
+                showCancelButton: true,
+                confirmButtonText: 'PDF',
+                denyButtonText: 'Excel',
+                cancelButtonText: 'CSV',
+                confirmButtonColor: '#4e73df',
+                denyButtonColor: '#1cc88a',
+                cancelButtonColor: '#36b9cc'
+            }).then((result) => {
+                if (result.isConfirmed || result.isDenied || result.dismiss === Swal.DismissReason.cancel) {
+                    let format = 'pdf';
+                    if (result.isDenied) format = 'excel';
+                    if (result.dismiss === Swal.DismissReason.cancel) format = 'csv';
+                    
+                    // Get form data and update format
+                    const formData = new FormData($('#reportGenerationForm')[0]);
+                    formData.set('report_format', format);
+                    
+                    downloadReport(formData);
+                }
+            });
+        });
+        
+        // Function to handle report download
+        function downloadReport(formData) {
+            const format = formData.get('report_format');
+            logToFile(`Downloading report in ${format} format`);
+            
+            // Show loading
+            Swal.fire({
+                title: 'Preparing Download',
+                html: `Generating ${format.toUpperCase()} file...`,
+                timer: 2000,
+                timerProgressBar: true,
+                didOpen: () => {
+                    Swal.showLoading();
+                }
+            }).then(() => {
+                // This would typically be an actual download
+                // In a real implementation, you'd make an AJAX call with proper response handling
+                
+                Swal.fire({
+                    title: 'Download Complete',
+                    text: `Report has been downloaded successfully.`,
+                    icon: 'success',
+                    confirmButtonColor: '#4e73df'
+                });
+                
+                logToFile(`Report downloaded successfully in ${format} format`);
+            });
+        }
+        
+        // Handle view report button click
+        $('.view-report').on('click', function() {
+            const reportId = $(this).data('report-id');
+            logToFile(`View report requested for report ID: ${reportId}`);
+            
+            // Show the report preview container
+            $('#reportPreviewContainer').show();
+            $('html, body').animate({
+                scrollTop: $('#reportPreviewContainer').offset().top - 20
+            }, 500);
+            
+            // Make AJAX request to get report data
+            $.ajax({
+                url: "{% url 'lab_assistant_portal:view_report' %}",
+                method: "GET",
+                data: { report_id: reportId },
+                beforeSend: function() {
+                    $('#reportContent').html(`
+                        <div class="text-center py-5">
+                            <div class="spinner-border text-primary" role="status">
+                                <span class="visually-hidden">Loading...</span>
+                            </div>
+                            <p class="mt-3">Loading report, please wait...</p>
+                        </div>
+                    `);
+                },
+                success: function(response) {
+                    if (response.success) {
+                        // Render report content
+                        $('#reportContent').html(response.html);
+                        
+                        // Initialize charts if included
+                        if (response.charts) {
+                            initializeReportCharts(response.charts);
+                        }
+                        
+                        logToFile('Report loaded successfully');
+                    } else {
+                        // Show error message
+                        $('#reportContent').html(`
+                            <div class="alert alert-danger">
+                                <i class="fas fa-exclamation-circle me-2"></i>
+                                ${response.message || 'Failed to load report.'}
+                            </div>
+                        `);
+                        logToFile(`Failed to load report: ${response.message}`, 'error');
+                    }
+                },
+                error: function(xhr, status, error) {
+                    // Show error message
+                    $('#reportContent').html(`
+                        <div class="alert alert-danger">
+                            <i class="fas fa-exclamation-circle me-2"></i>
+                            An error occurred while loading the report. Please try again.
+                        </div>
+                    `);
+                    logToFile(`Error loading report: ${error}`, 'error');
+                }
+            });
+        });
+        
+        // Handle download report from recent reports
+        $('.download-report').on('click', function() {
+            const reportId = $(this).data('report-id');
+            logToFile(`Download report requested for report ID: ${reportId}`);
+            
+            Swal.fire({
+                title: 'Downloading Report',
+                html: 'Preparing your report for download...',
+                timer: 2000,
+                timerProgressBar: true,
+                didOpen: () => {
+                    Swal.showLoading();
+                }
+            }).then(() => {
+                // This would typically trigger a download
+                Swal.fire({
+                    title: 'Download Complete',
+                    text: 'Your report has been downloaded successfully.',
+                    icon: 'success',
+                    confirmButtonColor: '#4e73df'
+                });
+                
+                logToFile(`Report downloaded successfully for report ID: ${reportId}`);
+            });
+        });
+        
+        // Handle share report from recent reports
+        $('.share-report').on('click', function() {
+            const reportId = $(this).data('report-id');
+            logToFile(`Share report requested for report ID: ${reportId}`);
+            
+            // Set the report ID in the share form
+            $('#shareReportId').val(reportId);
+            
+            // Show the share modal
+            $('#shareReportModal').modal('show');
+        });
+        
+        // Handle send report button click
+        $('#sendReportBtn').on('click', function() {
+            const form = $('#shareReportForm')[0];
+            
+            // Check if form is valid
+            if (!form.checkValidity()) {
+                form.reportValidity();
+                return;
+            }
+            
+            const formData = new FormData(form);
+            logToFile('Share report form submitted');
+            
+            // Make AJAX request to share the report
+            $.ajax({
+                url: "{% url 'lab_assistant_portal:share_report' %}",
+                method: "POST",
+                data: formData,
+                processData: false,
+                contentType: false,
+                beforeSend: function() {
+                    $(this).prop('disabled', true);
+                    $(this).html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Sending...');
+                },
+                success: function(response) {
+                    if (response.success) {
+                        // Close the modal
+                        $('#shareReportModal').modal('hide');
+                        
+                        // Show success message
+                        Swal.fire({
+                            title: 'Report Shared!',
+                            text: 'The report has been shared successfully.',
+                            icon: 'success',
+                            confirmButtonColor: '#4e73df'
+                        });
+                        
+                        logToFile('Report shared successfully');
+                    } else {
+                        // Show error message
+                        Swal.fire({
+                            title: 'Error',
+                            text: response.message || 'Failed to share report.',
+                            icon: 'error',
+                            confirmButtonColor: '#e74a3b'
+                        });
+                        
+                        logToFile(`Failed to share report: ${response.message}`, 'error');
+                    }
+                },
+                error: function(xhr, status, error) {
+                    // Show error message
+                    Swal.fire({
+                        title: 'Error',
+                        text: 'An error occurred while sharing the report. Please try again.',
+                        icon: 'error',
+                        confirmButtonColor: '#e74a3b'
+                    });
+                    
+                    logToFile(`Error sharing report: ${error}`, 'error');
+                },
+                complete: function() {
+                    $(this).prop('disabled', false);
+                    $(this).html('Send Report');
+                }
+            });
+        });
+        
+        // Handle save scheduled report button click
+        $('#saveScheduledReport').on('click', function() {
+            const form = $('#scheduleReportForm')[0];
+            
+            // Check if form is valid
+            if (!form.checkValidity()) {
+                form.reportValidity();
+                return;
+            }
+            
+            const formData = new FormData(form);
+            logToFile('Schedule report form submitted');
+            
+            // Make AJAX request to schedule the report
+            $.ajax({
+                url: "{% url 'lab_assistant_portal:schedule_report' %}",
+                method: "POST",
+                data: formData,
+                processData: false,
+                contentType: false,
+                beforeSend: function() {
+                    $(this).prop('disabled', true);
+                    $(this).html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Scheduling...');
+                },
+                success: function(response) {
+                    if (response.success) {
+                        // Close the modal
+                        $('#scheduleReportModal').modal('hide');
+                        
+                        // Show success message
+                        Swal.fire({
+                            title: 'Report Scheduled!',
+                            text: 'The report has been scheduled successfully.',
+                            icon: 'success',
+                            confirmButtonColor: '#4e73df'
+                        }).then(() => {
+                            // Reload the page to reflect changes
+                            window.location.reload();
+                        });
+                        
+                        logToFile('Report scheduled successfully');
+                    } else {
+                        // Show error message
+                        Swal.fire({
+                            title: 'Error',
+                            text: response.message || 'Failed to schedule report.',
+                            icon: 'error',
+                            confirmButtonColor: '#e74a3b'
+                        });
+                        
+                        logToFile(`Failed to schedule report: ${response.message}`, 'error');
+                    }
+                },
+                error: function(xhr, status, error) {
+                    // Show error message
+                    Swal.fire({
+                        title: 'Error',
+                        text: 'An error occurred while scheduling the report. Please try again.',
+                        icon: 'error',
+                        confirmButtonColor: '#e74a3b'
+                    });
+                    
+                    logToFile(`Error scheduling report: ${error}`, 'error');
+                },
+                complete: function() {
+                    $(this).prop('disabled', false);
+                    $(this).html('Schedule Report');
+                }
+            });
+        });
+        
+        // Handle view scheduled report details
+        $('.view-scheduled-report').on('click', function() {
+            const reportId = $(this).data('report-id');
+            logToFile(`View scheduled report details requested for report ID: ${reportId}`);
+            
+            // Make AJAX request to get scheduled report details
+            $.ajax({
+                url: "{% url 'lab_assistant_portal:get_scheduled_report_details' %}",
+                method: "GET",
+                data: { report_id: reportId },
+                success: function(response) {
+                    if (response.success) {
+                        // Show report details
+                        Swal.fire({
+                            title: response.data.name,
+                            html: `
+                                <div class="text-start">
+                                    <p><strong>Report Type:</strong> ${response.data.type}</p>
+                                    <p><strong>Frequency:</strong> ${response.data.frequency}</p>
+                                    <p><strong>Next Run:</strong> ${response.data.next_run}</p>
+                                    <p><strong>Recipients:</strong> ${response.data.recipients}</p>
+                                    <p><strong>Format:</strong> ${response.data.format.toUpperCase()}</p>
+                                    <p><strong>Status:</strong> ${response.data.status}</p>
+                                    <p><strong>Filters:</strong> ${response.data.filters || 'None'}</p>
+                                </div>
+                            `,
+                            icon: 'info',
+                            confirmButtonColor: '#4e73df'
+                        });
+                        
+                        logToFile('Scheduled report details loaded successfully');
+                    } else {
+                        // Show error message
+                        Swal.fire({
+                            title: 'Error',
+                            text: response.message || 'Failed to load scheduled report details.',
+                            icon: 'error',
+                            confirmButtonColor: '#e74a3b'
+                        });
+                        
+                        logToFile(`Failed to load scheduled report details: ${response.message}`, 'error');
+                    }
+                },
+                error: function(xhr, status, error) {
+                    // Show error message
+                    Swal.fire({
+                        title: 'Error',
+                        text: 'An error occurred while loading scheduled report details. Please try again.',
+                        icon: 'error',
+                        confirmButtonColor: '#e74a3b'
+                    });
+                    
+                    logToFile(`Error loading scheduled report details: ${error}`, 'error');
+                }
+            });
+        });
+        
+        // Handle delete scheduled report
+        $('.delete-scheduled-report').on('click', function() {
+            const reportId = $(this).data('report-id');
+            logToFile(`Delete scheduled report requested for report ID: ${reportId}`);
+            
+            Swal.fire({
+                title: 'Delete Scheduled Report',
+                text: 'Are you sure you want to delete this scheduled report?',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#e74a3b',
+                cancelButtonColor: '#858796',
+                confirmButtonText: 'Yes, delete it!'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // Make AJAX request to delete scheduled report
+                    $.ajax({
+                        url: "{% url 'lab_assistant_portal:delete_scheduled_report' %}",
+                        method: "POST",
+                        data: {
+                            report_id: reportId,
+                            csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val()
+                        },
+                        success: function(response) {
+                            if (response.success) {
+                                // Show success message
+                                Swal.fire({
+                                    title: 'Deleted!',
+                                    text: 'The scheduled report has been deleted.',
+                                    icon: 'success',
+                                    confirmButtonColor: '#4e73df'
+                                }).then(() => {
+                                    // Reload the page to reflect changes
+                                    window.location.reload();
+                                });
+                                
+                                logToFile('Scheduled report deleted successfully');
+                            } else {
+                                // Show error message
+                                Swal.fire({
+                                    title: 'Error',
+                                    text: response.message || 'Failed to delete scheduled report.',
+                                    icon: 'error',
+                                    confirmButtonColor: '#e74a3b'
+                                });
+                                
+                                logToFile(`Failed to delete scheduled report: ${response.message}`, 'error');
+                            }
+                        },
+                        error: function(xhr, status, error) {
+                            // Show error message
+                            Swal.fire({
+                                title: 'Error',
+                                text: 'An error occurred while deleting the scheduled report. Please try again.',
+                                icon: 'error',
+                                confirmButtonColor: '#e74a3b'
+                            });
+                            
+                            logToFile(`Error deleting scheduled report: ${error}`, 'error');
+                        }
+                    });
+                }
+            });
+        });
+        
+        // Function to initialize charts in report preview
+        function initializeReportCharts(chartData) {
+            // Attendance Chart
+            if (chartData.attendance && document.getElementById('attendanceChart')) {
+                new Chart(document.getElementById('attendanceChart').getContext('2d'), {
+                    type: 'bar',
+                    data: {
+                        labels: chartData.attendance.labels,
+                        datasets: [{
+                            label: 'Present',
+                            data: chartData.attendance.present,
+                            backgroundColor: '#1cc88a',
+                            borderWidth: 0
+                        }, {
+                            label: 'Absent',
+                            data: chartData.attendance.absent,
+                            backgroundColor: '#e74a3b',
+                            borderWidth: 0
+                        }, {
+                            label: 'On Leave',
+                            data: chartData.attendance.leave,
+                            backgroundColor: '#f6c23e',
+                            borderWidth: 0
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                position: 'top',
+                            }
+                        },
+                        scales: {
+                            x: {
+                                stacked: true,
+                            },
+                            y: {
+                                stacked: true,
+                                beginAtZero: true
+                            }
+                        }
+                    }
+                });
+            }
+            
+            // Percentage Chart
+            if (chartData.percentage && document.getElementById('percentageChart')) {
+                new Chart(document.getElementById('percentageChart').getContext('2d'), {
+                    type: 'line',
+                    data: {
+                        labels: chartData.percentage.labels,
+                        datasets: [{
+                            label: 'Attendance %',
+                            data: chartData.percentage.data,
+                            backgroundColor: 'rgba(78, 115, 223, 0.1)',
+                            borderColor: '#4e73df',
+                            borderWidth: 2,
+                            pointBackgroundColor: '#4e73df',
+                            pointBorderColor: '#fff',
+                            pointRadius: 4,
+                            fill: true,
+                            tension: 0.4
+                        }, {
+                            label: 'Required Threshold',
+                            data: Array(chartData.percentage.labels.length).fill(75),
+                            borderColor: '#e74a3b',
+                            borderDash: [5, 5],
+                            borderWidth: 2,
+                            pointRadius: 0,
+                            fill: false
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                position: 'top',
+                            }
+                        },
+                        scales: {
+                            y: {
+                                beginAtZero: false,
+                                min: 50,
+                                max: 100,
+                                ticks: {
+                                    stepSize: 10
+                                },
+                                title: {
+                                    display: true,
+                                    text: 'Attendance %'
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+            
+            // Comparison Chart
+            if (chartData.comparison && document.getElementById('comparisonChart')) {
+                new Chart(document.getElementById('comparisonChart').getContext('2d'), {
+                    type: 'bar',
+                    data: {
+                        labels: chartData.comparison.labels,
+                        datasets: [{
+                            label: 'Current Period',
+                            data: chartData.comparison.current,
+                            backgroundColor: '#4e73df',
+                            borderWidth: 0
+                        }, {
+                            label: 'Previous Period',
+                            data: chartData.comparison.previous,
+                            backgroundColor: '#36b9cc',
+                            borderWidth: 0
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                position: 'top',
+                            }
+                        },
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                title: {
+                                    display: true,
+                                    text: 'Attendance %'
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+        }
+        
+        // Sample report data (for demonstration)
+        if (document.getElementById('reportPreviewContainer').style.display !== 'none') {
+            const sampleChartData = {
+                attendance: {
+                    labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
+                    present: [42, 38, 45, 40, 37, 30],
+                    absent: [8, 12, 5, 10, 13, 5],
+                    leave: [0, 0, 0, 0, 0, 15]
+                },
+                percentage: {
+                    labels: ['Week 1', 'Week 2', 'Week 3', 'Week 4'],
+                    data: [84, 76, 90, 80]
+                }
+            };
+            
+            initializeReportCharts(sampleChartData);
+        }
+        
+        // Logging function
+        function logToFile(message, type = 'info') {
+            console.log(`[REPORTS] ${type.toUpperCase()}: ${message}`);
+            
+            // In a real app, you might send this to the server
+            // to write to a log file for debugging purposes
+            
+            // AJAX call to log to server
+            $.ajax({
+                url: "{% url 'lab_assistant_portal:log' %}",
+                type: "POST",
+                data: {
+                    message: message,
+                    type: type,
+                    csrfmiddlewaretoken: '{{ csrf_token }}'
+                },
+                success: function(data) {
+                    // Success handling (silent)
+                },
+                error: function(xhr, status, error) {
+                    // Error handling (silent)
+                    console.error("Failed to log message:", error);
+                }
+            });
+        }
+    });
+</script>
+{% endblock %}

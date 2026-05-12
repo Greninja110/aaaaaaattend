@@ -1,0 +1,167 @@
+{% extends 'admin_portal/base_admin.html' %}
+{% load static %}
+
+{% block admin_title %}{% if is_update %}Edit{% else %}Add{% endif %} Faculty Details{% endblock %}
+
+{% block admin_content %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2"><i class="fas fa-chalkboard-teacher"></i> {% if is_update %}Edit{% else %}Add{% endif %} Faculty Details</h1>
+    <div class="btn-toolbar mb-2 mb-md-0">
+        <a href="{% url 'admin_portal:user_edit' user_obj.user_id %}" class="btn btn-sm btn-secondary">
+            <i class="fas fa-arrow-left"></i> Back to User
+        </a>
+    </div>
+</div>
+
+{% if messages %}
+    {% for message in messages %}
+        <div class="alert {{ message.tags }} alert-dismissible fade show" role="alert">
+            {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    {% endfor %}
+{% endif %}
+
+<div class="row">
+    <div class="col-md-7">
+        <div class="card shadow mb-4">
+            <div class="card-header py-3">
+                <h6 class="m-0 font-weight-bold text-primary">Faculty Information for {{ user_obj.full_name }}</h6>
+            </div>
+            <div class="card-body">
+                <form method="post" class="needs-validation" novalidate>
+                    {% csrf_token %}
+                    
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label for="{{ form.employee_id.id_for_label }}" class="form-label">Employee ID</label>
+                            {{ form.employee_id }}
+                            {% if form.employee_id.errors %}
+                            <div class="invalid-feedback d-block">
+                                {{ form.employee_id.errors }}
+                            </div>
+                            {% endif %}
+                        </div>
+                        <div class="col-md-6">
+                            <label for="{{ form.department.id_for_label }}" class="form-label">Department</label>
+                            {{ form.department }}
+                            {% if form.department.errors %}
+                            <div class="invalid-feedback d-block">
+                                {{ form.department.errors }}
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label for="{{ form.designation.id_for_label }}" class="form-label">Designation</label>
+                            {{ form.designation }}
+                            {% if form.designation.errors %}
+                            <div class="invalid-feedback d-block">
+                                {{ form.designation.errors }}
+                            </div>
+                            {% endif %}
+                        </div>
+                        <div class="col-md-6">
+                            <label for="{{ form.joining_year.id_for_label }}" class="form-label">Joining Year</label>
+                            {{ form.joining_year }}
+                            {% if form.joining_year.errors %}
+                            <div class="invalid-feedback d-block">
+                                {{ form.joining_year.errors }}
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label for="{{ form.dob.id_for_label }}" class="form-label">Date of Birth</label>
+                            {{ form.dob }}
+                            {% if form.dob.errors %}
+                            <div class="invalid-feedback d-block">
+                                {{ form.dob.errors }}
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    <div class="mt-4">
+                        <button type="submit" class="btn btn-primary">
+                            {% if is_update %}Update{% else %}Save{% endif %} Faculty Details
+                        </button>
+                        <a href="{% url 'admin_portal:user_edit' user_obj.user_id %}" class="btn btn-secondary">Cancel</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-5">
+        <div class="card shadow mb-4">
+            <div class="card-header py-3">
+                <h6 class="m-0 font-weight-bold text-primary">User Information</h6>
+            </div>
+            <div class="card-body">
+                <table class="table">
+                    <tr>
+                        <th>Name:</th>
+                        <td>{{ user_obj.full_name }}</td>
+                    </tr>
+                    <tr>
+                        <th>Email:</th>
+                        <td>{{ user_obj.email }}</td>
+                    </tr>
+                    <tr>
+                        <th>Username:</th>
+                        <td>{{ user_obj.username }}</td>
+                    </tr>
+                    <tr>
+                        <th>Role:</th>
+                        <td>
+                            <span class="badge bg-primary">Faculty</span>
+                        </td>
+                    </tr>
+                </table>
+                
+                <div class="alert alert-info mt-3">
+                    <i class="fas fa-info-circle"></i> Faculty details are required for assigning subjects, timetable management, and attendance recording.
+                </div>
+            </div>
+        </div>
+        
+        <div class="card shadow mb-4">
+            <div class="card-header py-3">
+                <h6 class="m-0 font-weight-bold text-primary">Additional Information</h6>
+            </div>
+            <div class="card-body">
+                <p>After adding faculty details, you can:</p>
+                <ul>
+                    <li>Assign subjects to this faculty</li>
+                    <li>Set weekly teaching hours</li>
+                    <li>Manage department-specific roles</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block admin_custom_js %}
+<script>
+    $(document).ready(function() {
+        // Auto-fill designation based on dropdown if needed
+        const designationOptions = [
+            "Professor",
+            "Associate Professor",
+            "Assistant Professor",
+            "Head of Department",
+            "Visiting Faculty",
+            "Lab Instructor"
+        ];
+        
+        // Add datepicker to date of birth field if needed
+        // $('#{{ form.dob.id_for_label }}').datepicker({...});
+    });
+</script>
+{% endblock %}

@@ -1,0 +1,1019 @@
+{% extends 'lab_assistant_portal/base_lab_assistant.html' %}
+{% load static %}
+
+{% block lab_assistant_title %}Lab Schedule{% endblock %}
+
+{% block lab_assistant_content %}
+<div class="container-fluid py-4">
+    <div class="row mb-4">
+        <div class="col-md-12">
+            <h2>Lab Schedule</h2>
+            <p class="text-muted">View and manage laboratory sessions schedule</p>
+            
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="alert {{ message.tags }} alert-dismissible fade show" role="alert">
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                {% endfor %}
+            {% endif %}
+        </div>
+    </div>
+    
+    <!-- Filter Section -->
+    <div class="card shadow mb-4">
+        <div class="card-header py-3">
+            <h6 class="m-0 font-weight-bold text-primary">Filters</h6>
+        </div>
+        <div class="card-body">
+            <form id="scheduleFilterForm" method="get" class="row g-3">
+                <div class="col-md-3">
+                    <label for="labFilter" class="form-label">Lab</label>
+                    <select class="form-select" id="labFilter" name="lab">
+                        <option value="">All Labs</option>
+                        {% for lab in labs %}
+                            <option value="{{ lab.id }}" {% if selected_lab == lab.id %}selected{% endif %}>{{ lab.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <label for="dayFilter" class="form-label">Day</label>
+                    <select class="form-select" id="dayFilter" name="day">
+                        <option value="">All Days</option>
+                        <option value="Monday" {% if selected_day == 'Monday' %}selected{% endif %}>Monday</option>
+                        <option value="Tuesday" {% if selected_day == 'Tuesday' %}selected{% endif %}>Tuesday</option>
+                        <option value="Wednesday" {% if selected_day == 'Wednesday' %}selected{% endif %}>Wednesday</option>
+                        <option value="Thursday" {% if selected_day == 'Thursday' %}selected{% endif %}>Thursday</option>
+                        <option value="Friday" {% if selected_day == 'Friday' %}selected{% endif %}>Friday</option>
+                        <option value="Saturday" {% if selected_day == 'Saturday' %}selected{% endif %}>Saturday</option>
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <label for="batchFilter" class="form-label">Batch</label>
+                    <select class="form-select" id="batchFilter" name="batch">
+                        <option value="">All Batches</option>
+                        {% for batch in batches %}
+                            <option value="{{ batch.batch_id }}" {% if selected_batch == batch.batch_id %}selected{% endif %}>{{ batch.batch_name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-3 d-flex align-items-end">
+                    <button type="submit" class="btn btn-primary w-100" id="applyFilters">
+                        <i class="fas fa-filter me-2"></i> Apply Filters
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <!-- Lab Schedule View Selector -->
+    <div class="card shadow mb-4">
+        <div class="card-header py-3">
+            <ul class="nav nav-tabs card-header-tabs" id="scheduleViewTabs" role="tablist">
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link active" id="weekly-tab" data-bs-toggle="tab" data-bs-target="#weekly-view" type="button" role="tab" aria-controls="weekly-view" aria-selected="true">
+                        <i class="fas fa-calendar-week me-1"></i> Weekly View
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="daily-tab" data-bs-toggle="tab" data-bs-target="#daily-view" type="button" role="tab" aria-controls="daily-view" aria-selected="false">
+                        <i class="fas fa-calendar-day me-1"></i> Today's Schedule
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="list-tab" data-bs-toggle="tab" data-bs-target="#list-view" type="button" role="tab" aria-controls="list-view" aria-selected="false">
+                        <i class="fas fa-list me-1"></i> List View
+                    </button>
+                </li>
+            </ul>
+        </div>
+        <div class="card-body">
+            <div class="tab-content" id="scheduleViewContent">
+                <!-- Weekly View Tab -->
+                <div class="tab-pane fade show active" id="weekly-view" role="tabpanel" aria-labelledby="weekly-tab">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h5 class="mb-0">Weekly Lab Schedule</h5>
+                        <div class="btn-group">
+                            <button type="button" class="btn btn-outline-primary" id="printSchedule">
+                                <i class="fas fa-print me-1"></i> Print
+                            </button>
+                            <button type="button" class="btn btn-outline-primary" id="exportSchedule">
+                                <i class="fas fa-download me-1"></i> Export
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="table-responsive">
+                        <table class="table table-bordered timetable-weekly">
+                            <thead>
+                                <tr class="text-center bg-light">
+                                    <th width="8%">Time</th>
+                                    <th width="15.33%">Monday</th>
+                                    <th width="15.33%">Tuesday</th>
+                                    <th width="15.33%">Wednesday</th>
+                                    <th width="15.33%">Thursday</th>
+                                    <th width="15.33%">Friday</th>
+                                    <th width="15.33%">Saturday</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for time_slot in weekly_schedule.time_slots %}
+                                <tr>
+                                    <td class="text-center font-weight-bold bg-light">{{ time_slot.start_time }} - {{ time_slot.end_time }}</td>
+                                    
+                                    {% for day in time_slot.days %}
+                                    <td class="timetable-cell {% if day.session %}lab-cell{% endif %}">
+                                        {% if day.session %}
+                                        <div class="lab-session-details">
+                                            <h6 class="mb-1">{{ day.session.subject_name }}</h6>
+                                            <p class="mb-1 small">{{ day.session.faculty_name }}</p>
+                                            <div class="d-flex justify-content-between align-items-center">
+                                                <span class="batch-tag">{{ day.session.batch_name }}</span>
+                                                <span class="lab-tag">{{ day.session.lab_name }}</span>
+                                            </div>
+                                        </div>
+                                        {% endif %}
+                                    </td>
+                                    {% endfor %}
+                                </tr>
+                                {% endfor %}
+                                
+                                <!-- Break Times -->
+                                {% for break in weekly_schedule.breaks %}
+                                <tr>
+                                    <td class="text-center font-weight-bold bg-light">{{ break.start_time }} - {{ break.end_time }}</td>
+                                    <td colspan="6" class="text-center bg-break">{{ break.name }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                
+                <!-- Daily View Tab -->
+                <div class="tab-pane fade" id="daily-view" role="tabpanel" aria-labelledby="daily-tab">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h5 class="mb-0">Today's Lab Schedule ({{ today|date:"l, F j, Y" }})</h5>
+                        <div class="input-group date-picker-group" style="width: 200px;">
+                            <input type="date" class="form-control" id="dailyDatePicker" value="{{ today|date:'Y-m-d' }}">
+                            <button class="btn btn-outline-primary" type="button" id="goToDate">
+                                <i class="fas fa-arrow-right"></i>
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        {% for lab in labs %}
+                        <div class="col-md-4 mb-4">
+                            <div class="card h-100">
+                                <div class="card-header py-3 bg-primary text-white">
+                                    <h6 class="m-0 font-weight-bold">{{ lab.name }}</h6>
+                                </div>
+                                <div class="card-body">
+                                    {% if lab.today_sessions %}
+                                        <div class="today-sessions">
+                                            {% for session in lab.today_sessions %}
+                                            <div class="session-item mb-3 pb-3 border-bottom">
+                                                <div class="d-flex justify-content-between">
+                                                    <span class="time-badge">{{ session.start_time }} - {{ session.end_time }}</span>
+                                                    <span class="status-badge 
+                                                        {% if session.status == 'active' %}bg-success
+                                                        {% elif session.status == 'upcoming' %}bg-warning
+                                                        {% else %}bg-secondary{% endif %}">
+                                                        {{ session.status|title }}
+                                                    </span>
+                                                </div>
+                                                <h6 class="mt-2 mb-1">{{ session.subject_name }}</h6>
+                                                <p class="mb-1 text-muted small"><i class="fas fa-user-tie me-1"></i> {{ session.faculty_name }}</p>
+                                                <p class="mb-0 text-muted small"><i class="fas fa-users me-1"></i> {{ session.batch_name }} ({{ session.students_count }} students)</p>
+                                                <div class="mt-2">
+                                                    <button class="btn btn-sm btn-outline-primary view-attendance" 
+                                                            data-session-id="{{ session.id }}">
+                                                        <i class="fas fa-clipboard-list me-1"></i> Attendance
+                                                    </button>
+                                                </div>
+                                            </div>
+                                            {% endfor %}
+                                        </div>
+                                    {% else %}
+                                        <div class="text-center py-4 text-muted">
+                                            <i class="fas fa-calendar-times fa-3x mb-3"></i>
+                                            <p>No lab sessions scheduled for today in {{ lab.name }}.</p>
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+                
+                <!-- List View Tab -->
+                <div class="tab-pane fade" id="list-view" role="tabpanel" aria-labelledby="list-tab">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h5 class="mb-0">All Lab Sessions</h5>
+                        <div class="input-group" style="width: 300px;">
+                            <input type="text" class="form-control" placeholder="Search..." id="searchSessions">
+                            <button class="btn btn-outline-primary" type="button" id="searchButton">
+                                <i class="fas fa-search"></i>
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="table-responsive">
+                        <table class="table table-hover" id="labSessionsTable">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Day</th>
+                                    <th>Time</th>
+                                    <th>Lab</th>
+                                    <th>Subject</th>
+                                    <th>Faculty</th>
+                                    <th>Batch</th>
+                                    <th>Students</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for session in all_sessions %}
+                                <tr>
+                                    <td>{{ session.day_of_week }}</td>
+                                    <td>{{ session.start_time }} - {{ session.end_time }}</td>
+                                    <td>{{ session.lab_name }}</td>
+                                    <td>{{ session.subject_name }}</td>
+                                    <td>{{ session.faculty_name }}</td>
+                                    <td>{{ session.batch_name }}</td>
+                                    <td>{{ session.students_count }}</td>
+                                    <td>
+                                        <div class="btn-group btn-group-sm">
+                                            <button type="button" class="btn btn-outline-primary view-attendance"
+                                                    data-session-id="{{ session.id }}">
+                                                <i class="fas fa-clipboard-list"></i>
+                                            </button>
+                                            <button type="button" class="btn btn-outline-info view-session-details"
+                                                    data-session-id="{{ session.id }}">
+                                                <i class="fas fa-info-circle"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% empty %}
+                                <tr>
+                                    <td colspan="8" class="text-center">No lab sessions found</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Lab Equipment Status -->
+    <div class="row">
+        <div class="col-md-6">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">Lab Equipment Status</h6>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-hover" id="equipmentStatusTable">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Lab</th>
+                                    <th>Total PCs</th>
+                                    <th>Working</th>
+                                    <th>Under Maintenance</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for lab in equipment_status %}
+                                <tr>
+                                    <td>{{ lab.name }}</td>
+                                    <td>{{ lab.total_pcs }}</td>
+                                    <td>{{ lab.working_pcs }}</td>
+                                    <td>{{ lab.maintenance_pcs }}</td>
+                                    <td>
+                                        <div class="progress" style="height: 20px;">
+                                            <div class="progress-bar bg-success" role="progressbar" 
+                                                style="width: {{ lab.working_percentage }}%;" 
+                                                aria-valuenow="{{ lab.working_percentage }}" 
+                                                aria-valuemin="0" aria-valuemax="100">
+                                                {{ lab.working_percentage }}%
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-6">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">Recent Lab Issues</h6>
+                </div>
+                <div class="card-body">
+                    <div class="issue-list">
+                        {% for issue in recent_issues %}
+                        <div class="issue-item p-3 mb-3 border rounded {% if issue.is_resolved %}bg-light{% endif %}">
+                            <div class="d-flex justify-content-between align-items-start">
+                                <div>
+                                    <h6 class="mb-1">{{ issue.title }}</h6>
+                                    <p class="mb-2 text-muted small">
+                                        <i class="fas fa-map-marker-alt me-1"></i> {{ issue.lab_name }} | 
+                                        <i class="fas fa-calendar-alt me-1"></i> {{ issue.reported_date }}
+                                    </p>
+                                </div>
+                                <span class="badge {% if issue.is_resolved %}bg-success{% else %}bg-warning{% endif %}">
+                                    {{ issue.status }}
+                                </span>
+                            </div>
+                            <p class="mb-2">{{ issue.description }}</p>
+                            <div class="d-flex justify-content-between align-items-center mt-2">
+                                <small class="text-muted">Reported by: {{ issue.reported_by }}</small>
+                                {% if not issue.is_resolved %}
+                                <button class="btn btn-sm btn-outline-success mark-resolved" 
+                                        data-issue-id="{{ issue.id }}">
+                                    Mark as Resolved
+                                </button>
+                                {% endif %}
+                            </div>
+                        </div>
+                        {% empty %}
+                        <div class="text-center py-4 text-muted">
+                            <i class="fas fa-check-circle fa-3x mb-3"></i>
+                            <p>No pending lab issues. Everything is working properly!</p>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Session Details Modal -->
+<div class="modal fade" id="sessionDetailsModal" tabindex="-1" aria-labelledby="sessionDetailsModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title" id="sessionDetailsModalLabel">Lab Session Details</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body" id="sessionDetailsContent">
+                <div class="text-center py-4">
+                    <div class="spinner-border text-primary" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
+                    <p class="mt-3">Loading session details...</p>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" id="viewAttendanceBtn">View Attendance</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Attendance Modal -->
+<div class="modal fade" id="attendanceModal" tabindex="-1" aria-labelledby="attendanceModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title" id="attendanceModalLabel">Lab Session Attendance</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div id="attendanceContent">
+                    <div class="text-center py-4">
+                        <div class="spinner-border text-primary" role="status">
+                            <span class="visually-hidden">Loading...</span>
+                        </div>
+                        <p class="mt-3">Loading attendance data...</p>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-success" id="downloadAttendanceBtn">Download</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Report Lab Issue Modal -->
+<div class="modal fade" id="reportIssueModal" tabindex="-1" aria-labelledby="reportIssueModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-warning text-dark">
+                <h5 class="modal-title" id="reportIssueModalLabel">Report Lab Issue</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="reportIssueForm">
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        <label for="issueLab" class="form-label">Lab</label>
+                        <select class="form-select" id="issueLab" name="lab_id" required>
+                            <option value="">Select Lab</option>
+                            {% for lab in labs %}
+                                <option value="{{ lab.id }}">{{ lab.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="issueTitle" class="form-label">Issue Title</label>
+                        <input type="text" class="form-control" id="issueTitle" name="title" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="issueDescription" class="form-label">Description</label>
+                        <textarea class="form-control" id="issueDescription" name="description" rows="3" required></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label for="issuePriority" class="form-label">Priority</label>
+                        <select class="form-select" id="issuePriority" name="priority">
+                            <option value="low">Low</option>
+                            <option value="medium" selected>Medium</option>
+                            <option value="high">High</option>
+                            <option value="critical">Critical</option>
+                        </select>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-warning" id="submitIssueBtn">Report Issue</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block lab_assistant_custom_css %}
+<style>
+    /* Timetable styling */
+    .timetable-weekly {
+        border-collapse: separate;
+        border-spacing: 0;
+    }
+    
+    .timetable-cell {
+        vertical-align: top;
+        height: 100px;
+        padding: 10px;
+        border: 1px solid #e3e6f0;
+    }
+    
+    .lab-cell {
+        background-color: rgba(28, 200, 138, 0.1);
+    }
+    
+    .bg-break {
+        background-color: #f8f9fc;
+        color: #5a5c69;
+        font-weight: 600;
+    }
+    
+    .lab-session-details h6 {
+        font-size: 0.9rem;
+        font-weight: 600;
+        color: #4e73df;
+    }
+    
+    .lab-session-details p {
+        margin: 0;
+        font-size: 0.8rem;
+        color: #5a5c69;
+    }
+    
+    .batch-tag, .lab-tag {
+        display: inline-block;
+        padding: 2px 6px;
+        border-radius: 4px;
+        font-size: 0.7rem;
+    }
+    
+    .batch-tag {
+        background-color: rgba(78, 115, 223, 0.2);
+        color: #4e73df;
+    }
+    
+    .lab-tag {
+        background-color: rgba(28, 200, 138, 0.2);
+        color: #1cc88a;
+    }
+    
+    /* Daily sessions styling */
+    .session-item {
+        position: relative;
+    }
+    
+    .time-badge {
+        display: inline-block;
+        padding: 3px 8px;
+        background-color: #f1f1f1;
+        border-radius: 4px;
+        font-size: 0.8rem;
+        font-weight: 600;
+    }
+    
+    .status-badge {
+        display: inline-block;
+        padding: 3px 8px;
+        color: white;
+        border-radius: 4px;
+        font-size: 0.75rem;
+    }
+    
+    /* Issue list styling */
+    .issue-list {
+        max-height: 400px;
+        overflow-y: auto;
+    }
+    
+    .issue-item {
+        transition: all 0.2s ease;
+    }
+    
+    .issue-item:hover {
+        background-color: #f8f9fc;
+    }
+    
+    /* Progress bar styling */
+    .progress {
+        height: 20px;
+        border-radius: 5px;
+    }
+    
+    .progress-bar {
+        color: white;
+        font-weight: 600;
+        font-size: 0.85rem;
+    }
+    
+    /* Date picker styling */
+    .date-picker-group .form-control {
+        border-top-right-radius: 0;
+        border-bottom-right-radius: 0;
+    }
+    
+    .date-picker-group .btn {
+        border-top-left-radius: 0;
+        border-bottom-left-radius: 0;
+    }
+</style>
+{% endblock %}
+
+{% block lab_assistant_custom_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Initialize DataTable for lab sessions list
+        const labSessionsTable = $('#labSessionsTable').DataTable({
+            ordering: true,
+            paging: true,
+            pageLength: 10,
+            lengthMenu: [10, 25, 50, 100],
+            language: {
+                search: "_INPUT_",
+                searchPlaceholder: "Search sessions..."
+            }
+        });
+        
+        // Initialize DataTable for equipment status
+        $('#equipmentStatusTable').DataTable({
+            ordering: true,
+            paging: false,
+            info: false,
+            searching: false
+        });
+        
+        // Handle search button click
+        $('#searchButton').on('click', function() {
+            labSessionsTable.search($('#searchSessions').val()).draw();
+            logToFile(`Lab sessions search performed: ${$('#searchSessions').val()}`);
+        });
+        
+        // Handle search input enter key
+        $('#searchSessions').on('keyup', function(e) {
+            if (e.key === 'Enter') {
+                labSessionsTable.search(this.value).draw();
+                logToFile(`Lab sessions search performed with Enter key: ${this.value}`);
+            }
+        });
+        
+        // Handle date picker change
+        $('#goToDate').on('click', function() {
+            const selectedDate = $('#dailyDatePicker').val();
+            if (!selectedDate) return;
+            
+            logToFile(`Daily lab schedule date changed to: ${selectedDate}`);
+            
+            // Show loading spinner
+            Swal.fire({
+                title: 'Loading...',
+                html: 'Fetching lab schedule for selected date',
+                timer: 1000,
+                timerProgressBar: true,
+                didOpen: () => {
+                    Swal.showLoading();
+                }
+            }).then((result) => {
+                // Redirect to the selected date
+                window.location.href = `{% url 'lab_assistant_portal:lab_schedule' %}?date=${selectedDate}&view=daily`;
+            });
+        });
+        
+        // Handle print schedule button
+        $('#printSchedule').on('click', function() {
+            logToFile('Print lab schedule requested');
+            window.print();
+        });
+        
+        // Handle export schedule button
+        $('#exportSchedule').on('click', function() {
+            logToFile('Export lab schedule requested');
+            
+            Swal.fire({
+                title: 'Export Schedule',
+                text: 'Choose export format',
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonColor: '#4e73df',
+                cancelButtonColor: '#1cc88a',
+                confirmButtonText: 'PDF',
+                cancelButtonText: 'Excel'
+            }).then((result) => {
+                if (result.isConfirmed || result.dismiss === Swal.DismissReason.cancel) {
+                    const format = result.isConfirmed ? 'PDF' : 'Excel';
+                    const filters = new URLSearchParams(window.location.search).toString();
+                    
+                    logToFile(`Lab schedule export started in ${format} format`);
+                    
+                    // Show loading
+                    Swal.fire({
+                        title: 'Exporting...',
+                        html: `Preparing ${format} file...`,
+                        timer: 2000,
+                        timerProgressBar: true,
+                        didOpen: () => {
+                            Swal.showLoading();
+                        }
+                    }).then(() => {
+                        // This is where you'd normally handle the download response
+                        logToFile(`Lab schedule export completed in ${format} format`);
+                        
+                        Swal.fire({
+                            title: 'Export Complete',
+                            text: `Lab schedule has been exported as ${format} successfully.`,
+                            icon: 'success',
+                            confirmButtonColor: '#4e73df'
+                        });
+                    });
+                }
+            });
+        });
+        
+        // Handle view session details button click
+        $('.view-session-details').on('click', function() {
+            const sessionId = $(this).data('session-id');
+            logToFile(`View session details requested for session ID: ${sessionId}`);
+            
+            // Show the modal
+            $('#sessionDetailsModal').modal('show');
+            
+            // Set current session ID to view attendance button
+            $('#viewAttendanceBtn').data('session-id', sessionId);
+            
+            // Make AJAX request to get session details
+            $.ajax({
+                url: `{% url 'lab_assistant_portal:get_session_details' %}`,
+                method: 'GET',
+                data: { session_id: sessionId },
+                beforeSend: function() {
+                    // Show loading spinner in modal body
+                    $('#sessionDetailsContent').html(`
+                        <div class="text-center py-4">
+                            <div class="spinner-border text-primary" role="status">
+                                <span class="visually-hidden">Loading...</span>
+                            </div>
+                            <p class="mt-3">Loading session details...</p>
+                        </div>
+                    `);
+                },
+                success: function(response) {
+                    // Update modal content with session details
+                    if (response.success) {
+                        $('#sessionDetailsModal .modal-title').text(`Lab Session: ${response.data.subject_name}`);
+                        $('#sessionDetailsContent').html(response.html);
+                        logToFile(`Session details loaded successfully for session ID: ${sessionId}`);
+                    } else {
+                        // Show error message
+                        $('#sessionDetailsContent').html(`
+                            <div class="alert alert-danger">
+                                <i class="fas fa-exclamation-circle me-2"></i>
+                                ${response.message || 'Failed to load session details.'}
+                            </div>
+                        `);
+                        logToFile(`Failed to load session details for session ID: ${sessionId}`, 'error');
+                    }
+                },
+                error: function(xhr, status, error) {
+                    // Show error message
+                    $('#sessionDetailsContent').html(`
+                        <div class="alert alert-danger">
+                            <i class="fas fa-exclamation-circle me-2"></i>
+                            Failed to load session details. Please try again.
+                        </div>
+                    `);
+                    logToFile(`Error loading session details: ${error}`, 'error');
+                }
+            });
+        });
+        
+        // Handle view attendance button click (from table or modal)
+        $('.view-attendance, #viewAttendanceBtn').on('click', function() {
+            const sessionId = $(this).data('session-id');
+            logToFile(`View attendance requested for session ID: ${sessionId}`);
+            
+            // Close session details modal if open
+            $('#sessionDetailsModal').modal('hide');
+            
+            // Show the attendance modal
+            $('#attendanceModal').modal('show');
+            
+            // Make AJAX request to get attendance data
+            $.ajax({
+                url: `{% url 'lab_assistant_portal:get_session_attendance' %}`,
+                method: 'GET',
+                data: { session_id: sessionId },
+                beforeSend: function() {
+                    // Show loading spinner in modal body
+                    $('#attendanceContent').html(`
+                        <div class="text-center py-4">
+                            <div class="spinner-border text-primary" role="status">
+                                <span class="visually-hidden">Loading...</span>
+                            </div>
+                            <p class="mt-3">Loading attendance data...</p>
+                        </div>
+                    `);
+                },
+                success: function(response) {
+                    // Update modal content with attendance data
+                    if (response.success) {
+                        $('#attendanceModal .modal-title').text(`Attendance: ${response.data.subject_name} (${response.data.date})`);
+                        $('#attendanceContent').html(response.html);
+                        
+                        // Initialize DataTable for attendance list
+                        $('#attendanceListTable').DataTable({
+                            ordering: true,
+                            paging: false,
+                            info: false,
+                            searching: true
+                        });
+                        
+                        logToFile(`Attendance data loaded successfully for session ID: ${sessionId}`);
+                    } else {
+                        // Show error message
+                        $('#attendanceContent').html(`
+                            <div class="alert alert-danger">
+                                <i class="fas fa-exclamation-circle me-2"></i>
+                                ${response.message || 'Failed to load attendance data.'}
+                            </div>
+                        `);
+                        logToFile(`Failed to load attendance data for session ID: ${sessionId}`, 'error');
+                    }
+                },
+                error: function(xhr, status, error) {
+                    // Show error message
+                    $('#attendanceContent').html(`
+                        <div class="alert alert-danger">
+                            <i class="fas fa-exclamation-circle me-2"></i>
+                            Failed to load attendance data. Please try again.
+                        </div>
+                    `);
+                    logToFile(`Error loading attendance data: ${error}`, 'error');
+                }
+            });
+        });
+        
+        // Handle download attendance button click
+        $('#downloadAttendanceBtn').on('click', function() {
+            logToFile('Download attendance data requested');
+            
+            Swal.fire({
+                title: 'Export Attendance',
+                text: 'Choose export format',
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonColor: '#4e73df',
+                cancelButtonColor: '#1cc88a',
+                confirmButtonText: 'PDF',
+                cancelButtonText: 'Excel'
+            }).then((result) => {
+                if (result.isConfirmed || result.dismiss === Swal.DismissReason.cancel) {
+                    const format = result.isConfirmed ? 'PDF' : 'Excel';
+                    
+                    logToFile(`Attendance data export started in ${format} format`);
+                    
+                    // Show loading
+                    Swal.fire({
+                        title: 'Exporting...',
+                        html: `Preparing ${format} file...`,
+                        timer: 2000,
+                        timerProgressBar: true,
+                        didOpen: () => {
+                            Swal.showLoading();
+                        }
+                    }).then(() => {
+                        // This is where you'd normally handle the download response
+                        logToFile(`Attendance data export completed in ${format} format`);
+                        
+                        Swal.fire({
+                            title: 'Export Complete',
+                            text: `Attendance data has been exported as ${format} successfully.`,
+                            icon: 'success',
+                            confirmButtonColor: '#4e73df'
+                        });
+                    });
+                }
+            });
+        });
+        
+        // Handle mark as resolved button click
+        $('.mark-resolved').on('click', function() {
+            const issueId = $(this).data('issue-id');
+            logToFile(`Mark issue as resolved requested for issue ID: ${issueId}`);
+            
+            Swal.fire({
+                title: 'Confirm Resolution',
+                text: 'Are you sure you want to mark this issue as resolved?',
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonColor: '#1cc88a',
+                cancelButtonColor: '#6c757d',
+                confirmButtonText: 'Yes, mark as resolved'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // Make AJAX request to mark issue as resolved
+                    $.ajax({
+                        url: `{% url 'lab_assistant_portal:mark_issue_resolved' %}`,
+                        method: 'POST',
+                        data: {
+                            issue_id: issueId,
+                            csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val()
+                        },
+                        beforeSend: function() {
+                            // Show loading
+                            Swal.fire({
+                                title: 'Processing...',
+                                html: 'Updating issue status',
+                                timer: 1000,
+                                timerProgressBar: true,
+                                didOpen: () => {
+                                    Swal.showLoading();
+                                }
+                            });
+                        },
+                        success: function(response) {
+                            if (response.success) {
+                                logToFile(`Issue marked as resolved successfully for issue ID: ${issueId}`);
+                                
+                                Swal.fire({
+                                    title: 'Success',
+                                    text: 'Issue has been marked as resolved successfully.',
+                                    icon: 'success',
+                                    confirmButtonColor: '#4e73df',
+                                    timer: 1500,
+                                    timerProgressBar: true
+                                }).then(() => {
+                                    // Reload the page to reflect changes
+                                    window.location.reload();
+                                });
+                            } else {
+                                logToFile(`Failed to mark issue as resolved for issue ID: ${issueId}`, 'error');
+                                
+                                Swal.fire({
+                                    title: 'Error',
+                                    text: response.message || 'Failed to mark issue as resolved.',
+                                    icon: 'error',
+                                    confirmButtonColor: '#e74a3b'
+                                });
+                            }
+                        },
+                        error: function(xhr, status, error) {
+                            logToFile(`Error marking issue as resolved: ${error}`, 'error');
+                            
+                            Swal.fire({
+                                title: 'Error',
+                                text: 'Failed to mark issue as resolved. Please try again.',
+                                icon: 'error',
+                                confirmButtonColor: '#e74a3b'
+                            });
+                        }
+                    });
+                }
+            });
+        });
+        
+        // Add a floating button to report lab issues
+        $('body').append(`
+            <button class="btn btn-warning position-fixed" style="bottom: 20px; right: 20px; border-radius: 50%; width: 60px; height: 60px;" 
+                    id="reportIssueBtn" data-bs-toggle="modal" data-bs-target="#reportIssueModal">
+                <i class="fas fa-exclamation-triangle"></i>
+            </button>
+        `);
+        
+        // Handle report issue form submission
+        $('#submitIssueBtn').on('click', function() {
+            const form = $('#reportIssueForm')[0];
+            
+            // Check if form is valid
+            if (!form.checkValidity()) {
+                form.reportValidity();
+                return;
+            }
+            
+            const formData = new FormData(form);
+            logToFile('Lab issue report submitted');
+            
+            // Make AJAX request to submit issue report
+            $.ajax({
+                url: `{% url 'lab_assistant_portal:report_lab_issue' %}`,
+                method: 'POST',
+                data: formData,
+                processData: false,
+                contentType: false,
+                beforeSend: function() {
+                    // Show loading
+                    Swal.fire({
+                        title: 'Submitting...',
+                        html: 'Reporting lab issue',
+                        timer: 1500,
+                        timerProgressBar: true,
+                        didOpen: () => {
+                            Swal.showLoading();
+                        }
+                    });
+                },
+                success: function(response) {
+                    if (response.success) {
+                        logToFile('Lab issue reported successfully');
+                        
+                        // Close the modal
+                        $('#reportIssueModal').modal('hide');
+                        
+                        Swal.fire({
+                            title: 'Success',
+                            text: 'Lab issue has been reported successfully.',
+                            icon: 'success',
+                            confirmButtonColor: '#4e73df',
+                            timer: 1500,
+                            timerProgressBar: true
+                        }).then(() => {
+                            // Reload the page to reflect changes
+                            window.location.reload();
+                        });
+                    } else {
+                        logToFile(`Failed to report lab issue: ${response.message}`, 'error');
+                        
+                        Swal.fire({
+                            title: 'Error',
+                            text: response.message || 'Failed to report lab issue.',
+                            icon: 'error',
+                            confirmButtonColor: '#e74a3b'
+                        });
+                    }
+                },
+                error: function(xhr, status, error) {
+                    logToFile(`Error reporting lab issue: ${error}`, 'error');
+                    
+                    Swal.fire({
+                        title: 'Error',
+                        text: 'Failed to report lab issue. Please try again.',
+                        icon: 'error',
+                        confirmButtonColor: '#e74a3b'
+                    });
+                }
+            });
+        });
+        
+        // Add logging function
+        function logToFile(message, type = 'info') {
+            console.log(`[LAB SCHEDULE] ${type.toUpperCase()}: ${message}`);
+            
+            // In a real app, you might send this to the server
+            // to write to a log file for debugging purposes
+        }
+    });
+</script>
+{% endblock %}

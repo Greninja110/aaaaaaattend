@@ -1,0 +1,170 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Reject Leave Application - Faculty Portal{% endblock %}
+
+{% block nav_items %}
+<li class="nav-item">
+    <a class="nav-link" href="{% url 'faculty_portal:index' %}">Dashboard</a>
+</li>
+<li class="nav-item">
+    <a class="nav-link" href="{% url 'faculty_portal:attendance_record' %}">Attendance</a>
+</li>
+<li class="nav-item">
+    <a class="nav-link" href="{% url 'faculty_portal:timetable' %}">Timetable</a>
+</li>
+<li class="nav-item">
+    <a class="nav-link active" href="{% url 'faculty_portal:leave_applications' %}">Leave Applications</a>
+</li>
+<li class="nav-item">
+    <a class="nav-link" href="{% url 'faculty_portal:reports' %}">Reports</a>
+</li>
+<li class="nav-item">
+    <a class="nav-link" href="{% url 'faculty_portal:bulk_attendance' %}">Bulk Upload</a>
+</li>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <h2 class="mb-4">Reject Leave Application</h2>
+            
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                {% endfor %}
+            {% endif %}
+            
+            <!-- Leave Application Details -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h6 class="m-0 font-weight-bold text-primary">Leave Application Details</h6>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <p><strong>Student Name:</strong> {{ leave_application.student.user.full_name }}</p>
+                            <p><strong>Roll Number:</strong> {{ leave_application.student.roll_number }}</p>
+                            <p><strong>Department:</strong> {{ leave_application.student.department.department_name }}</p>
+                            <p><strong>Semester:</strong> {{ leave_application.student.current_semester }}</p>
+                        </div>
+                        <div class="col-md-6">
+                            <p><strong>Leave Period:</strong> {{ leave_application.start_date|date:"d M Y" }} to {{ leave_application.end_date|date:"d M Y" }}</p>
+                            <p><strong>Duration:</strong> 
+                                {% with days=leave_application.end_date|timesince:leave_application.start_date %}
+                                    {{ days|cut:" ago" }}
+                                {% endwith %}
+                            </p>
+                            <p><strong>Applied On:</strong> {{ leave_application.created_at|date:"d M Y" }}</p>
+                            <p><strong>Current Status:</strong> 
+                                <span class="badge badge-warning">{{ leave_application.get_status_display }}</span>
+                            </p>
+                        </div>
+                    </div>
+                    <div class="row mt-3">
+                        <div class="col-md-12">
+                            <p><strong>Reason for Leave:</strong></p>
+                            <div class="alert alert-light">
+                                {{ leave_application.reason }}
+                            </div>
+                        </div>
+                    </div>
+                    {% if leave_application.document_path %}
+                        <div class="row mt-3">
+                            <div class="col-md-12">
+                                <p><strong>Supporting Document:</strong></p>
+                                <a href="{{ leave_application.document_path }}" class="btn btn-sm btn-outline-primary" target="_blank">
+                                    <i class="fas fa-file-download"></i> View Document
+                                </a>
+                            </div>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <!-- Rejection Form -->
+            <div class="card">
+                <div class="card-header">
+                    <h6 class="m-0 font-weight-bold text-danger">Rejection Details</h6>
+                </div>
+                <div class="card-body">
+                    <form method="post">
+                        {% csrf_token %}
+                        <div class="mb-3">
+                            <label for="rejection_reason" class="form-label">
+                                <strong>Reason for Rejection <span class="text-danger">*</span></strong>
+                            </label>
+                            <textarea class="form-control" id="rejection_reason" name="rejection_reason" 
+                                      rows="4" placeholder="Please provide a clear reason for rejecting this leave application..." required></textarea>
+                            <div class="form-text">This reason will be visible to the student and lab assistant.</div>
+                        </div>
+                        
+                        <div class="alert alert-warning">
+                            <i class="fas fa-exclamation-triangle"></i>
+                            <strong>Important:</strong> Once rejected, this action cannot be undone. Please ensure you have reviewed the application carefully.
+                        </div>
+                        
+                        <div class="d-flex justify-content-between">
+                            <a href="{% url 'faculty_portal:leave_applications' %}" class="btn btn-secondary">
+                                <i class="fas fa-arrow-left"></i> Back to Applications
+                            </a>
+                            <div>
+                                <button type="button" class="btn btn-outline-secondary me-2" onclick="window.history.back()">Cancel</button>
+                                <button type="submit" class="btn btn-danger" onclick="return confirmRejection()">
+                                    <i class="fas fa-times"></i> Reject Application
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+    .card {
+        border: none;
+        box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.15);
+    }
+    .card-header {
+        background-color: #f8f9fc;
+        border-bottom: 1px solid #e3e6f0;
+    }
+    .alert-light {
+        background-color: #f8f9fa;
+        border-color: #dee2e6;
+        color: #495057;
+    }
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function confirmRejection() {
+    const reason = document.getElementById('rejection_reason').value.trim();
+    
+    if (reason.length < 10) {
+        alert('Please provide a detailed reason for rejection (at least 10 characters).');
+        return false;
+    }
+    
+    return confirm('Are you sure you want to reject this leave application? This action cannot be undone.');
+}
+
+// Auto-resize textarea
+document.addEventListener('DOMContentLoaded', function() {
+    const textarea = document.getElementById('rejection_reason');
+    textarea.addEventListener('input', function() {
+        this.style.height = 'auto';
+        this.style.height = (this.scrollHeight) + 'px';
+    });
+});
+</script>
+{% endblock %}

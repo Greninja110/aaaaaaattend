@@ -1,0 +1,853 @@
+{% extends 'student_portal/base_student.html' %}
+{% load static %}
+
+{% block student_title %}Timetable{% endblock %}
+
+{% block student_content %}
+<div class="container-fluid py-4">
+    <!-- Page Header -->
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+        <h2 class="h3 mb-0">Timetable</h2>
+        <div>
+            <button type="button" class="btn btn-sm btn-primary" id="printTimetable">
+                <i class="fas fa-print mr-1"></i> Print
+            </button>
+            <button type="button" class="btn btn-sm btn-outline-primary" id="downloadTimetable">
+                <i class="fas fa-download mr-1"></i> Download
+            </button>
+        </div>
+    </div>
+    
+    <!-- Timetable View Selector -->
+    <div class="card shadow mb-4 dashboard-card">
+        <div class="card-header py-3">
+            <ul class="nav nav-pills card-header-pills" id="timetableViewTabs" role="tablist">
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link active" id="weekly-tab" data-bs-toggle="tab" data-bs-target="#weekly-view" type="button" role="tab" aria-controls="weekly-view" aria-selected="true">
+                        <i class="fas fa-calendar-week me-1"></i> Weekly View
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="daily-tab" data-bs-toggle="tab" data-bs-target="#daily-view" type="button" role="tab" aria-controls="daily-view" aria-selected="false">
+                        <i class="fas fa-calendar-day me-1"></i> Daily View
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="list-tab" data-bs-toggle="tab" data-bs-target="#list-view" type="button" role="tab" aria-controls="list-view" aria-selected="false">
+                        <i class="fas fa-list me-1"></i> List View
+                    </button>
+                </li>
+            </ul>
+        </div>
+        <div class="card-body">
+            <div class="tab-content" id="timetableViewContent">
+                <!-- Weekly View Tab -->
+                <div class="tab-pane fade show active" id="weekly-view" role="tabpanel" aria-labelledby="weekly-tab">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h5 class="mb-0">Weekly Schedule</h5>
+                        <div class="btn-group">
+                            <button type="button" class="btn btn-sm btn-outline-primary" id="prevWeek">
+                                <i class="fas fa-chevron-left"></i>
+                            </button>
+                            <button type="button" class="btn btn-sm btn-outline-primary active" id="currentWeek" data-week="{{ current_week_id }}">
+                                Current Week
+                            </button>
+                            <button type="button" class="btn btn-sm btn-outline-primary" id="nextWeek">
+                                <i class="fas fa-chevron-right"></i>
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="table-responsive">
+                        <table class="table table-bordered timetable-weekly">
+                            <thead>
+                                <tr class="text-center bg-light">
+                                    <th width="8%">Time</th>
+                                    <th width="15.33%">Monday</th>
+                                    <th width="15.33%">Tuesday</th>
+                                    <th width="15.33%">Wednesday</th>
+                                    <th width="15.33%">Thursday</th>
+                                    <th width="15.33%">Friday</th>
+                                    <th width="15.33%">Saturday</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for time_slot in weekly_timetable.time_slots %}
+                                <tr>
+                                    <td class="text-center font-weight-bold bg-light">{{ time_slot.start_time }} - {{ time_slot.end_time }}</td>
+                                    
+                                    {% for day in time_slot.days %}
+                                    <td class="timetable-cell {% if day.class %}{% if day.class.is_lab %}lab-cell{% else %}theory-cell{% endif %}{% endif %}">
+                                        {% if day.class %}
+                                        <div class="class-details">
+                                            <h6>{{ day.class.subject_name }}</h6>
+                                            <p class="mb-0">{{ day.class.faculty_name }}</p>
+                                            <span class="room-tag">{{ day.class.room_number }}</span>
+                                        </div>
+                                        {% endif %}
+                                    </td>
+                                    {% endfor %}
+                                </tr>
+                                {% endfor %}
+                                
+                                <!-- Break Times -->
+                                {% for break in weekly_timetable.breaks %}
+                                <tr>
+                                    <td class="text-center font-weight-bold bg-light">{{ break.start_time }} - {{ break.end_time }}</td>
+                                    <td colspan="6" class="text-center bg-break">{{ break.name }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                
+                <!-- Daily View Tab -->
+                <div class="tab-pane fade" id="daily-view" role="tabpanel" aria-labelledby="daily-tab">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h5 class="mb-0">Daily Schedule</h5>
+                        <div class="input-group date-picker-group" style="width: 200px;">
+                            <span class="input-group-text"><i class="fas fa-calendar"></i></span>
+                            <input type="date" class="form-control" id="dailyDatePicker" value="{{ current_date|date:'Y-m-d' }}">
+                        </div>
+                    </div>
+                    
+                    <div class="day-schedule">
+                        <div class="day-header">
+                            <h4>{{ current_date|date:"l, F j, Y" }}</h4>
+                            <p class="text-muted">{{ daily_classes|length }} classes scheduled today</p>
+                        </div>
+                        
+                        <div class="daily-timeline">
+                            {% for class in daily_classes %}
+                            <div class="timeline-item">
+                                <div class="timeline-left">
+                                    <div class="time-block">
+                                        <span class="time">{{ class.start_time }}</span>
+                                        <span class="to">to</span>
+                                        <span class="time">{{ class.end_time }}</span>
+                                    </div>
+                                </div>
+                                <div class="timeline-center">
+                                    <div class="timeline-line"></div>
+                                    <div class="timeline-marker {% if class.is_lab %}lab{% else %}theory{% endif %}"></div>
+                                </div>
+                                <div class="timeline-right">
+                                    <div class="class-card {% if class.is_lab %}lab{% else %}theory{% endif %}">
+                                        <div class="card-header">
+                                            <h5>{{ class.subject_name }}</h5>
+                                            <span class="badge {% if class.is_lab %}bg-primary{% else %}bg-secondary{% endif %}">
+                                                {% if class.is_lab %}Practical{% else %}Theory{% endif %}
+                                            </span>
+                                        </div>
+                                        <div class="card-body">
+                                            <p><i class="fas fa-user-tie me-2"></i> {{ class.faculty_name }}</p>
+                                            <p><i class="fas fa-map-marker-alt me-2"></i> {{ class.room_number }}</p>
+                                            <p><i class="fas fa-book me-2"></i> {{ class.topic|default:"Regular Class" }}</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            {% empty %}
+                            <div class="text-center py-4 text-muted">
+                                <i class="fas fa-calendar-day fa-3x mb-3"></i>
+                                <p>No classes scheduled for today.</p>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- List View Tab -->
+                <div class="tab-pane fade" id="list-view" role="tabpanel" aria-labelledby="list-tab">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h5 class="mb-0">List View</h5>
+                        <div class="input-group" style="width: 300px;">
+                            <input type="text" class="form-control" placeholder="Search classes..." id="searchTimetable">
+                            <button class="btn btn-outline-primary" type="button" id="searchButton">
+                                <i class="fas fa-search"></i>
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="table-responsive">
+                        <table class="table table-hover" id="timetableListTable">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Day</th>
+                                    <th>Time</th>
+                                    <th>Subject</th>
+                                    <th>Type</th>
+                                    <th>Faculty</th>
+                                    <th>Room</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for class in list_view_classes %}
+                                <tr>
+                                    <td>{{ class.day_of_week }}</td>
+                                    <td>{{ class.start_time }} - {{ class.end_time }}</td>
+                                    <td>{{ class.subject_name }}</td>
+                                    <td>
+                                        <span class="badge {% if class.is_lab %}bg-primary{% else %}bg-secondary{% endif %}">
+                                            {% if class.is_lab %}Practical{% else %}Theory{% endif %}
+                                        </span>
+                                    </td>
+                                    <td>{{ class.faculty_name }}</td>
+                                    <td>{{ class.room_number }}</td>
+                                </tr>
+                                {% empty %}
+                                <tr>
+                                    <td colspan="6" class="text-center">No classes found</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Class Information -->
+    <div class="row">
+        <div class="col-md-4">
+            <div class="card shadow mb-4 dashboard-card">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold">Today's Classes</h6>
+                </div>
+                <div class="card-body">
+                    <div class="today-classes">
+                        {% for class in today_classes %}
+                        <div class="class-item {% if class.is_past %}{% if class.attended %}complete{% else %}absent{% endif %}{% else %}upcoming{% endif %}">
+                            <span class="time">{{ class.start_time }} - {{ class.end_time }}</span>
+                            <div class="class-content">
+                                <h6>{{ class.subject_name }}</h6>
+                                <p class="mb-0">{{ class.faculty_name }} | {{ class.room_number }}</p>
+                            </div>
+                            <span class="status-icon">
+                                {% if class.is_past %}
+                                    {% if class.attended %}
+                                        <i class="fas fa-check-circle"></i>
+                                    {% else %}
+                                        <i class="fas fa-times-circle"></i>
+                                    {% endif %}
+                                {% else %}
+                                    <i class="fas fa-hourglass-half"></i>
+                                {% endif %}
+                            </span>
+                        </div>
+                        {% empty %}
+                        <div class="text-center py-4 text-muted">
+                            <i class="fas fa-calendar-times fa-3x mb-3"></i>
+                            <p>No classes scheduled for today.</p>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-4">
+            <div class="card shadow mb-4 dashboard-card">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold">Faculty Contact</h6>
+                </div>
+                <div class="card-body">
+                    <div class="faculty-list">
+                        {% for faculty in faculty_contacts %}
+                        <div class="faculty-item">
+                            {% if faculty.profile_photo %}
+                                <img src="{{ faculty.profile_photo.url }}" alt="{{ faculty.name }}" class="faculty-avatar">
+                            {% else %}
+                                <img src="{% static 'img/faculty/default.jpg' %}" alt="{{ faculty.name }}" class="faculty-avatar">
+                            {% endif %}
+                            <div class="faculty-details">
+                                <h6>{{ faculty.name }}</h6>
+                                <p class="mb-0">{{ faculty.subjects|join:", " }}</p>
+                                <div class="faculty-contact">
+                                    <a href="mailto:{{ faculty.email }}" class="btn btn-sm btn-outline-primary">
+                                        <i class="fas fa-envelope"></i>
+                                    </a>
+                                    <a href="tel:{{ faculty.phone }}" class="btn btn-sm btn-outline-success">
+                                        <i class="fas fa-phone"></i>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                        {% empty %}
+                        <div class="text-center py-4 text-muted">
+                            <i class="fas fa-user-tie fa-3x mb-3"></i>
+                            <p>No faculty contacts available.</p>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-4">
+            <div class="card shadow mb-4 dashboard-card">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold">Upcoming Schedule Changes</h6>
+                </div>
+                <div class="card-body">
+                    <div class="schedule-changes">
+                        {% for change in schedule_changes %}
+                        <div class="change-item">
+                            <div class="change-date">{{ change.date|date:"M d" }}</div>
+                            <div class="change-content">
+                                <h6>{{ change.title }}</h6>
+                                <p>{{ change.description }}</p>
+                                <span class="badge 
+                                    {% if change.type == 'rescheduled' %}bg-warning
+                                    {% elif change.type == 'cancelled' %}bg-danger
+                                    {% elif change.type == 'substitution' %}bg-info
+                                    {% elif change.type == 'added' %}bg-success{% endif %}">
+                                    {{ change.type|title }}
+                                </span>
+                            </div>
+                        </div>
+                        {% empty %}
+                        <div class="text-center py-4 text-muted">
+                            <i class="fas fa-calendar-alt fa-3x mb-3"></i>
+                            <p>No upcoming schedule changes.</p>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block student_custom_css %}
+<style>
+    /* Weekly timetable styling */
+    .timetable-weekly {
+        border-collapse: separate;
+        border-spacing: 0;
+    }
+    
+    .timetable-cell {
+        vertical-align: top;
+        height: 100px;
+        padding: 0;
+        border: 1px solid #e3e6f0;
+    }
+    
+    .theory-cell {
+        background-color: rgba(78, 115, 223, 0.1);
+    }
+    
+    .lab-cell {
+        background-color: rgba(28, 200, 138, 0.1);
+    }
+    
+    .bg-break {
+        background-color: #f8f9fc;
+        color: #5a5c69;
+        font-weight: 600;
+    }
+    
+    .class-details {
+        padding: 10px;
+        height: 100%;
+    }
+    
+    .class-details h6 {
+        margin: 0;
+        font-size: 0.9rem;
+        font-weight: 600;
+        color: #4e73df;
+    }
+    
+    .class-details p {
+        margin: 5px 0;
+        font-size: 0.8rem;
+        color: #5a5c69;
+    }
+    
+    .room-tag {
+        display: inline-block;
+        background-color: rgba(78, 115, 223, 0.2);
+        color: #4e73df;
+        padding: 2px 6px;
+        border-radius: 4px;
+        font-size: 0.7rem;
+    }
+    
+    /* Daily timeline styling */
+    .day-header {
+        margin-bottom: 20px;
+    }
+    
+    .day-header h4 {
+        margin-bottom: 5px;
+        color: #4e73df;
+    }
+    
+    .daily-timeline {
+        position: relative;
+    }
+    
+    .timeline-item {
+        display: flex;
+        margin-bottom: 20px;
+    }
+    
+    .timeline-left {
+        width: 120px;
+        padding-right: 15px;
+    }
+    
+    .time-block {
+        text-align: right;
+        padding: 5px;
+        border-radius: 4px;
+        background-color: #f8f9fc;
+    }
+    
+    .time-block .time {
+        display: block;
+        font-weight: 600;
+        color: #4e73df;
+    }
+    
+    .time-block .to {
+        display: block;
+        font-size: 0.7rem;
+        color: #858796;
+    }
+    
+    .timeline-center {
+        position: relative;
+        width: 30px;
+    }
+    
+    .timeline-line {
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        left: 50%;
+        width: 2px;
+        background-color: #e3e6f0;
+        transform: translateX(-50%);
+    }
+    
+    .timeline-marker {
+        position: absolute;
+        top: 15px;
+        left: 50%;
+        width: 15px;
+        height: 15px;
+        border-radius: 50%;
+        transform: translateX(-50%);
+    }
+    
+    .timeline-marker.theory {
+        background-color: #4e73df;
+    }
+    
+    .timeline-marker.lab {
+        background-color: #1cc88a;
+    }
+    
+    .timeline-marker.break {
+        background-color: #f6c23e;
+    }
+    
+    .timeline-right {
+        flex: 1;
+    }
+    
+    .class-card {
+        border-radius: 8px;
+        overflow: hidden;
+        box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.1);
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    
+    .class-card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 0.5rem 1.5rem 0 rgba(58, 59, 69, 0.15);
+    }
+    
+    .class-card.theory {
+        border-left: 4px solid #4e73df;
+    }
+    
+    .class-card.lab {
+        border-left: 4px solid #1cc88a;
+    }
+    
+    .class-card.break {
+        border-left: 4px solid #f6c23e;
+        opacity: 0.8;
+    }
+    
+    .class-card .card-header {
+        padding: 10px 15px;
+        background-color: #f8f9fc;
+        border-bottom: 1px solid #e3e6f0;
+    }
+    
+    .class-card .card-header h5 {
+        margin: 0;
+        font-size: 1rem;
+        font-weight: 600;
+        color: #4e73df;
+    }
+    
+    .class-card .card-body {
+        padding: 15px;
+        background-color: white;
+    }
+    
+    .class-card .card-body p {
+        margin-bottom: 5px;
+        font-size: 0.85rem;
+    }
+    
+    /* Today's classes styling */
+    .today-classes {
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+    }
+    
+    .class-item {
+        display: flex;
+        align-items: center;
+        padding: 10px;
+        border-radius: 8px;
+        box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+        background-color: white;
+    }
+    
+    .class-item.complete {
+        border-left: 4px solid #1cc88a;
+    }
+    
+    .class-item.upcoming {
+        border-left: 4px solid #f6c23e;
+    }
+    
+    .class-item.absent {
+        border-left: 4px solid #e74a3b;
+    }
+    
+    .class-item .time {
+        width: 100px;
+        font-size: 0.8rem;
+        font-weight: 600;
+        color: #4e73df;
+    }
+    
+    .class-item .class-content {
+        flex: 1;
+    }
+    
+    .class-item .class-content h6 {
+        margin: 0;
+        font-size: 0.9rem;
+        font-weight: 600;
+    }
+    
+    .class-item .class-content p {
+        margin: 0;
+        font-size: 0.8rem;
+        color: #5a5c69;
+    }
+    
+    .class-item .status-icon {
+        width: 30px;
+        text-align: center;
+        font-size: 1.1rem;
+    }
+    
+    .class-item.complete .status-icon {
+        color: #1cc88a;
+    }
+    
+    .class-item.upcoming .status-icon {
+        color: #f6c23e;
+    }
+    
+    .class-item.absent .status-icon {
+        color: #e74a3b;
+    }
+    
+    /* Faculty list styling */
+    .faculty-list {
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+    }
+    
+    .faculty-item {
+        display: flex;
+        align-items: center;
+        padding: 10px;
+        border-radius: 8px;
+        box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+        background-color: white;
+    }
+    
+    .faculty-avatar {
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        object-fit: cover;
+        margin-right: 15px;
+        background-color: #e3e6f0;
+    }
+    
+    .faculty-details {
+        flex: 1;
+    }
+    
+    .faculty-details h6 {
+        margin: 0;
+        font-size: 0.9rem;
+        font-weight: 600;
+    }
+    
+    .faculty-details p {
+        margin: 0 0 5px 0;
+        font-size: 0.8rem;
+        color: #5a5c69;
+    }
+    
+    .faculty-contact {
+        display: flex;
+        gap: 5px;
+    }
+    
+    /* Schedule changes styling */
+    .schedule-changes {
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+    }
+    
+    .change-item {
+        display: flex;
+        padding: 10px;
+        border-radius: 8px;
+        box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+        background-color: white;
+    }
+    
+    .change-date {
+        width: 60px;
+        height: 60px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background-color: #4e73df;
+        color: white;
+        border-radius: 8px;
+        font-weight: 600;
+        margin-right: 15px;
+    }
+    
+    .change-content {
+        flex: 1;
+    }
+    
+    .change-content h6 {
+        margin: 0 0 5px 0;
+        font-size: 0.9rem;
+        font-weight: 600;
+    }
+    
+    .change-content p {
+        margin: 0 0 5px 0;
+        font-size: 0.8rem;
+        color: #5a5c69;
+    }
+    
+    /* Date picker styling */
+    .date-picker-group .form-control {
+        border-top-left-radius: 0;
+        border-bottom-left-radius: 0;
+    }
+    
+    .date-picker-group .input-group-text {
+        background-color: #4e73df;
+        color: white;
+        border-color: #4e73df;
+    }
+</style>
+{% endblock %}
+
+{% block student_custom_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        try {
+            // Log page load
+            logToFile('Timetable page loaded');
+            
+            // Initialize DataTable for list view
+            const timetableListTable = $('#timetableListTable').DataTable({
+                pageLength: 10,
+                lengthMenu: [5, 10, 25, 50],
+                order: [[0, 'asc'], [1, 'asc']],
+                language: {
+                    search: "_INPUT_",
+                    searchPlaceholder: "Search classes..."
+                }
+            });
+            
+            // Handle search button click
+            $('#searchButton').on('click', function() {
+                timetableListTable.search($('#searchTimetable').val()).draw();
+                logToFile(`Timetable search performed: ${$('#searchTimetable').val()}`);
+            });
+            
+            // Handle search input enter key
+            $('#searchTimetable').on('keyup', function(e) {
+                if (e.key === 'Enter') {
+                    timetableListTable.search(this.value).draw();
+                    logToFile(`Timetable search performed with Enter key: ${this.value}`);
+                }
+            });
+            
+            // Handle date picker change
+            $('#dailyDatePicker').on('change', function() {
+                const selectedDate = $(this).val();
+                logToFile(`Daily timetable date changed to: ${selectedDate}`);
+                
+                // Redirect to the day view with the selected date
+                window.location.href = `{% url 'student_portal:day_timetable' 'placeholder' %}`.replace('placeholder', selectedDate);
+            });
+            
+            // Handle week navigation buttons
+            $('#prevWeek, #nextWeek, #currentWeek').on('click', function() {
+                const buttonId = this.id;
+                const currentWeekId = $('#currentWeek').data('week');
+                let weekId = currentWeekId;
+                
+                if (buttonId === 'prevWeek') {
+                    weekId = currentWeekId - 1;
+                } else if (buttonId === 'nextWeek') {
+                    weekId = currentWeekId + 1;
+                }
+                
+                logToFile(`Week navigation: ${buttonId}, week ID: ${weekId}`);
+                
+                // Remove active class from all buttons
+                $('#prevWeek, #nextWeek, #currentWeek').removeClass('active');
+                
+                // Add active class to clicked button
+                $(this).addClass('active');
+                
+                // Update timetable via AJAX
+                $.ajax({
+                    url: '{% url "student_portal:timetable" %}',
+                    data: {
+                        week_id: weekId,
+                        format: 'json'
+                    },
+                    type: 'GET',
+                    dataType: 'json',
+                    beforeSend: function() {
+                        // Show loading indicator
+                        Swal.fire({
+                            title: 'Loading Schedule',
+                            html: `Fetching schedule...`,
+                            timer: 1500,
+                            timerProgressBar: true,
+                            didOpen: () => {
+                                Swal.showLoading();
+                            }
+                        });
+                    },
+                    success: function(data) {
+                        // In a real app, you would update the timetable with the fetched data
+                        // For this demo, we're just showing a success message
+                        
+                        Swal.fire({
+                            title: 'Schedule Updated',
+                            text: `Showing schedule for ${data.week_label || 'selected week'}`,
+                            icon: 'success',
+                            confirmButtonColor: '#4e73df',
+                            timer: 1500,
+                            timerProgressBar: true,
+                            showConfirmButton: false
+                        });
+                    },
+                    error: function(xhr, status, error) {
+                        logToFile(`Error fetching timetable: ${error}`, 'error');
+                        
+                        Swal.fire({
+                            title: 'Error',
+                            text: 'Failed to load timetable. Please try again.',
+                            icon: 'error',
+                            confirmButtonColor: '#e74a3b'
+                        });
+                    }
+                });
+            });
+            
+            // Handle print timetable button
+            $('#printTimetable').on('click', function() {
+                logToFile('Print timetable requested');
+                window.print();
+            });
+            
+            // Handle download timetable button
+            $('#downloadTimetable').on('click', function() {
+                logToFile('Download timetable requested');
+                
+                Swal.fire({
+                    title: 'Download Timetable',
+                    html: 'Choose format:<br><br>',
+                    showDenyButton: true,
+                    showCancelButton: true,
+                    confirmButtonText: 'PDF',
+                    denyButtonText: 'Excel',
+                    cancelButtonText: 'iCal',
+                    confirmButtonColor: '#4e73df',
+                    denyButtonColor: '#1cc88a',
+                    cancelButtonColor: '#36b9cc'
+                }).then((result) => {
+                    if (result.isConfirmed || result.isDenied || result.dismiss === Swal.DismissReason.cancel) {
+                        let format = 'PDF';
+                        if (result.isDenied) format = 'Excel';
+                        if (result.dismiss === Swal.DismissReason.cancel) format = 'iCal';
+                        
+                        logToFile(`Download timetable started in ${format} format`);
+                        
+                        // In a real app, this would make an AJAX call to generate the download
+                        Swal.fire({
+                            title: 'Downloading...',
+                            html: `Preparing ${format} file...`,
+                            timer: 2000,
+                            timerProgressBar: true,
+                            didOpen: () => {
+                                Swal.showLoading();
+                            }
+                        }).then(() => {
+                            logToFile(`Download timetable completed in ${format} format`);
+                            
+                            Swal.fire({
+                                title: 'Success!',
+                                text: `Timetable has been downloaded as ${format}.`,
+                                icon: 'success',
+                                confirmButtonColor: '#4e73df'
+                            });
+                        });
+                    }
+                });
+            });
+            
+        } catch (error) {
+            logToFile(`Error in timetable page: ${error.message}`, 'error');
+            console.error("An error occurred:", error);
+        }
+    });
+</script>
+{% endblock %}

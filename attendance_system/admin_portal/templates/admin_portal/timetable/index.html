@@ -1,0 +1,371 @@
+{% extends 'admin_portal/base_admin.html' %}
+{% load static %}
+
+{% block admin_title %}Timetable Management{% endblock %}
+
+{% block admin_content %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2"><i class="fas fa-clock"></i> Timetable Management</h1>
+    <div class="btn-toolbar mb-2 mb-md-0">
+        <a href="{% url 'admin_portal:timetable_create' %}" class="btn btn-sm btn-primary">
+            <i class="fas fa-plus"></i> Add Timetable Entry
+        </a>
+    </div>
+</div>
+
+{% if messages %}
+    {% for message in messages %}
+        <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+            {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    {% endfor %}
+{% endif %}
+
+<!-- Filters -->
+<div class="card shadow mb-4">
+    <div class="card-header py-3">
+        <h6 class="m-0 font-weight-bold text-primary">Filter Timetable</h6>
+    </div>
+    <div class="card-body">
+        <form method="get" class="row g-3">
+            <div class="col-md-3">
+                <label class="form-label">Department</label>
+                <select name="department" class="form-select">
+                    <option value="">All Departments</option>
+                    {% for dept in departments %}
+                        <option value="{{ dept.department_id }}" {% if request.GET.department == dept.department_id|stringformat:"s" %}selected{% endif %}>
+                            {{ dept.department_name }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-3">
+                <label class="form-label">Faculty</label>
+                <select name="faculty" class="form-select">
+                    <option value="">All Faculty</option>
+                    {% for faculty in faculties %}
+                        <option value="{{ faculty.faculty_id }}" {% if request.GET.faculty == faculty.faculty_id|stringformat:"s" %}selected{% endif %}>
+                            {{ faculty.user.full_name }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-3">
+                <label class="form-label">Day</label>
+                <select name="day" class="form-select">
+                    <option value="">All Days</option>
+                    <option value="Monday" {% if request.GET.day == "Monday" %}selected{% endif %}>Monday</option>
+                    <option value="Tuesday" {% if request.GET.day == "Tuesday" %}selected{% endif %}>Tuesday</option>
+                    <option value="Wednesday" {% if request.GET.day == "Wednesday" %}selected{% endif %}>Wednesday</option>
+                    <option value="Thursday" {% if request.GET.day == "Thursday" %}selected{% endif %}>Thursday</option>
+                    <option value="Friday" {% if request.GET.day == "Friday" %}selected{% endif %}>Friday</option>
+                    <option value="Saturday" {% if request.GET.day == "Saturday" %}selected{% endif %}>Saturday</option>
+                </select>
+            </div>
+            <div class="col-md-3">
+                <label class="form-label">Class Section</label>
+                <select name="class_section" class="form-select">
+                    <option value="">All Classes</option>
+                    {% for section in class_sections %}
+                        <option value="{{ section.section_id }}" {% if request.GET.class_section == section.section_id|stringformat:"s" %}selected{% endif %}>
+                            {{ section.section_name }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-12">
+                <button type="submit" class="btn btn-primary">Filter</button>
+                <a href="{% url 'admin_portal:timetable' %}" class="btn btn-secondary">Clear</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Timetable View Toggle -->
+<div class="mb-3">
+    <div class="btn-group" role="group">
+        <button type="button" class="btn btn-outline-primary active" id="tableView">
+            <i class="fas fa-list"></i> List View
+        </button>
+        <button type="button" class="btn btn-outline-primary" id="gridView">
+            <i class="fas fa-calendar"></i> Grid View
+        </button>
+    </div>
+</div>
+
+<!-- List View -->
+<div class="card shadow mb-4" id="listViewCard">
+    <div class="card-header py-3">
+        <h6 class="m-0 font-weight-bold text-primary">Timetable Entries</h6>
+    </div>
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-bordered table-hover" id="timetableTable">
+                <thead>
+                    <tr>
+                        <th>Faculty</th>
+                        <th>Subject</th>
+                        <th>Class/Batch</th>
+                        <th>Day</th>
+                        <th>Time</th>
+                        <th>Room</th>
+                        <th>Type</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for entry in timetable_entries %}
+                        <tr>
+                            <td>
+                                <strong>{{ entry.faculty_subject.faculty.user.full_name }}</strong><br>
+                                <small class="text-muted">{{ entry.faculty_subject.faculty.employee_id }}</small>
+                            </td>
+                            <td>
+                                <strong>{{ entry.faculty_subject.subject.subject_name }}</strong><br>
+                                <small class="text-muted">{{ entry.faculty_subject.subject.subject_code }}</small>
+                            </td>
+                            <td>
+                                {% if entry.faculty_subject.class_section %}
+                                    {{ entry.faculty_subject.class_section.section_name }}
+                                    {% if entry.faculty_subject.batch %}
+                                        <br><small>{{ entry.faculty_subject.batch.batch_name }}</small>
+                                    {% endif %}
+                                {% else %}
+                                    <span class="text-muted">General</span>
+                                {% endif %}
+                            </td>
+                            <td>{{ entry.day_of_week }}</td>
+                            <td>
+                                <strong>{{ entry.start_time|time:"H:i" }} - {{ entry.end_time|time:"H:i" }}</strong><br>
+                                <small class="text-muted">Duration: 1 hour</small>
+                            </td>
+                            <td>
+                                {% if entry.room_number %}
+                                    <span class="badge bg-info">{{ entry.room_number }}</span>
+                                {% else %}
+                                    <span class="text-muted">Not assigned</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if entry.faculty_subject.is_lab %}
+                                    <span class="badge bg-success">Lab</span>
+                                {% else %}
+                                    <span class="badge bg-primary">Theory</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <div class="btn-group" role="group">
+                                    <a href="{% url 'admin_portal:timetable_edit' entry.timetable_id %}" 
+                                       class="btn btn-sm btn-outline-primary" title="Edit">
+                                        <i class="fas fa-edit"></i>
+                                    </a>
+                                    <a href="{% url 'admin_portal:timetable_delete' entry.timetable_id %}" 
+                                       class="btn btn-sm btn-outline-danger" title="Delete"
+                                       onclick="return confirm('Are you sure you want to delete this timetable entry?')">
+                                        <i class="fas fa-trash"></i>
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                    {% empty %}
+                        <tr>
+                            <td colspan="8" class="text-center">No timetable entries found</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        
+        <!-- Pagination -->
+        {% if is_paginated %}
+            <nav class="mt-3">
+                <ul class="pagination justify-content-center">
+                    {% if page_obj.has_previous %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ page_obj.previous_page_number }}{% if request.GET.department %}&department={{ request.GET.department }}{% endif %}{% if request.GET.faculty %}&faculty={{ request.GET.faculty }}{% endif %}{% if request.GET.day %}&day={{ request.GET.day }}{% endif %}{% if request.GET.class_section %}&class_section={{ request.GET.class_section }}{% endif %}">Previous</a>
+                        </li>
+                    {% endif %}
+                    
+                    <li class="page-item active">
+                        <span class="page-link">
+                            Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}
+                        </span>
+                    </li>
+                    
+                    {% if page_obj.has_next %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ page_obj.next_page_number }}{% if request.GET.department %}&department={{ request.GET.department }}{% endif %}{% if request.GET.faculty %}&faculty={{ request.GET.faculty }}{% endif %}{% if request.GET.day %}&day={{ request.GET.day }}{% endif %}{% if request.GET.class_section %}&class_section={{ request.GET.class_section }}{% endif %}">Next</a>
+                        </li>
+                    {% endif %}
+                </ul>
+            </nav>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Grid View -->
+<div class="card shadow mb-4" id="gridViewCard" style="display: none;">
+    <div class="card-header py-3">
+        <h6 class="m-0 font-weight-bold text-primary">Weekly Timetable Grid</h6>
+    </div>
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-bordered">
+                <thead class="table-light">
+                    <tr>
+                        <th width="100">Time</th>
+                        <th>Monday</th>
+                        <th>Tuesday</th>
+                        <th>Wednesday</th>
+                        <th>Thursday</th>
+                        <th>Friday</th>
+                        <th>Saturday</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for time_slot in time_slots %}
+                        <tr>
+                            <th class="text-center">{{ time_slot.start_time|time:"H:i" }}<br><small>{{ time_slot.end_time|time:"H:i" }}</small></th>
+                            {% for day in days %}
+                                <td class="position-relative" style="height: 80px; vertical-align: top;">
+                                    {% for entry in timetable_grid %}
+                                        {% if entry.start_time == time_slot.start_time and entry.day_of_week == day %}
+                                            <div class="timetable-cell {% if entry.faculty_subject.is_lab %}bg-success{% else %}bg-primary{% endif %} bg-opacity-25 p-2 rounded">
+                                                <strong>{{ entry.faculty_subject.subject.subject_code }}</strong><br>
+                                                <small>{{ entry.faculty_subject.faculty.user.full_name|truncatechars:15 }}</small><br>
+                                                {% if entry.room_number %}
+                                                    <span class="badge bg-secondary">{{ entry.room_number }}</span>
+                                                {% endif %}
+                                                <div class="mt-1">
+                                                    <a href="{% url 'admin_portal:timetable_edit' entry.timetable_id %}" 
+                                                       class="btn btn-xs btn-outline-dark" title="Edit">
+                                                        <i class="fas fa-edit fa-xs"></i>
+                                                    </a>
+                                                </div>
+                                            </div>
+                                        {% endif %}
+                                    {% endfor %}
+                                </td>
+                            {% endfor %}
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        
+        <div class="mt-3 text-center">
+            <span class="badge bg-primary me-2">Theory</span>
+            <span class="badge bg-success me-2">Lab</span>
+            <span class="badge bg-warning me-2">Elective</span>
+            <span class="badge bg-danger">Substitution</span>
+        </div>
+    </div>
+</div>
+
+<!-- Statistics -->
+<div class="row">
+    <div class="col-md-3">
+        <div class="card bg-primary text-white mb-4">
+            <div class="card-body">
+                <div class="text-center">
+                    <h4>{{ total_entries }}</h4>
+                    <p class="mb-0">Total Entries</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card bg-success text-white mb-4">
+            <div class="card-body">
+                <div class="text-center">
+                    <h4>{{ lab_sessions }}</h4>
+                    <p class="mb-0">Lab Sessions</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card bg-info text-white mb-4">
+            <div class="card-body">
+                <div class="text-center">
+                    <h4>{{ theory_sessions }}</h4>
+                    <p class="mb-0">Theory Sessions</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card bg-warning text-white mb-4">
+            <div class="card-body">
+                <div class="text-center">
+                    <h4>{{ unique_rooms }}</h4>
+                    <p class="mb-0">Rooms Used</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block admin_extra_css %}
+<style>
+    .timetable-cell {
+        border-radius: 4px;
+        font-size: 0.85rem;
+        line-height: 1.2;
+    }
+    
+    .btn-xs {
+        padding: 0.125rem 0.25rem;
+        font-size: 0.7rem;
+    }
+    
+    #timetableTable th {
+        background-color: #f8f9fc;
+        border-color: #e3e6f0;
+    }
+    
+    .table-hover tbody tr:hover {
+        background-color: rgba(0, 123, 255, 0.05);
+    }
+</style>
+{% endblock %}
+
+{% block admin_extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Initialize DataTable
+    $('#timetableTable').DataTable({
+        "order": [[ 3, "asc" ], [ 4, "asc" ]], // Sort by day and time
+        "pageLength": 25,
+        "responsive": true,
+        "language": {
+            "search": "Search timetable:",
+            "lengthMenu": "Show _MENU_ entries per page",
+            "info": "Showing _START_ to _END_ of _TOTAL_ entries"
+        }
+    });
+    
+    // View toggle functionality
+    const tableViewBtn = document.getElementById('tableView');
+    const gridViewBtn = document.getElementById('gridView');
+    const listViewCard = document.getElementById('listViewCard');
+    const gridViewCard = document.getElementById('gridViewCard');
+    
+    tableViewBtn.addEventListener('click', function() {
+        tableViewBtn.classList.add('active');
+        gridViewBtn.classList.remove('active');
+        listViewCard.style.display = 'block';
+        gridViewCard.style.display = 'none';
+    });
+    
+    gridViewBtn.addEventListener('click', function() {
+        gridViewBtn.classList.add('active');
+        tableViewBtn.classList.remove('active');
+        listViewCard.style.display = 'none';
+        gridViewCard.style.display = 'block';
+    });
+});
+</script>
+{% endblock %}

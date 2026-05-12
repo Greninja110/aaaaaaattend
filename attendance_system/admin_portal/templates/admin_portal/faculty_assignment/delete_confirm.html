@@ -1,0 +1,183 @@
+{% extends 'admin_portal/base_admin.html' %}
+{% load static %}
+
+{% block admin_title %}Delete Faculty Assignment{% endblock %}
+
+{% block admin_content %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2"><i class="fas fa-trash text-danger"></i> Delete Faculty Assignment</h1>
+    <div class="btn-toolbar mb-2 mb-md-0">
+        <a href="{% url 'admin_portal:faculty_assignment_edit' assignment.faculty_subject_id %}" class="btn btn-sm btn-secondary">
+            <i class="fas fa-arrow-left"></i> Back to Assignment
+        </a>
+    </div>
+</div>
+
+{% if messages %}
+    {% for message in messages %}
+        <div class="alert {{ message.tags }} alert-dismissible fade show" role="alert">
+            {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    {% endfor %}
+{% endif %}
+
+<div class="card shadow mb-4">
+    <div class="card-header py-3 bg-danger text-white">
+        <h6 class="m-0 font-weight-bold">Confirm Faculty Assignment Deletion</h6>
+    </div>
+    <div class="card-body">
+        <div class="alert alert-warning">
+            <h5 class="alert-heading"><i class="fas fa-exclamation-triangle"></i> Warning!</h5>
+            <p>You are about to delete the faculty assignment for <strong>{{ assignment.faculty.user.full_name }}</strong> to teach <strong>{{ assignment.subject.subject_name }}</strong>. This action cannot be undone.</p>
+            <p class="mb-0">Deleting this assignment will affect all associated timetable entries and attendance records.</p>
+        </div>
+        
+        <div class="row mb-4">
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header">
+                        Assignment Information
+                    </div>
+                    <div class="card-body">
+                        <table class="table table-sm">
+                            <tr>
+                                <th>Faculty:</th>
+                                <td>{{ assignment.faculty.user.full_name }}</td>
+                            </tr>
+                            <tr>
+                                <th>Subject:</th>
+                                <td>{{ assignment.subject.subject_name }} ({{ assignment.subject.subject_code }})</td>
+                            </tr>
+                            <tr>
+                                <th>Class Section:</th>
+                                <td>
+                                    {% if assignment.class_section %}
+                                        {{ assignment.class_section.section_name }}
+                                    {% else %}
+                                        <span class="badge bg-secondary">N/A</span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            <tr>
+                                <th>Type:</th>
+                                <td>
+                                    {% if assignment.is_lab %}
+                                        <span class="badge bg-success">Lab</span>
+                                    {% else %}
+                                        <span class="badge bg-primary">Theory</span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            <tr>
+                                <th>Batch:</th>
+                                <td>
+                                    {% if assignment.batch %}
+                                        Batch {{ assignment.batch.batch_name }}
+                                    {% else %}
+                                        <span class="badge bg-secondary">N/A</span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            <tr>
+                                <th>Academic Year:</th>
+                                <td>{{ assignment.academic_year.year_start }}-{{ assignment.academic_year.year_end }}</td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header bg-danger text-white">
+                        Deletion Confirmation
+                    </div>
+                    <div class="card-body">
+                        <p>To confirm deletion, please type "DELETE" in the field below:</p>
+                        
+                        <form method="post" id="deleteForm">
+                            {% csrf_token %}
+                            
+                            <div class="mb-3">
+                                <input type="text" class="form-control" id="confirmDelete" 
+                                       placeholder="Type DELETE to confirm">
+                                <div class="invalid-feedback">
+                                    Please type DELETE to confirm.
+                                </div>
+                            </div>
+                            
+                            <button type="submit" class="btn btn-danger" id="deleteBtn" disabled>
+                                <i class="fas fa-trash"></i> Delete Assignment Permanently
+                            </button>
+                            <a href="{% url 'admin_portal:faculty_assignment_edit' assignment.faculty_subject_id %}" class="btn btn-secondary">
+                                Cancel
+                            </a>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="card shadow mb-4">
+    <div class="card-header py-3">
+        <h6 class="m-0 font-weight-bold text-primary">Associated Records</h6>
+    </div>
+    <div class="card-body">
+        <div class="row">
+            <div class="col-md-6 mb-3">
+                <div class="card bg-primary text-white">
+                    <div class="card-body text-center">
+                        <h3>3</h3>
+                        <p class="mb-0">Timetable Entries</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-6 mb-3">
+                <div class="card bg-success text-white">
+                    <div class="card-body text-center">
+                        <h3>124</h3>
+                        <p class="mb-0">Attendance Records</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="alert alert-danger mt-3">
+            <i class="fas fa-exclamation-circle"></i> All associated records will be deleted. This may result in data inconsistency.
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block admin_custom_js %}
+<script>
+    $(document).ready(function() {
+        // Confirm deletion validation
+        const confirmDelete = $('#confirmDelete');
+        const deleteBtn = $('#deleteBtn');
+        
+        confirmDelete.on('input', function() {
+            if ($(this).val() === 'DELETE') {
+                $(this).removeClass('is-invalid').addClass('is-valid');
+                deleteBtn.prop('disabled', false);
+            } else {
+                $(this).removeClass('is-valid').addClass('is-invalid');
+                deleteBtn.prop('disabled', true);
+            }
+        });
+        
+        // Form submission confirmation
+        $('#deleteForm').on('submit', function(e) {
+            if (!confirm('Are you absolutely sure you want to delete this faculty assignment? This action CANNOT be undone!')) {
+                e.preventDefault();
+                return false;
+            }
+            return true;
+        });
+    });
+</script>
+{% endblock %}

@@ -1,0 +1,312 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}HOD Dashboard - MBIT Attendance System{% endblock %}
+
+{% block nav_items %}
+<li class="nav-item">
+    <a class="nav-link active" href="{% url 'hod_portal:index' %}">Dashboard</a>
+</li>
+<li class="nav-item">
+    <a class="nav-link" href="{% url 'hod_portal:faculty_performance' %}">Faculty</a>
+</li>
+<li class="nav-item">
+    <a class="nav-link" href="{% url 'hod_portal:student_progression' %}">Students</a>
+</li>
+<li class="nav-item">
+    <a class="nav-link" href="{% url 'hod_portal:attendance_analytics' %}">Attendance</a>
+</li>
+<li class="nav-item">
+    <a class="nav-link" href="{% url 'hod_portal:elective_management' %}">Electives</a>
+</li>
+<li class="nav-item">
+    <a class="nav-link" href="{% url 'hod_portal:department_reports' %}">Reports</a>
+</li>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <div class="row mb-4">
+        <div class="col-md-12">
+            <h2 class="mb-4">HOD Dashboard</h2>
+            
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="alert {{ message.tags }} alert-dismissible fade show" role="alert">
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                {% endfor %}
+            {% endif %}
+            
+            <div class="alert alert-info">
+                <h4 class="alert-heading">Welcome to HOD Portal!</h4>
+                <p>You are logged in as Head of Department - {{ department.department_name }}. From here, you can manage all aspects of your department.</p>
+                <hr>
+                <p class="mb-0">Academic Year: {{ academic_year }} | You have access to manage faculty, students, subjects, and view reports for your department.</p>
+            </div>
+        </div>
+    </div>
+    
+    <div class="row">
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-primary shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                                Department Students</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">{{ students_count }}</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-user-graduate fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-success shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
+                                Department Faculty</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">{{ faculty_count }}</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-chalkboard-teacher fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-warning shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
+                                Low Attendance Students</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">{{ low_attendance_students|length }}</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-exclamation-triangle fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-info shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-info text-uppercase mb-1">
+                                Total Subjects</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">{{ subjects_count }}</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-book fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Students by Semester Chart -->
+    <div class="row mt-4">
+        <div class="col-md-6">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">Students by Semester</h6>
+                </div>
+                <div class="card-body">
+                    <div class="chart-container">
+                        <canvas id="semesterChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-6">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">Faculty Workload</h6>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-bordered">
+                            <thead>
+                                <tr>
+                                    <th>Faculty</th>
+                                    <th>Subjects</th>
+                                    <th>Weekly Hours</th>
+                                    <th>Utilization</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for fw in faculty_workload|slice:":5" %}
+                                <tr>
+                                    <td>{{ fw.faculty.user.full_name }}</td>
+                                    <td>{{ fw.assigned_subjects }}</td>
+                                    <td>{{ fw.weekly_hours }}</td>
+                                    <td>
+                                        <span class="badge badge-{% if fw.utilization > 100 %}danger{% elif fw.utilization > 80 %}warning{% else %}success{% endif %}">
+                                            {{ fw.utilization }}%
+                                        </span>
+                                    </td>
+                                </tr>
+                                {% empty %}
+                                <tr>
+                                    <td colspan="4" class="text-center">No faculty workload data available</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Subject Attendance and Low Attendance Students -->
+    <div class="row mt-4">
+        <div class="col-md-6">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">Subject Attendance Overview</h6>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-bordered">
+                            <thead>
+                                <tr>
+                                    <th>Subject</th>
+                                    <th>Attendance %</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for sa in subject_attendance|slice:":5" %}
+                                <tr>
+                                    <td>{{ sa.subject.subject_name }}</td>
+                                    <td>{{ sa.attendance_percentage }}%</td>
+                                    <td>
+                                        {% if sa.below_threshold %}
+                                            <span class="badge badge-danger">Below Threshold</span>
+                                        {% else %}
+                                            <span class="badge badge-success">Good</span>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                {% empty %}
+                                <tr>
+                                    <td colspan="3" class="text-center">No subject attendance data available</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-6">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">Low Attendance Students</h6>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-bordered">
+                            <thead>
+                                <tr>
+                                    <th>Student</th>
+                                    <th>Roll No</th>
+                                    <th>Attendance %</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for las in low_attendance_students|slice:":5" %}
+                                <tr>
+                                    <td>{{ las.student.user.full_name }}</td>
+                                    <td>{{ las.student.roll_number }}</td>
+                                    <td>
+                                        <span class="badge badge-danger">{{ las.attendance_percentage }}%</span>
+                                    </td>
+                                </tr>
+                                {% empty %}
+                                <tr>
+                                    <td colspan="3" class="text-center">No low attendance students found</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+    .border-left-primary {
+        border-left: 0.25rem solid #007bff;
+    }
+    .border-left-success {
+        border-left: 0.25rem solid #28a745;
+    }
+    .border-left-info {
+        border-left: 0.25rem solid #17a2b8;
+    }
+    .border-left-warning {
+        border-left: 0.25rem solid #ffc107;
+    }
+    .chart-container {
+        height: 300px;
+    }
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+// Students by Semester Chart
+var ctx = document.getElementById('semesterChart').getContext('2d');
+var semesterChart = new Chart(ctx, {
+    type: 'bar',
+    data: {
+        labels: [{% for sem in students_by_semester %}'Semester {{ sem.semester }}',{% endfor %}],
+        datasets: [{
+            label: 'Number of Students',
+            data: [{% for sem in students_by_semester %}{{ sem.count }},{% endfor %}],
+            backgroundColor: [
+                '#007bff', '#28a745', '#ffc107', '#dc3545',
+                '#6f42c1', '#fd7e14', '#20c997', '#e83e8c'
+            ],
+            borderColor: [
+                '#007bff', '#28a745', '#ffc107', '#dc3545',
+                '#6f42c1', '#fd7e14', '#20c997', '#e83e8c'
+            ],
+            borderWidth: 1
+        }]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        scales: {
+            y: {
+                beginAtZero: true
+            }
+        }
+    }
+});
+</script>
+{% endblock %}

@@ -1,0 +1,185 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Department Reports - HOD Portal{% endblock %}
+
+{% block nav_items %}
+<li class="nav-item">
+    <a class="nav-link" href="{% url 'hod_portal:index' %}">Dashboard</a>
+</li>
+<li class="nav-item">
+    <a class="nav-link" href="{% url 'hod_portal:faculty_performance' %}">Faculty</a>
+</li>
+<li class="nav-item">
+    <a class="nav-link" href="{% url 'hod_portal:student_progression' %}">Students</a>
+</li>
+<li class="nav-item">
+    <a class="nav-link" href="{% url 'hod_portal:attendance_analytics' %}">Attendance</a>
+</li>
+<li class="nav-item">
+    <a class="nav-link" href="{% url 'hod_portal:elective_management' %}">Electives</a>
+</li>
+<li class="nav-item">
+    <a class="nav-link active" href="{% url 'hod_portal:department_reports' %}">Reports</a>
+</li>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <div class="row mb-4">
+        <div class="col-md-12">
+            <h2 class="mb-4">Department Reports - {{ department.department_name }}</h2>
+            
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                {% endfor %}
+            {% endif %}
+            
+            <!-- Filter Form -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h6 class="m-0 font-weight-bold text-primary">Report Filters</h6>
+                </div>
+                <div class="card-body">
+                    <form method="get" class="row g-3">
+                        <div class="col-md-3">
+                            <label class="form-label">Report Type</label>
+                            <select name="type" class="form-select">
+                                <option value="attendance" {% if report_type == 'attendance' %}selected{% endif %}>Attendance Report</option>
+                                <option value="faculty_workload" {% if report_type == 'faculty_workload' %}selected{% endif %}>Faculty Workload</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label">Semester</label>
+                            <select name="semester" class="form-select">
+                                <option value="">All Semesters</option>
+                                {% for sem in semesters %}
+                                    <option value="{{ sem }}" {% if semester_filter == sem|stringformat:"s" %}selected{% endif %}>Semester {{ sem }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label">Subject</label>
+                            <select name="subject" class="form-select">
+                                <option value="">All Subjects</option>
+                                {% for subject in subjects %}
+                                    <option value="{{ subject.subject_id }}" {% if subject_filter == subject.subject_id|stringformat:"s" %}selected{% endif %}>{{ subject.subject_name }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label">&nbsp;</label>
+                            <div class="d-flex gap-2">
+                                <button type="submit" class="btn btn-primary">Generate Report</button>
+                                {% if reports_data %}
+                                    <a href="?{{ request.GET.urlencode }}&export=csv" class="btn btn-success">Export CSV</a>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            
+            <!-- Report Results -->
+            {% if reports_data %}
+                <div class="card">
+                    <div class="card-header">
+                        <h6 class="m-0 font-weight-bold text-primary">
+                            {% if report_type == 'attendance' %}
+                                Attendance Report
+                            {% else %}
+                                Faculty Workload Report
+                            {% endif %}
+                        </h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-bordered">
+                                <thead>
+                                    <tr>
+                                        {% if report_type == 'attendance' %}
+                                            <th>Student Name</th>
+                                            <th>Roll Number</th>
+                                            <th>Semester</th>
+                                            <th>Total Classes</th>
+                                            <th>Present</th>
+                                            <th>Absent</th>
+                                            <th>Attendance %</th>
+                                            <th>Status</th>
+                                        {% else %}
+                                            <th>Faculty Name</th>
+                                            <th>Employee ID</th>
+                                            <th>Assigned Subjects</th>
+                                            <th>Weekly Hours</th>
+                                            <th>Hours Limit</th>
+                                            <th>Utilization %</th>
+                                            <th>Status</th>
+                                        {% endif %}
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for data in reports_data %}
+                                        <tr>
+                                            {% if report_type == 'attendance' %}
+                                                <td>{{ data.student.user.full_name }}</td>
+                                                <td>{{ data.student.roll_number }}</td>
+                                                <td>{{ data.student.current_semester }}</td>
+                                                <td>{{ data.total_classes }}</td>
+                                                <td>{{ data.present_classes }}</td>
+                                                <td>{{ data.absent_classes }}</td>
+                                                <td>{{ data.attendance_percentage }}%</td>
+                                                <td>
+                                                    {% if data.below_threshold %}
+                                                        <span class="badge badge-danger">Below Threshold</span>
+                                                    {% else %}
+                                                        <span class="badge badge-success">Good</span>
+                                                    {% endif %}
+                                                </td>
+                                            {% else %}
+                                                <td>{{ data.faculty.user.full_name }}</td>
+                                                <td>{{ data.faculty.employee_id }}</td>
+                                                <td>{{ data.assigned_subjects }}</td>
+                                                <td>{{ data.weekly_hours }}</td>
+                                                <td>{{ data.hours_limit }}</td>
+                                                <td>{{ data.utilization }}%</td>
+                                                <td>
+                                                    {% if data.overloaded %}
+                                                        <span class="badge badge-danger">Overloaded</span>
+                                                    {% else %}
+                                                        <span class="badge badge-success">Normal</span>
+                                                    {% endif %}
+                                                </td>
+                                            {% endif %}
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            {% else %}
+                <div class="alert alert-info">
+                    <i class="fas fa-info-circle"></i> Select filters and click "Generate Report" to view data.
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+    .card {
+        border: none;
+        box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.15);
+    }
+    .card-header {
+        background-color: #f8f9fc;
+        border-bottom: 1px solid #e3e6f0;
+    }
+</style>
+{% endblock %}

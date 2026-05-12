@@ -1,0 +1,389 @@
+{% extends 'student_portal/base_student.html' %}
+{% load static %}
+
+{% block student_title %}Attendance History{% endblock %}
+
+{% block student_content %}
+<div class="container-fluid py-4">
+    <!-- Page Header -->
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+        <h2 class="h3 mb-0">Attendance History</h2>
+        <div>
+            <button type="button" class="btn btn-sm btn-primary" id="downloadHistory">
+                <i class="fas fa-download mr-1"></i> Export Complete History
+            </button>
+        </div>
+    </div>
+    
+    <!-- Semester Navigation Tabs -->
+    <div class="card shadow mb-4 dashboard-card">
+        <div class="card-header py-3">
+            <ul class="nav nav-tabs card-header-tabs" id="semesterTabs" role="tablist">
+                {% for semester in semesters %}
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link {% if semester.is_current %}active{% endif %}" 
+                            id="semester-{{ semester.number }}-tab" 
+                            data-bs-toggle="tab" 
+                            data-bs-target="#semester-{{ semester.number }}" 
+                            type="button" role="tab" 
+                            aria-controls="semester-{{ semester.number }}" 
+                            aria-selected="{% if semester.is_current %}true{% else %}false{% endif %}">
+                        Semester {{ semester.number }} 
+                        {% if semester.is_current %}<span class="badge bg-primary ms-1">Current</span>{% endif %}
+                    </button>
+                </li>
+                {% endfor %}
+            </ul>
+        </div>
+        <div class="card-body">
+            <div class="tab-content" id="semesterTabsContent">
+                {% for semester in semesters %}
+                <div class="tab-pane fade {% if semester.is_current %}show active{% endif %}" 
+                     id="semester-{{ semester.number }}" 
+                     role="tabpanel" 
+                     aria-labelledby="semester-{{ semester.number }}-tab">
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <div>
+                            <h4 class="mb-0">Semester {{ semester.number }}</h4>
+                            <p class="text-muted mb-0">{{ semester.academic_year }} {% if semester.is_current %}(Current Semester){% endif %}</p>
+                        </div>
+                        <div class="overall-stat">
+                            <div class="d-flex align-items-center">
+                                <div class="attendance-meter">
+                                    <div class="meter-fill {% if semester.attendance_percentage >= 85 %}good{% elif semester.attendance_percentage >= 75 %}warning{% else %}danger{% endif %}" 
+                                         style="width: {{ semester.attendance_percentage }}%"></div>
+                                </div>
+                                <span class="ms-2 fw-bold">{{ semester.attendance_percentage }}% Overall</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="table-responsive">
+                        <table class="table table-hover semester-table">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Subject Code</th>
+                                    <th>Subject Name</th>
+                                    <th>Faculty</th>
+                                    <th>Classes</th>
+                                    <th>Attended</th>
+                                    <th>Percentage</th>
+                                    <th>Status</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for subject in semester.subjects %}
+                                <tr>
+                                    <td>{{ subject.code }}</td>
+                                    <td>{{ subject.name }}</td>
+                                    <td>{{ subject.faculty }}</td>
+                                    <td>{{ subject.total_classes }}</td>
+                                    <td>{{ subject.attended_classes }}</td>
+                                    <td>{{ subject.attendance_percentage }}%</td>
+                                    <td>
+                                        <span class="badge 
+                                            {% if subject.attendance_percentage >= 85 %}bg-success{% elif subject.attendance_percentage >= 75 %}bg-success{% else %}bg-warning{% endif %}">
+                                            {% if subject.attendance_percentage >= 90 %}Excellent{% elif subject.attendance_percentage >= 75 %}Good{% else %}Warning{% endif %}
+                                        </span>
+                                    </td>
+                                    <td><a href="{% url 'student_portal:subject_attendance' subject.id %}" class="btn btn-sm btn-primary">View</a></td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+    
+    <!-- Semester-wise Attendance Comparison -->
+    <div class="card shadow mb-4 dashboard-card">
+        <div class="card-header py-3">
+            <h6 class="m-0 font-weight-bold">Semester-wise Attendance Comparison</h6>
+        </div>
+        <div class="card-body">
+            <div class="chart-container" style="position: relative; height:300px;">
+                <canvas id="semesterComparisonChart"></canvas>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Key Observations -->
+    <div class="card shadow dashboard-card">
+        <div class="card-header py-3">
+            <h6 class="m-0 font-weight-bold">Key Observations</h6>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                {% for observation in observations %}
+                <div class="col-md-3 mb-4">
+                    <div class="observation-card">
+                        <div class="observation-icon">
+                            <i class="{{ observation.icon }}"></i>
+                        </div>
+                        <h5>{{ observation.title }}</h5>
+                        <p>{{ observation.description }}</p>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block student_custom_css %}
+<style>
+    /* Attendance meter styling */
+    .attendance-meter {
+        width: 100px;
+        height: 10px;
+        background-color: #f1f1f1;
+        border-radius: 5px;
+        overflow: hidden;
+    }
+    
+    .meter-fill {
+        height: 100%;
+        border-radius: 5px;
+    }
+    
+    .meter-fill.good {
+        background-color: #1cc88a;
+    }
+    
+    .meter-fill.warning {
+        background-color: #f6c23e;
+    }
+    
+    .meter-fill.danger {
+        background-color: #e74a3b;
+    }
+    
+    /* Observation cards */
+    .observation-card {
+        padding: 20px;
+        border-radius: 10px;
+        background-color: #f8f9fc;
+        box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.1);
+        height: 100%;
+        transition: all 0.3s ease;
+    }
+    
+    .observation-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 0.5rem 1.5rem 0 rgba(58, 59, 69, 0.15);
+    }
+    
+    .observation-icon {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 50px;
+        height: 50px;
+        background-color: #4e73df;
+        color: white;
+        border-radius: 50%;
+        font-size: 1.5rem;
+        margin-bottom: 15px;
+    }
+    
+    .observation-card h5 {
+        font-size: 1.1rem;
+        font-weight: 700;
+        margin-bottom: 10px;
+        color: #4e73df;
+    }
+    
+    .observation-card p {
+        font-size: 0.85rem;
+        color: #5a5c69;
+        margin: 0;
+    }
+    
+    /* Semester table styling */
+    .semester-table th {
+        font-weight: 600;
+        color: #4e73df;
+    }
+    
+    /* Tab styling */
+    .nav-tabs .nav-link {
+        color: #5a5c69;
+        border: none;
+        border-bottom: 3px solid transparent;
+        font-weight: 600;
+    }
+    
+    .nav-tabs .nav-link.active {
+        color: #4e73df;
+        border-bottom: 3px solid #4e73df;
+        background-color: transparent;
+    }
+    
+    .nav-tabs .nav-link:hover {
+        border-color: transparent;
+        border-bottom: 3px solid #e3e6f0;
+    }
+</style>
+{% endblock %}
+
+{% block student_custom_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Initialize DataTables for semester tables
+        $('.semester-table').DataTable({
+            pageLength: 10,
+            lengthMenu: [5, 10, 25, 50],
+            ordering: true,
+            info: false
+        });
+        
+        // Initialize Semester Comparison Chart
+        const semesterCtx = document.getElementById('semesterComparisonChart').getContext('2d');
+        const semesterData = {
+            labels: [{% for semester in semesters %}'Semester {{ semester.number }}'{% if not forloop.last %}, {% endif %}{% endfor %}],
+            data: [{% for semester in semesters %}{{ semester.attendance_percentage }}{% if not forloop.last %}, {% endif %}{% endfor %}]
+        };
+        
+        const semesterComparisonChart = new Chart(semesterCtx, {
+            type: 'bar',
+            data: {
+                labels: semesterData.labels,
+                datasets: [{
+                    label: 'Average Attendance %',
+                    data: semesterData.data,
+                    backgroundColor: [
+                        {% for semester in semesters %}
+                        '{% if semester.is_current %}rgba(78, 115, 223, 0.8){% else %}rgba(28, 200, 138, 0.8){% endif %}'{% if not forloop.last %},{% endif %}
+                        {% endfor %}
+                    ],
+                    borderColor: [
+                        {% for semester in semesters %}
+                        '{% if semester.is_current %}rgb(78, 115, 223){% else %}rgb(28, 200, 138){% endif %}'{% if not forloop.last %},{% endif %}
+                        {% endfor %}
+                    ],
+                    borderWidth: 1
+                }, {
+                    label: 'Required Threshold',
+                    data: Array({{ semesters|length }}).fill(75),
+                    type: 'line',
+                    fill: false,
+                    borderColor: '#e74a3b',
+                    borderDash: [5, 5],
+                    pointRadius: 0,
+                    borderWidth: 2
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        beginAtZero: false,
+                        min: 50,
+                        max: 100,
+                        ticks: {
+                            stepSize: 10
+                        },
+                        title: {
+                            display: true,
+                            text: 'Attendance %'
+                        }
+                    },
+                    x: {
+                        grid: {
+                            display: false
+                        }
+                    }
+                },
+                plugins: {
+                    legend: {
+                        position: 'top'
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                return context.dataset.label + ': ' + context.raw + '%';
+                            }
+                        }
+                    }
+                }
+            }
+        });
+        
+        // Handle Export Complete History Button
+        document.getElementById('downloadHistory').addEventListener('click', function() {
+            Swal.fire({
+                title: 'Export Attendance History',
+                html: 'Choose export format:<br><br>',
+                showDenyButton: true,
+                showCancelButton: true,
+                confirmButtonText: 'PDF',
+                denyButtonText: 'Excel',
+                cancelButtonText: 'CSV',
+                confirmButtonColor: '#4e73df',
+                denyButtonColor: '#1cc88a',
+                cancelButtonColor: '#36b9cc'
+            }).then((result) => {
+                if (result.isConfirmed || result.isDenied || result.dismiss === Swal.DismissReason.cancel) {
+                    let format = 'PDF';
+                    if (result.isDenied) format = 'Excel';
+                    if (result.dismiss === Swal.DismissReason.cancel) format = 'CSV';
+                    
+                    // Send AJAX request to get the export
+                    $.ajax({
+                        url: "{% url 'student_portal:export_attendance_history' %}",
+                        method: "POST",
+                        data: {
+                            format: format,
+                            csrfmiddlewaretoken: '{{ csrf_token }}'
+                        },
+                        beforeSend: function() {
+                            Swal.fire({
+                                title: 'Exporting...',
+                                html: `Preparing ${format} file...`,
+                                timer: 2000,
+                                timerProgressBar: true,
+                                didOpen: () => {
+                                    Swal.showLoading();
+                                }
+                            });
+                        },
+                        success: function(response) {
+                            if (response.success) {
+                                // For a real implementation, we would redirect to the download URL
+                                Swal.fire({
+                                    title: 'Success!',
+                                    text: `Complete attendance history has been exported as ${format}.`,
+                                    icon: 'success',
+                                    confirmButtonColor: '#4e73df'
+                                });
+                            } else {
+                                Swal.fire({
+                                    title: 'Error',
+                                    text: response.message || 'There was an error exporting your attendance history.',
+                                    icon: 'error',
+                                    confirmButtonColor: '#4e73df'
+                                });
+                            }
+                        },
+                        error: function(xhr, status, error) {
+                            Swal.fire({
+                                title: 'Error',
+                                text: 'There was an error exporting your attendance history.',
+                                icon: 'error',
+                                confirmButtonColor: '#4e73df'
+                            });
+                            console.error("Export error:", error);
+                        }
+                    });
+                }
+            });
+        });
+    });
+</script>
+{% endblock %}

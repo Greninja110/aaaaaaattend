@@ -1,0 +1,1632 @@
+{% extends 'lab_assistant_portal/base_lab_assistant.html' %}
+{% load static %}
+
+{% block lab_assistant_title %}Low Attendance Monitoring{% endblock %}
+
+{% block lab_assistant_content %}
+<div class="container-fluid py-4">
+    <div class="row mb-4">
+        <div class="col-md-12">
+            <h2>Low Attendance Monitoring</h2>
+            <p class="text-muted">Track and notify students with attendance below required threshold</p>
+            
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="alert {{ message.tags }} alert-dismissible fade show" role="alert">
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                {% endfor %}
+            {% endif %}
+        </div>
+    </div>
+    
+    <!-- Attendance Threshold Card -->
+    <div class="card shadow mb-4">
+        <div class="card-header py-3 d-flex justify-content-between align-items-center">
+            <h6 class="m-0 font-weight-bold text-primary">Attendance Thresholds</h6>
+            <button class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#thresholdSettingsModal">
+                <i class="fas fa-cog me-2"></i>Configure Thresholds
+            </button>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-4 mb-4">
+                    <div class="threshold-card critical-threshold">
+                        <div class="threshold-icon">
+                            <i class="fas fa-exclamation-circle"></i>
+                        </div>
+                        <div class="threshold-content">
+                            <h4>Critical</h4>
+                            <div class="threshold-meter">
+                                <div class="meter-value" style="width: 65%">
+                                    <span>65%</span>
+                                </div>
+                            </div>
+                            <p class="mb-0">Auto-notification to HOD & Parents</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4 mb-4">
+                    <div class="threshold-card warning-threshold">
+                        <div class="threshold-icon">
+                            <i class="fas fa-exclamation-triangle"></i>
+                        </div>
+                        <div class="threshold-content">
+                            <h4>Warning</h4>
+                            <div class="threshold-meter">
+                                <div class="meter-value" style="width: 70%">
+                                    <span>70%</span>
+                                </div>
+                            </div>
+                            <p class="mb-0">Auto-notification to Student</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4 mb-4">
+                    <div class="threshold-card required-threshold">
+                        <div class="threshold-icon">
+                            <i class="fas fa-check-circle"></i>
+                        </div>
+                        <div class="threshold-content">
+                            <h4>Required</h4>
+                            <div class="threshold-meter">
+                                <div class="meter-value" style="width: 75%">
+                                    <span>75%</span>
+                                </div>
+                            </div>
+                            <p class="mb-0">Minimum attendance requirement</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Filter Section -->
+    <div class="card shadow mb-4">
+        <div class="card-header py-3">
+            <h6 class="m-0 font-weight-bold text-primary">Filters</h6>
+        </div>
+        <div class="card-body">
+            <form id="attendanceFilterForm" method="get" class="row g-3">
+                <div class="col-md-3">
+                    <label for="departmentFilter" class="form-label">Department</label>
+                    <select class="form-select" id="departmentFilter" name="department">
+                        <option value="">All Departments</option>
+                        {% for department in departments %}
+                            <option value="{{ department.department_id }}" {% if selected_department == department.department_id %}selected{% endif %}>{{ department.department_name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <label for="semesterFilter" class="form-label">Semester</label>
+                    <select class="form-select" id="semesterFilter" name="semester">
+                        <option value="">All Semesters</option>
+                        {% for i in "12345678"|make_list %}
+                            <option value="{{ i }}" {% if selected_semester == i %}selected{% endif %}>Semester {{ i }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <label for="subjectFilter" class="form-label">Subject</label>
+                    <select class="form-select" id="subjectFilter" name="subject">
+                        <option value="">All Subjects</option>
+                        {% for subject in subjects %}
+                            <option value="{{ subject.subject_id }}" {% if selected_subject == subject.subject_id %}selected{% endif %}>{{ subject.subject_code }} - {{ subject.subject_name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-3 d-flex align-items-end">
+                    <button type="submit" class="btn btn-primary w-100" id="applyFilters">
+                        <i class="fas fa-filter me-2"></i> Apply Filters
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <!-- Attendance Overview Stats -->
+    <div class="row mb-4">
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-primary shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                                Total Students</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">{{ total_students }}</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-users fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-warning shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
+                                Warning Level</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">{{ warning_count }}</div>
+                            <div class="text-xs text-muted mt-1">{{ warning_percentage }}% of total</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-exclamation-triangle fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-danger shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-danger text-uppercase mb-1">
+                                Critical Level</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">{{ critical_count }}</div>
+                            <div class="text-xs text-muted mt-1">{{ critical_percentage }}% of total</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-exclamation-circle fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-success shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
+                                Good Standing</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">{{ good_count }}</div>
+                            <div class="text-xs text-muted mt-1">{{ good_percentage }}% of total</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-check-circle fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Low Attendance Students List -->
+    <div class="card shadow mb-4">
+        <div class="card-header py-3 d-flex justify-content-between align-items-center">
+            <h6 class="m-0 font-weight-bold text-primary">Students Below Required Threshold (75%)</h6>
+            <div>
+                <button class="btn btn-sm btn-outline-primary me-2" id="exportAttendanceList">
+                    <i class="fas fa-download me-1"></i> Export
+                </button>
+                <button class="btn btn-sm btn-primary" id="sendNotificationsBtn">
+                    <i class="fas fa-bell me-1"></i> Send Notifications
+                </button>
+            </div>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover" id="lowAttendanceTable">
+                    <thead>
+                        <tr>
+                            <th>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="selectAllStudents">
+                                    <label class="form-check-label" for="selectAllStudents"></label>
+                                </div>
+                            </th>
+                            <th>Roll Number</th>
+                            <th>Student Name</th>
+                            <th>Department</th>
+                            <th>Semester</th>
+                            {% if not selected_subject %}<th>Subject</th>{% endif %}
+                            <th>Attendance %</th>
+                            <th>Status</th>
+                            <th>Classes To Attend</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for student in low_attendance_students %}
+                        <tr>
+                            <td>
+                                <div class="form-check">
+                                    <input class="form-check-input student-checkbox" type="checkbox" 
+                                           value="{{ student.student_id }}" id="student-{{ student.student_id }}">
+                                    <label class="form-check-label" for="student-{{ student.student_id }}"></label>
+                                </div>
+                            </td>
+                            <td>{{ student.roll_number }}</td>
+                            <td>{{ student.student_name }}</td>
+                            <td>{{ student.department_name }}</td>
+                            <td>{{ student.semester }}</td>
+                            {% if not selected_subject %}<td>{{ student.subject_name }}</td>{% endif %}
+                            <td>
+                                <div class="progress" style="height: 20px;">
+                                    <div class="progress-bar 
+                                        {% if student.attendance_percentage < 65 %}bg-danger
+                                        {% elif student.attendance_percentage < 70 %}bg-warning
+                                        {% else %}bg-primary{% endif %}" 
+                                        role="progressbar" 
+                                        style="width: {{ student.attendance_percentage }}%;" 
+                                        aria-valuenow="{{ student.attendance_percentage }}" 
+                                        aria-valuemin="0" aria-valuemax="100">
+                                        {{ student.attendance_percentage }}%
+                                    </div>
+                                </div>
+                            </td>
+                            <td>
+                                <span class="badge 
+                                      {% if student.attendance_percentage < 65 %}bg-danger
+                                      {% elif student.attendance_percentage < 70 %}bg-warning
+                                      {% else %}bg-primary{% endif %}">
+                                    {% if student.attendance_percentage < 65 %}Critical
+                                    {% elif student.attendance_percentage < 70 %}Warning
+                                    {% else %}Below Required{% endif %}
+                                </span>
+                            </td>
+                            <td>{{ student.classes_to_attend }}</td>
+                            <td>
+                                <div class="dropdown">
+                                    <button class="btn btn-sm btn-outline-primary dropdown-toggle" type="button" 
+                                            id="actionDropdown{{ student.student_id }}" data-bs-toggle="dropdown" 
+                                            aria-expanded="false">
+                                        Action
+                                    </button>
+                                    <ul class="dropdown-menu" aria-labelledby="actionDropdown{{ student.student_id }}">
+                                        <li>
+                                            <a class="dropdown-item view-student" href="#" 
+                                               data-student-id="{{ student.student_id }}">
+                                                <i class="fas fa-eye me-2"></i> View Details
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <a class="dropdown-item send-email" href="#" 
+                                               data-student-id="{{ student.student_id }}"
+                                               data-student-name="{{ student.student_name }}"
+                                               data-student-email="{{ student.email }}">
+                                                <i class="fas fa-envelope me-2"></i> Send Email
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <a class="dropdown-item add-exception" href="#"
+                                               data-student-id="{{ student.student_id }}"
+                                               data-student-name="{{ student.student_name }}"
+                                               data-subject-id="{% if selected_subject %}{{ selected_subject }}{% else %}{{ student.subject_id }}{% endif %}"
+                                               data-subject-name="{% if selected_subject %}{{ selected_subject_name }}{% else %}{{ student.subject_name }}{% endif %}">
+                                                <i class="fas fa-plus-circle me-2"></i> Add Exception
+                                            </a>
+                                        </li>
+                                        <li><hr class="dropdown-divider"></li>
+                                        <li>
+                                            <a class="dropdown-item text-primary contact-parents" href="#"
+                                               data-student-id="{{ student.student_id }}"
+                                               data-student-name="{{ student.student_name }}">
+                                                <i class="fas fa-phone me-2"></i> Contact Parents
+                                            </a>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="{% if not selected_subject %}10{% else %}9{% endif %}" class="text-center">
+                                <div class="py-4">
+                                    <i class="fas fa-check-circle fa-3x text-success mb-3"></i>
+                                    <p>Great news! No students are below the required attendance threshold.</p>
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Department-wise Low Attendance Chart -->
+    <div class="row">
+        <div class="col-md-6 mb-4">
+            <div class="card shadow">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">Department-wise Low Attendance</h6>
+                </div>
+                <div class="card-body">
+                    <div class="chart-container" style="position: relative; height:350px;">
+                        <canvas id="deptAttendanceChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Subject-wise Low Attendance Chart -->
+        <div class="col-md-6 mb-4">
+            <div class="card shadow">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">Subject-wise Low Attendance</h6>
+                </div>
+                <div class="card-body">
+                    <div class="chart-container" style="position: relative; height:350px;">
+                        <canvas id="subjectAttendanceChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Notification History -->
+    <div class="card shadow mb-4">
+        <div class="card-header py-3">
+            <h6 class="m-0 font-weight-bold text-primary">Notification History</h6>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover" id="notificationHistoryTable">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Student</th>
+                            <th>Subject</th>
+                            <th>Notification Type</th>
+                            <th>Sent To</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for notification in notification_history %}
+                        <tr>
+                            <td>{{ notification.created_at }}</td>
+                            <td>{{ notification.student_name }}</td>
+                            <td>{{ notification.subject_name }}</td>
+                            <td>
+                                <span class="badge 
+                                      {% if notification.notification_type == 'email' %}bg-info
+                                      {% elif notification.notification_type == 'sms' %}bg-primary
+                                      {% else %}bg-secondary{% endif %}">
+                                    {{ notification.notification_type|title }}
+                                </span>
+                            </td>
+                            <td>{{ notification.recipient }}</td>
+                            <td>
+                                <span class="badge 
+                                      {% if notification.status == 'sent' %}bg-success
+                                      {% elif notification.status == 'failed' %}bg-danger
+                                      {% else %}bg-warning{% endif %}">
+                                    {{ notification.status|title }}
+                                </span>
+                            </td>
+                            <td>
+                                <button class="btn btn-sm btn-outline-primary view-notification" 
+                                        data-notification-id="{{ notification.id }}">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                                {% if notification.status == 'failed' %}
+                                <button class="btn btn-sm btn-outline-success retry-notification" 
+                                        data-notification-id="{{ notification.id }}">
+                                    <i class="fas fa-redo"></i>
+                                </button>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="7" class="text-center">
+                                <div class="py-4">
+                                    <i class="fas fa-bell-slash fa-3x mb-3"></i>
+                                    <p>No notification history found.</p>
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Threshold Settings Modal -->
+<div class="modal fade" id="thresholdSettingsModal" tabindex="-1" aria-labelledby="thresholdSettingsModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title" id="thresholdSettingsModalLabel">Configure Attendance Thresholds</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="thresholdSettingsForm">
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        <label for="criticalThreshold" class="form-label">Critical Threshold (%)</label>
+                        <input type="number" class="form-control" id="criticalThreshold" name="critical_threshold" 
+                               min="0" max="100" value="65" required>
+                        <div class="form-text">Students below this threshold will trigger critical alerts.</div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="warningThreshold" class="form-label">Warning Threshold (%)</label>
+                        <input type="number" class="form-control" id="warningThreshold" name="warning_threshold" 
+                               min="0" max="100" value="70" required>
+                        <div class="form-text">Students below this threshold will receive warning notifications.</div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="requiredThreshold" class="form-label">Required Threshold (%)</label>
+                        <input type="number" class="form-control" id="requiredThreshold" name="required_threshold" 
+                               min="0" max="100" value="75" required>
+                        <div class="form-text">Minimum attendance percentage required for exams.</div>
+                    </div>
+                    <div class="mb-3">
+                        <h6>Notification Settings</h6>
+                        <div class="form-check mb-2">
+                            <input class="form-check-input" type="checkbox" id="notifyStudent" name="notify_student" checked>
+                            <label class="form-check-label" for="notifyStudent">
+                                Notify Students
+                            </label>
+                        </div>
+                        <div class="form-check mb-2">
+                            <input class="form-check-input" type="checkbox" id="notifyFaculty" name="notify_faculty" checked>
+                            <label class="form-check-label" for="notifyFaculty">
+                                Notify Faculty
+                            </label>
+                        </div>
+                        <div class="form-check mb-2">
+                            <input class="form-check-input" type="checkbox" id="notifyParents" name="notify_parents" checked>
+                            <label class="form-check-label" for="notifyParents">
+                                Notify Parents
+                            </label>
+                        </div>
+                        <div class="form-check mb-2">
+                            <input class="form-check-input" type="checkbox" id="notifyHOD" name="notify_hod" checked>
+                            <label class="form-check-label" for="notifyHOD">
+                                Notify HOD
+                            </label>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <h6>Notification Frequency</h6>
+                        <div class="form-check mb-2">
+                            <input class="form-check-input" type="radio" name="notification_frequency" id="frequencyWeekly" value="weekly" checked>
+                            <label class="form-check-label" for="frequencyWeekly">
+                                Weekly
+                            </label>
+                        </div>
+                        <div class="form-check mb-2">
+                            <input class="form-check-input" type="radio" name="notification_frequency" id="frequencyBiweekly" value="biweekly">
+                            <label class="form-check-label" for="frequencyBiweekly">
+                                Bi-weekly
+                            </label>
+                        </div>
+                        <div class="form-check mb-2">
+                            <input class="form-check-input" type="radio" name="notification_frequency" id="frequencyMonthly" value="monthly">
+                            <label class="form-check-label" for="frequencyMonthly">
+                                Monthly
+                            </label>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" id="saveThresholdSettings">Save Settings</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Student Details Modal -->
+<div class="modal fade" id="studentDetailsModal" tabindex="-1" aria-labelledby="studentDetailsModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title" id="studentDetailsModalLabel">Student Attendance Details</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div id="studentDetailsContent">
+                    <div class="text-center py-4">
+                        <div class="spinner-border text-primary" role="status">
+                            <span class="visually-hidden">Loading...</span>
+                        </div>
+                        <p class="mt-3">Loading student details...</p>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" id="contactStudentBtn">Contact Student</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Send Notification Modal -->
+<div class="modal fade" id="sendNotificationModal" tabindex="-1" aria-labelledby="sendNotificationModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title" id="sendNotificationModalLabel">Send Attendance Notification</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="notificationForm">
+                    {% csrf_token %}
+                    <input type="hidden" id="notificationStudentIds" name="student_ids">
+                    
+                    <div class="mb-3">
+                        <label class="form-label">Recipients</label>
+                        <div class="form-check mb-2">
+                            <input class="form-check-input" type="checkbox" id="notifyStudentsCheck" name="notify_students" checked>
+                            <label class="form-check-label" for="notifyStudentsCheck">
+                                Students
+                            </label>
+                        </div>
+                        <div class="form-check mb-2">
+                            <input class="form-check-input" type="checkbox" id="notifyParentsCheck" name="notify_parents" checked>
+                            <label class="form-check-label" for="notifyParentsCheck">
+                                Parents
+                            </label>
+                        </div>
+                        <div class="form-check mb-2">
+                            <input class="form-check-input" type="checkbox" id="notifyFacultyCheck" name="notify_faculty">
+                            <label class="form-check-label" for="notifyFacultyCheck">
+                                Faculty
+                            </label>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">Notification Method</label>
+                        <div class="form-check mb-2">
+                            <input class="form-check-input" type="checkbox" id="sendEmailCheck" name="send_email" checked>
+                            <label class="form-check-label" for="sendEmailCheck">
+                                Email
+                            </label>
+                        </div>
+                        <div class="form-check mb-2">
+                            <input class="form-check-input" type="checkbox" id="sendSMSCheck" name="send_sms">
+                            <label class="form-check-label" for="sendSMSCheck">
+                                SMS
+                            </label>
+                        </div>
+                        <div class="form-check mb-2">
+                            <input class="form-check-input" type="checkbox" id="sendPortalCheck" name="send_portal" checked>
+                            <label class="form-check-label" for="sendPortalCheck">
+                                Portal Notification
+                            </label>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="notificationSubject" class="form-label">Subject</label>
+                        <input type="text" class="form-control" id="notificationSubject" name="subject" 
+                               value="Important: Low Attendance Notification" required>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="notificationTemplate" class="form-label">Template</label>
+                        <select class="form-select" id="notificationTemplate" name="template">
+                            <option value="warning">Warning Template</option>
+                            <option value="critical">Critical Template</option>
+                            <option value="reminder">Gentle Reminder</option>
+                            <option value="custom">Custom Message</option>
+                        </select>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="notificationMessage" class="form-label">Message</label>
+                        <textarea class="form-control" id="notificationMessage" name="message" rows="6" required>Dear {STUDENT_NAME},
+
+This is to notify you that your attendance in {SUBJECT_NAME} is currently {ATTENDANCE_PERCENTAGE}%, which is below the required minimum of 75%.
+
+To ensure eligibility for examinations, please attend all remaining classes. You need to attend at least {CLASSES_NEEDED} more classes to reach the minimum threshold.
+
+Please contact your faculty if you have any concerns.
+
+Regards,
+MBIT Administration</textarea>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <div class="alert alert-info">
+                            <i class="fas fa-info-circle me-2"></i>
+                            <strong>Available placeholders:</strong> {STUDENT_NAME}, {ROLL_NUMBER}, {SUBJECT_NAME}, {ATTENDANCE_PERCENTAGE}, {CLASSES_NEEDED}, {DEPARTMENT}
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" id="sendNotification">Send Notification</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Add Exception Modal -->
+<div class="modal fade" id="addExceptionModal" tabindex="-1" aria-labelledby="addExceptionModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title" id="addExceptionModalLabel">Add Attendance Exception</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="exceptionForm">
+                    {% csrf_token %}
+                    <input type="hidden" id="exceptionStudentId" name="student_id">
+                    <input type="hidden" id="exceptionSubjectId" name="subject_id">
+                    
+                    <div class="mb-3">
+                        <label class="form-label">Student</label>
+                        <input type="text" class="form-control" id="exceptionStudentName" readonly>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">Subject</label>
+                        <input type="text" class="form-control" id="exceptionSubjectName" readonly>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="exceptionType" class="form-label">Exception Type</label>
+                        <select class="form-select" id="exceptionType" name="exception_type" required>
+                            <option value="">Select Exception Type</option>
+                            <option value="medical">Medical Exception</option>
+                            <option value="sports">Sports/Cultural Activities</option>
+                            <option value="placement">Placement Related</option>
+                            <option value="other">Other</option>
+                        </select>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="exceptionDates" class="form-label">Exception Dates</label>
+                        <div class="row g-2" id="exceptionDateRangeSelector">
+                            <div class="col-md-6">
+                                <input type="date" class="form-control" id="exceptionStartDate" name="start_date" required>
+                            </div>
+                            <div class="col-md-6">
+                                <input type="date" class="form-control" id="exceptionEndDate" name="end_date" required>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="exceptionReason" class="form-label">Reason</label>
+                        <textarea class="form-control" id="exceptionReason" name="reason" rows="3" required></textarea>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="exceptionDocument" class="form-label">Supporting Document</label>
+                        <input type="file" class="form-control" id="exceptionDocument" name="document">
+                        <div class="form-text">Upload supporting documents (optional).</div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="exceptionStatus" class="form-label">Status</label>
+                        <select class="form-select" id="exceptionStatus" name="status" required>
+                            <option value="approved">Approved</option>
+                            <option value="pending">Pending Approval</option>
+                        </select>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" id="saveException">Save Exception</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block lab_assistant_custom_css %}
+<style>
+    /* Threshold cards */
+    .threshold-card {
+        display: flex;
+        align-items: center;
+        padding: 20px;
+        border-radius: 10px;
+        box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.15);
+        transition: transform 0.3s ease;
+        height: 100%;
+    }
+    
+    .threshold-card:hover {
+        transform: translateY(-5px);
+    }
+    
+    .critical-threshold {
+        background: linear-gradient(to right, #fff, #faeceb);
+        border-left: 5px solid #e74a3b;
+    }
+    
+    .warning-threshold {
+        background: linear-gradient(to right, #fff, #fff8e5);
+        border-left: 5px solid #f6c23e;
+    }
+    
+    .required-threshold {
+        background: linear-gradient(to right, #fff, #eaf7f2);
+        border-left: 5px solid #1cc88a;
+    }
+    
+    .threshold-icon {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        margin-right: 20px;
+        font-size: 1.5rem;
+    }
+    
+    .critical-threshold .threshold-icon {
+        background-color: #e74a3b;
+        color: white;
+    }
+    
+    .warning-threshold .threshold-icon {
+        background-color: #f6c23e;
+        color: white;
+    }
+    
+    .required-threshold .threshold-icon {
+        background-color: #1cc88a;
+        color: white;
+    }
+    
+    .threshold-content {
+        flex: 1;
+    }
+    
+    .threshold-content h4 {
+        margin-bottom: 10px;
+        font-weight: 600;
+    }
+    
+    .threshold-meter {
+        height: 20px;
+        background-color: #f1f1f1;
+        border-radius: 10px;
+        margin-bottom: 10px;
+        overflow: hidden;
+    }
+    
+    .meter-value {
+        height: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 0.8rem;
+        font-weight: 600;
+    }
+    
+    .critical-threshold .meter-value {
+        background-color: #e74a3b;
+    }
+    
+    .warning-threshold .meter-value {
+        background-color: #f6c23e;
+    }
+    
+    .required-threshold .meter-value {
+        background-color: #1cc88a;
+    }
+    
+    /* Card styles */
+    .border-left-primary {
+        border-left: 0.25rem solid #4e73df;
+    }
+    
+    .border-left-success {
+        border-left: 0.25rem solid #1cc88a;
+    }
+    
+    .border-left-warning {
+        border-left: 0.25rem solid #f6c23e;
+    }
+    
+    .border-left-danger {
+        border-left: 0.25rem solid #e74a3b;
+    }
+    
+    /* Progress bar styling */
+    .progress {
+        height: 20px;
+        border-radius: 5px;
+        margin-bottom: 0;
+    }
+    
+    .progress-bar {
+        color: white;
+        font-weight: 600;
+        font-size: 0.85rem;
+    }
+    
+    /* Chart container */
+    .chart-container {
+        background-color: white;
+        border-radius: 5px;
+    }
+    
+    /* Student details styling (for modal content) */
+    .student-info-header {
+        display: flex;
+        align-items: center;
+        margin-bottom: 20px;
+    }
+    
+    .student-avatar {
+        width: 80px;
+        height: 80px;
+        border-radius: 50%;
+        overflow: hidden;
+        margin-right: 20px;
+        background-color: #f1f1f1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 2rem;
+        color: #4e73df;
+    }
+    
+    .student-avatar img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+    
+    .student-info h4 {
+        margin-bottom: 5px;
+    }
+    
+    .student-info p {
+        margin-bottom: 0;
+        color: #858796;
+    }
+    
+    .student-attendance-summary {
+        background-color: #f8f9fc;
+        border-radius: 10px;
+        padding: 20px;
+        margin-bottom: 20px;
+    }
+    
+    .subject-attendance-card {
+        border-radius: 10px;
+        box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.15);
+        margin-bottom: 15px;
+        transition: transform 0.2s ease;
+    }
+    
+    .subject-attendance-card:hover {
+        transform: translateY(-3px);
+    }
+    
+    .subject-attendance-header {
+        padding: 15px;
+        border-bottom: 1px solid #e3e6f0;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    
+    .subject-attendance-header h5 {
+        margin-bottom: 0;
+        font-weight: 600;
+    }
+    
+    .subject-attendance-body {
+        padding: 15px;
+    }
+    
+    .subject-attendance-body .progress {
+        margin-bottom: 10px;
+    }
+    
+    .subject-attendance-stats {
+        display: flex;
+        justify-content: space-between;
+    }
+    
+    .stat-item {
+        text-align: center;
+    }
+    
+    .stat-item h6 {
+        font-size: 1.25rem;
+        font-weight: 700;
+        margin-bottom: 5px;
+    }
+    
+    .stat-item p {
+        font-size: 0.8rem;
+        color: #858796;
+        margin-bottom: 0;
+    }
+</style>
+{% endblock %}
+
+{% block lab_assistant_custom_js %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Initialize DataTables
+        $('#lowAttendanceTable').DataTable({
+            ordering: true,
+            pageLength: 25,
+            lengthMenu: [10, 25, 50, 100],
+            language: {
+                search: "_INPUT_",
+                searchPlaceholder: "Search students..."
+            }
+        });
+        
+        $('#notificationHistoryTable').DataTable({
+            ordering: true,
+            pageLength: 10,
+            lengthMenu: [10, 25, 50, 100],
+            language: {
+                search: "_INPUT_",
+                searchPlaceholder: "Search notifications..."
+            }
+        });
+        
+        // Initialize Department Chart
+        const deptCtx = document.getElementById('deptAttendanceChart').getContext('2d');
+        const deptData = {
+            labels: [{% for dept in department_stats %}'{{ dept.department_name }}'{% if not forloop.last %}, {% endif %}{% endfor %}],
+            critical: [{% for dept in department_stats %}{{ dept.critical_count }}{% if not forloop.last %}, {% endif %}{% endfor %}],
+            warning: [{% for dept in department_stats %}{{ dept.warning_count }}{% if not forloop.last %}, {% endif %}{% endfor %}],
+            good: [{% for dept in department_stats %}{{ dept.good_count }}{% if not forloop.last %}, {% endif %}{% endfor %}]
+        };
+        
+        new Chart(deptCtx, {
+            type: 'bar',
+            data: {
+                labels: deptData.labels,
+                datasets: [{
+                    label: 'Critical',
+                    data: deptData.critical,
+                    backgroundColor: '#e74a3b',
+                    borderWidth: 0
+                }, {
+                    label: 'Warning',
+                    data: deptData.warning,
+                    backgroundColor: '#f6c23e',
+                    borderWidth: 0
+                }, {
+                    label: 'Good Standing',
+                    data: deptData.good,
+                    backgroundColor: '#1cc88a',
+                    borderWidth: 0
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'top',
+                    }
+                },
+                scales: {
+                    x: {
+                        stacked: true,
+                    },
+                    y: {
+                        stacked: true,
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+        
+        // Initialize Subject Chart
+        const subjectCtx = document.getElementById('subjectAttendanceChart').getContext('2d');
+        const subjectData = {
+            labels: [{% for subject in subject_stats %}'{{ subject.subject_code }}'{% if not forloop.last %}, {% endif %}{% endfor %}],
+            data: [{% for subject in subject_stats %}{{ subject.average_attendance }}{% if not forloop.last %}, {% endif %}{% endfor %}]
+        };
+        
+        new Chart(subjectCtx, {
+            type: 'bar',
+            data: {
+                labels: subjectData.labels,
+                datasets: [{
+                    label: 'Average Attendance (%)',
+                    data: subjectData.data,
+                    backgroundColor: function(context) {
+                        const value = context.dataset.data[context.dataIndex];
+                        return value < 65 ? '#e74a3b' : value < 70 ? '#f6c23e' : value < 75 ? '#4e73df' : '#1cc88a';
+                    },
+                    borderWidth: 0
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: false
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: false,
+                        min: 50,
+                        max: 100,
+                        title: {
+                            display: true,
+                            text: 'Attendance %'
+                        }
+                    }
+                }
+            }
+        });
+        
+        // Handle "Select All" checkbox
+        $('#selectAllStudents').on('change', function() {
+            $('.student-checkbox').prop('checked', this.checked);
+        });
+        
+        // Update "Select All" when individual checkboxes change
+        $('.student-checkbox').on('change', function() {
+            $('#selectAllStudents').prop('checked', $('.student-checkbox:checked').length === $('.student-checkbox').length);
+        });
+        
+        // Handle Send Notifications button
+        $('#sendNotificationsBtn').on('click', function() {
+            const selectedStudents = $('.student-checkbox:checked');
+            
+            if (selectedStudents.length === 0) {
+                Swal.fire({
+                    title: 'No Students Selected',
+                    text: 'Please select at least one student to send notifications.',
+                    icon: 'warning',
+                    confirmButtonColor: '#4e73df'
+                });
+                return;
+            }
+            
+            // Collect student IDs
+            const studentIds = [];
+            selectedStudents.each(function() {
+                studentIds.push($(this).val());
+            });
+            
+            // Set student IDs in form
+            $('#notificationStudentIds').val(studentIds.join(','));
+            
+            // Show notification modal
+            $('#sendNotificationModal').modal('show');
+        });
+        
+        // Handle notification template selection
+        $('#notificationTemplate').on('change', function() {
+            const template = $(this).val();
+            
+            // If custom template is selected, clear the message
+            if (template === 'custom') {
+                $('#notificationMessage').val('');
+                return;
+            }
+            
+            // Otherwise, set the appropriate template text
+            let templateText = '';
+            
+            if (template === 'warning') {
+                templateText = `Dear {STUDENT_NAME},
+
+This is to notify you that your attendance in {SUBJECT_NAME} is currently {ATTENDANCE_PERCENTAGE}%, which is below the required minimum of 75%.
+
+To ensure eligibility for examinations, please attend all remaining classes. You need to attend at least {CLASSES_NEEDED} more classes to reach the minimum threshold.
+
+Please contact your faculty if you have any concerns.
+
+Regards,
+MBIT Administration`;
+            } else if (template === 'critical') {
+                templateText = `URGENT: CRITICAL ATTENDANCE ALERT
+
+Dear {STUDENT_NAME},
+
+This is to inform you that your attendance in {SUBJECT_NAME} has dropped to a CRITICAL level of {ATTENDANCE_PERCENTAGE}%.
+
+As per institute policies, a minimum of 75% attendance is mandatory to appear for examinations. You need to attend at least {CLASSES_NEEDED} more classes to reach the minimum threshold.
+
+Please note that a copy of this notification has been sent to your parents/guardians and the HOD.
+
+Kindly meet your class counselor immediately to discuss this matter.
+
+Regards,
+MBIT Administration`;
+            } else if (template === 'reminder') {
+                templateText = `Dear {STUDENT_NAME},
+
+This is a gentle reminder that your attendance in {SUBJECT_NAME} is currently {ATTENDANCE_PERCENTAGE}%.
+
+While this is below the required 75% threshold, there is still time to improve. You need to attend approximately {CLASSES_NEEDED} more classes to reach the minimum requirement.
+
+Regular attendance is crucial for academic success. If you're facing any issues that are preventing you from attending classes regularly, please feel free to discuss with your faculty or class counselor.
+
+Best regards,
+MBIT Administration`;
+            }
+            
+            $('#notificationMessage').val(templateText);
+        });
+        
+        // Handle sending notification
+        $('#sendNotification').on('click', function() {
+            const form = $('#notificationForm')[0];
+            
+            // Check if form is valid
+            if (!form.checkValidity()) {
+                form.reportValidity();
+                return;
+            }
+            
+            // Check if at least one notification method is selected
+            if (!$('#sendEmailCheck').prop('checked') && !$('#sendSMSCheck').prop('checked') && !$('#sendPortalCheck').prop('checked')) {
+                Swal.fire({
+                    title: 'Notification Method Required',
+                    text: 'Please select at least one notification method.',
+                    icon: 'warning',
+                    confirmButtonColor: '#4e73df'
+                });
+                return;
+            }
+            
+            // Check if at least one recipient type is selected
+            if (!$('#notifyStudentsCheck').prop('checked') && !$('#notifyParentsCheck').prop('checked') && !$('#notifyFacultyCheck').prop('checked')) {
+                Swal.fire({
+                    title: 'Recipients Required',
+                    text: 'Please select at least one recipient type.',
+                    icon: 'warning',
+                    confirmButtonColor: '#4e73df'
+                });
+                return;
+            }
+            
+            // Get form data
+            const formData = new FormData(form);
+            
+            // Show loading
+            Swal.fire({
+                title: 'Sending Notifications',
+                html: 'Please wait while we send the notifications...',
+                timer: 2000,
+                timerProgressBar: true,
+                didOpen: () => {
+                    Swal.showLoading();
+                }
+            }).then(() => {
+                // This would be an AJAX call in a real app
+                
+                // Show success message
+                Swal.fire({
+                    title: 'Notifications Sent!',
+                    text: 'The notifications have been sent successfully.',
+                    icon: 'success',
+                    confirmButtonColor: '#4e73df'
+                });
+                
+                // Close modal
+                $('#sendNotificationModal').modal('hide');
+            });
+        });
+        
+        // Handle view student details
+        $('.view-student').on('click', function(e) {
+            e.preventDefault();
+            
+            const studentId = $(this).data('student-id');
+            
+            // Show modal
+            $('#studentDetailsModal').modal('show');
+            
+            // Make AJAX request to get student details
+            $.ajax({
+                url: "{% url 'lab_assistant_portal:get_student_attendance_details' %}",
+                method: "GET",
+                data: { student_id: studentId },
+                success: function(response) {
+                    if (response.success) {
+                        // Update modal content
+                        $('#studentDetailsContent').html(response.html);
+                        $('#studentDetailsModalLabel').text(`${response.data.student_name} - Attendance Details`);
+                        
+                        // Initialize charts if needed
+                        if (response.charts) {
+                            // Initialize student attendance trend chart
+                            const trendCtx = document.getElementById('studentAttendanceTrend').getContext('2d');
+                            
+                            new Chart(trendCtx, {
+                                type: 'line',
+                                data: {
+                                    labels: response.charts.trend.labels,
+                                    datasets: [{
+                                        label: 'Attendance %',
+                                        data: response.charts.trend.data,
+                                        backgroundColor: 'rgba(78, 115, 223, 0.05)',
+                                        borderColor: '#4e73df',
+                                        borderWidth: 2,
+                                        pointBackgroundColor: '#4e73df',
+                                        pointRadius: 3,
+                                        tension: 0.3
+                                    }, {
+                                        label: 'Required Threshold',
+                                        data: Array(response.charts.trend.labels.length).fill(75),
+                                        borderColor: '#e74a3b',
+                                        borderWidth: 2,
+                                        borderDash: [5, 5],
+                                        pointRadius: 0,
+                                        fill: false
+                                    }]
+                                },
+                                options: {
+                                    responsive: true,
+                                    maintainAspectRatio: false,
+                                    scales: {
+                                        y: {
+                                            beginAtZero: false,
+                                            min: 50,
+                                            max: 100,
+                                            ticks: {
+                                                stepSize: 10
+                                            }
+                                        }
+                                    }
+                                }
+                            });
+                        }
+                    } else {
+                        // Show error message
+                        $('#studentDetailsContent').html(`
+                            <div class="alert alert-danger">
+                                <i class="fas fa-exclamation-circle me-2"></i>
+                                ${response.message || 'Failed to load student details.'}
+                            </div>
+                        `);
+                    }
+                },
+                error: function(xhr, status, error) {
+                    // Show error message
+                    $('#studentDetailsContent').html(`
+                        <div class="alert alert-danger">
+                            <i class="fas fa-exclamation-circle me-2"></i>
+                            An error occurred while loading student details. Please try again.
+                        </div>
+                    `);
+                    console.error("Error loading student details:", error);
+                }
+            });
+        });
+        
+        // Handle send email to student
+        $('.send-email').on('click', function(e) {
+            e.preventDefault();
+            
+            const studentId = $(this).data('student-id');
+            const studentName = $(this).data('student-name');
+            const studentEmail = $(this).data('student-email');
+            
+            // Pre-fill notification form for single student
+            $('#notificationStudentIds').val(studentId);
+            $('#notificationSubject').val(`Low Attendance Notification - ${studentName}`);
+            $('#notifyStudentsCheck').prop('checked', true);
+            $('#notifyParentsCheck').prop('checked', false);
+            $('#notifyFacultyCheck').prop('checked', false);
+            $('#sendEmailCheck').prop('checked', true);
+            $('#sendSMSCheck').prop('checked', false);
+            $('#sendPortalCheck').prop('checked', true);
+            
+            // Show notification modal
+            $('#sendNotificationModal').modal('show');
+        });
+        
+        // Handle add exception
+        $('.add-exception').on('click', function(e) {
+            e.preventDefault();
+            
+            const studentId = $(this).data('student-id');
+            const studentName = $(this).data('student-name');
+            const subjectId = $(this).data('subject-id');
+            const subjectName = $(this).data('subject-name');
+            
+            // Set values in form
+            $('#exceptionStudentId').val(studentId);
+            $('#exceptionStudentName').val(studentName);
+            $('#exceptionSubjectId').val(subjectId);
+            $('#exceptionSubjectName').val(subjectName);
+            
+            // Set default dates (today and tomorrow)
+            const today = new Date();
+            const tomorrow = new Date(today);
+            tomorrow.setDate(today.getDate() + 1);
+            
+            $('#exceptionStartDate').val(today.toISOString().split('T')[0]);
+            $('#exceptionEndDate').val(tomorrow.toISOString().split('T')[0]);
+            
+            // Show exception modal
+            $('#addExceptionModal').modal('show');
+        });
+        
+        // Handle save exception
+        $('#saveException').on('click', function() {
+            const form = $('#exceptionForm')[0];
+            
+            // Check if form is valid
+            if (!form.checkValidity()) {
+                form.reportValidity();
+                return;
+            }
+            
+            // Get form data
+            const formData = new FormData(form);
+            
+            // Show loading
+            Swal.fire({
+                title: 'Saving Exception',
+                html: 'Please wait while we save the attendance exception...',
+                timer: 2000,
+                timerProgressBar: true,
+                didOpen: () => {
+                    Swal.showLoading();
+                }
+            }).then(() => {
+                // This would be an AJAX call in a real app
+                
+                // Show success message
+                Swal.fire({
+                    title: 'Exception Saved!',
+                    text: 'The attendance exception has been saved successfully.',
+                    icon: 'success',
+                    confirmButtonColor: '#4e73df'
+                });
+                
+                // Close modal
+                $('#addExceptionModal').modal('hide');
+                
+                // Reload page to reflect changes
+                setTimeout(() => {
+                    window.location.reload();
+                }, 1500);
+            });
+        });
+        
+        // Handle contact parents
+        $('.contact-parents').on('click', function(e) {
+            e.preventDefault();
+            
+            const studentId = $(this).data('student-id');
+            const studentName = $(this).data('student-name');
+            
+            // Show options menu
+            Swal.fire({
+                title: `Contact ${studentName}'s Parents`,
+                html: 'Choose contact method:',
+                icon: 'question',
+                showDenyButton: true,
+                showCancelButton: true,
+                confirmButtonText: 'Email',
+                denyButtonText: 'SMS',
+                cancelButtonText: 'Phone Call',
+                confirmButtonColor: '#4e73df',
+                denyButtonColor: '#1cc88a',
+                cancelButtonColor: '#f6c23e'
+            }).then((result) => {
+                if (result.isConfirmed || result.isDenied || result.dismiss === Swal.DismissReason.cancel) {
+                    let method = 'Email';
+                    if (result.isDenied) method = 'SMS';
+                    if (result.dismiss === Swal.DismissReason.cancel) method = 'Phone Call';
+                    
+                    // This would open appropriate interface in a real app
+                    Swal.fire({
+                        title: `${method} Interface`,
+                        text: `The ${method.toLowerCase()} interface would open here.`,
+                        icon: 'info',
+                        confirmButtonColor: '#4e73df'
+                    });
+                }
+            });
+        });
+        
+        // Handle threshold settings save
+        $('#saveThresholdSettings').on('click', function() {
+            const form = $('#thresholdSettingsForm')[0];
+            
+            // Check if form is valid
+            if (!form.checkValidity()) {
+                form.reportValidity();
+                return;
+            }
+            
+            // Get form values
+            const criticalThreshold = $('#criticalThreshold').val();
+            const warningThreshold = $('#warningThreshold').val();
+            const requiredThreshold = $('#requiredThreshold').val();
+            
+            // Validate thresholds
+            if (parseInt(criticalThreshold) >= parseInt(warningThreshold)) {
+                Swal.fire({
+                    title: 'Invalid Thresholds',
+                    text: 'Critical threshold must be lower than warning threshold.',
+                    icon: 'error',
+                    confirmButtonColor: '#4e73df'
+                });
+                return;
+            }
+            
+            if (parseInt(warningThreshold) >= parseInt(requiredThreshold)) {
+                Swal.fire({
+                    title: 'Invalid Thresholds',
+                    text: 'Warning threshold must be lower than required threshold.',
+                    icon: 'error',
+                    confirmButtonColor: '#4e73df'
+                });
+                return;
+            }
+            
+            // Get form data
+            const formData = new FormData(form);
+            
+            // Show loading
+            Swal.fire({
+                title: 'Saving Settings',
+                html: 'Please wait while we save your settings...',
+                timer: 2000,
+                timerProgressBar: true,
+                didOpen: () => {
+                    Swal.showLoading();
+                }
+            }).then(() => {
+                // This would be an AJAX call in a real app
+                
+                // Update UI to reflect new thresholds
+                $('.critical-threshold .meter-value').css('width', `${criticalThreshold}%`).text(`${criticalThreshold}%`);
+                $('.warning-threshold .meter-value').css('width', `${warningThreshold}%`).text(`${warningThreshold}%`);
+                $('.required-threshold .meter-value').css('width', `${requiredThreshold}%`).text(`${requiredThreshold}%`);
+                
+                // Show success message
+                Swal.fire({
+                    title: 'Settings Saved!',
+                    text: 'Attendance threshold settings have been saved successfully.',
+                    icon: 'success',
+                    confirmButtonColor: '#4e73df'
+                });
+                
+                // Close modal
+                $('#thresholdSettingsModal').modal('hide');
+            });
+        });
+        
+        // Handle export attendance list
+        $('#exportAttendanceList').on('click', function() {
+            Swal.fire({
+                title: 'Export Attendance List',
+                text: 'Choose export format',
+                icon: 'question',
+                showDenyButton: true,
+                showCancelButton: true,
+                confirmButtonText: 'PDF',
+                denyButtonText: 'Excel',
+                cancelButtonText: 'CSV',
+                confirmButtonColor: '#4e73df',
+                denyButtonColor: '#1cc88a',
+                cancelButtonColor: '#36b9cc'
+            }).then((result) => {
+                if (result.isConfirmed || result.isDenied || result.dismiss === Swal.DismissReason.cancel) {
+                    let format = 'PDF';
+                    if (result.isDenied) format = 'Excel';
+                    if (result.dismiss === Swal.DismissReason.cancel) format = 'CSV';
+                    
+                    // Show loading
+                    Swal.fire({
+                        title: 'Exporting Data',
+                        html: `Preparing ${format} file...`,
+                        timer: 2000,
+                        timerProgressBar: true,
+                        didOpen: () => {
+                            Swal.showLoading();
+                        }
+                    }).then(() => {
+                        // This would be an actual download in a real app
+                        
+                        Swal.fire({
+                            title: 'Export Complete',
+                            text: `The attendance list has been exported as ${format} successfully.`,
+                            icon: 'success',
+                            confirmButtonColor: '#4e73df'
+                        });
+                    });
+                }
+            });
+        });
+        
+        // Handle view notification
+        $('.view-notification').on('click', function() {
+            const notificationId = $(this).data('notification-id');
+            
+            // This would be an AJAX call in a real app
+            Swal.fire({
+                title: 'Notification Details',
+                html: `
+                    <div class="text-start">
+                        <p><strong>Date:</strong> March 15, 2025, 10:30 AM</p>
+                        <p><strong>Student:</strong> Rohit Sharma</p>
+                        <p><strong>Subject:</strong> Operating Systems</p>
+                        <p><strong>Notification Type:</strong> Email</p>
+                        <p><strong>Recipient:</strong> rohit.sharma@example.com</p>
+                        <p><strong>Status:</strong> Sent</p>
+                        <hr>
+                        <div class="border p-3 rounded">
+                            <p><strong>Subject:</strong> Low Attendance Notification</p>
+                            <p><strong>Message:</strong></p>
+                            <p>Dear Rohit Sharma,</p>
+                            <p>This is to notify you that your attendance in Operating Systems is currently 68%, which is below the required minimum of 75%.</p>
+                            <p>To ensure eligibility for examinations, please attend all remaining classes. You need to attend at least 4 more classes to reach the minimum threshold.</p>
+                            <p>Please contact your faculty if you have any concerns.</p>
+                            <p>Regards,<br>MBIT Administration</p>
+                        </div>
+                    </div>
+                `,
+                icon: 'info',
+                confirmButtonColor: '#4e73df',
+                confirmButtonText: 'Close',
+                width: '600px'
+            });
+        });
+        
+        // Handle retry notification
+        $('.retry-notification').on('click', function() {
+            const notificationId = $(this).data('notification-id');
+            
+            Swal.fire({
+                title: 'Retry Notification',
+                text: 'Are you sure you want to retry sending this notification?',
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonColor: '#4e73df',
+                cancelButtonColor: '#6c757d',
+                confirmButtonText: 'Yes, retry'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // Show loading
+                    Swal.fire({
+                        title: 'Sending Notification',
+                        html: 'Please wait...',
+                        timer: 2000,
+                        timerProgressBar: true,
+                        didOpen: () => {
+                            Swal.showLoading();
+                        }
+                    }).then(() => {
+                        // This would be an AJAX call in a real app
+                        
+                        Swal.fire({
+                            title: 'Notification Sent!',
+                            text: 'The notification has been successfully resent.',
+                            icon: 'success',
+                            confirmButtonColor: '#4e73df'
+                        });
+                    });
+                }
+            });
+        });
+    });
+</script>
+{% endblock %}

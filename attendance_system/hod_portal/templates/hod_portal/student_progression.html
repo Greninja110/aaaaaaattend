@@ -1,0 +1,238 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Student Progression - HOD Portal{% endblock %}
+
+{% block nav_items %}
+<li class="nav-item">
+    <a class="nav-link" href="{% url 'hod_portal:index' %}">Dashboard</a>
+</li>
+<li class="nav-item">
+    <a class="nav-link" href="{% url 'hod_portal:faculty_performance' %}">Faculty</a>
+</li>
+<li class="nav-item">
+    <a class="nav-link active" href="{% url 'hod_portal:student_progression' %}">Students</a>
+</li>
+<li class="nav-item">
+    <a class="nav-link" href="{% url 'hod_portal:attendance_analytics' %}">Attendance</a>
+</li>
+<li class="nav-item">
+    <a class="nav-link" href="{% url 'hod_portal:elective_management' %}">Electives</a>
+</li>
+<li class="nav-item">
+    <a class="nav-link" href="{% url 'hod_portal:department_reports' %}">Reports</a>
+</li>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <div class="row mb-4">
+        <div class="col-md-12">
+            <h2 class="mb-4">Student Progression Management - {{ department.department_name }}</h2>
+            
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                {% endfor %}
+            {% endif %}
+            
+            <!-- Filter Form -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h6 class="m-0 font-weight-bold text-primary">Filter Students</h6>
+                </div>
+                <div class="card-body">
+                    <form method="get" class="row g-3">
+                        <div class="col-md-4">
+                            <label class="form-label">Semester</label>
+                            <select name="semester" class="form-select">
+                                <option value="">All Semesters</option>
+                                {% for sem in semesters %}
+                                    <option value="{{ sem }}" {% if semester_filter == sem|stringformat:"s" %}selected{% endif %}>Semester {{ sem }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label">&nbsp;</label>
+                            <div>
+                                <button type="submit" class="btn btn-primary">Filter</button>
+                                <a href="{% url 'hod_portal:student_progression' %}" class="btn btn-secondary">Clear</a>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            
+            <!-- Student Progression Form -->
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h6 class="m-0 font-weight-bold text-primary">Student Progression Status</h6>
+                    <div>
+                        <button type="button" class="btn btn-success" onclick="selectEligible()">Select Eligible</button>
+                        <button type="button" class="btn btn-secondary" onclick="clearSelection()">Clear Selection</button>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <form method="post" id="progressionForm">
+                        {% csrf_token %}
+                        <input type="hidden" name="action" value="promote">
+                        
+                        <div class="table-responsive">
+                            <table class="table table-bordered">
+                                <thead>
+                                    <tr>
+                                        <th>
+                                            <input type="checkbox" id="selectAll" onclick="toggleAll(this)">
+                                        </th>
+                                        <th>Student Name</th>
+                                        <th>Roll Number</th>
+                                        <th>Current Semester</th>
+                                        <th>Total Classes</th>
+                                        <th>Attendance %</th>
+                                        <th>Status</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for data in page_obj %}
+                                        <tr class="{% if data.eligible %}table-success{% else %}table-danger{% endif %}">
+                                            <td>
+                                                {% if data.can_promote %}
+                                                    <input type="checkbox" name="student_ids" value="{{ data.student.student_id }}" class="student-checkbox">
+                                                {% endif %}
+                                            </td>
+                                            <td>{{ data.student.user.full_name }}</td>
+                                            <td>{{ data.student.roll_number }}</td>
+                                            <td>{{ data.current_semester }}</td>
+                                            <td>{{ data.total_classes }}</td>
+                                            <td>
+                                                <span class="badge badge-{% if data.attendance_percentage >= 75 %}success{% else %}danger{% endif %}">
+                                                    {{ data.attendance_percentage }}%
+                                                </span>
+                                            </td>
+                                            <td>
+                                                {% if data.eligible %}
+                                                    <span class="badge badge-success">Eligible</span>
+                                                {% else %}
+                                                    <span class="badge badge-danger">Not Eligible</span>
+                                                {% endif %}
+                                            </td>
+                                            <td>
+                                                {% if data.can_promote %}
+                                                    <span class="text-success">Can Promote</span>
+                                                {% elif data.current_semester == 8 %}
+                                                    <span class="text-info">Final Semester</span>
+                                                {% else %}
+                                                    <span class="text-danger">Cannot Promote</span>
+                                                {% endif %}
+                                            </td>
+                                        </tr>
+                                    {% empty %}
+                                        <tr>
+                                            <td colspan="8" class="text-center">No students found</td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                        
+                        {% if page_obj %}
+                            <div class="d-flex justify-content-between align-items-center mt-3">
+                                <div>
+                                    <button type="submit" class="btn btn-primary" onclick="return confirmPromotion()">
+                                        Promote Selected Students
+                                    </button>
+                                </div>
+                                
+                                <!-- Pagination -->
+                                <nav>
+                                    <ul class="pagination mb-0">
+                                        {% if page_obj.has_previous %}
+                                            <li class="page-item">
+                                                <a class="page-link" href="?page={{ page_obj.previous_page_number }}{% if semester_filter %}&semester={{ semester_filter }}{% endif %}">Previous</a>
+                                            </li>
+                                        {% endif %}
+                                        
+                                        <li class="page-item active">
+                                            <span class="page-link">
+                                                Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}
+                                            </span>
+                                        </li>
+                                        
+                                        {% if page_obj.has_next %}
+                                            <li class="page-item">
+                                                <a class="page-link" href="?page={{ page_obj.next_page_number }}{% if semester_filter %}&semester={{ semester_filter }}{% endif %}">Next</a>
+                                            </li>
+                                        {% endif %}
+                                    </ul>
+                                </nav>
+                            </div>
+                        {% endif %}
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+    .card {
+        border: none;
+        box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.15);
+    }
+    .card-header {
+        background-color: #f8f9fc;
+        border-bottom: 1px solid #e3e6f0;
+    }
+    .table-success {
+        background-color: rgba(40, 167, 69, 0.1);
+    }
+    .table-danger {
+        background-color: rgba(220, 53, 69, 0.1);
+    }
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function toggleAll(selectAllCheckbox) {
+    const checkboxes = document.querySelectorAll('.student-checkbox');
+    checkboxes.forEach(checkbox => {
+        checkbox.checked = selectAllCheckbox.checked;
+    });
+}
+
+function selectEligible() {
+    const checkboxes = document.querySelectorAll('.student-checkbox');
+    checkboxes.forEach(checkbox => {
+        const row = checkbox.closest('tr');
+        if (row.classList.contains('table-success')) {
+            checkbox.checked = true;
+        }
+    });
+}
+
+function clearSelection() {
+    const checkboxes = document.querySelectorAll('.student-checkbox, #selectAll');
+    checkboxes.forEach(checkbox => {
+        checkbox.checked = false;
+    });
+}
+
+function confirmPromotion() {
+    const selectedCheckboxes = document.querySelectorAll('.student-checkbox:checked');
+    if (selectedCheckboxes.length === 0) {
+        alert('Please select at least one student to promote.');
+        return false;
+    }
+    
+    const count = selectedCheckboxes.length;
+    return confirm(`Are you sure you want to promote ${count} student(s) to the next semester?`);
+}
+</script>
+{% endblock %}

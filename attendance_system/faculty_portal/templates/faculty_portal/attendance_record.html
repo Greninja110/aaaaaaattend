@@ -1,0 +1,198 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Attendance Recording - Faculty Portal{% endblock %}
+
+{% block nav_items %}
+<li class="nav-item">
+    <a class="nav-link" href="{% url 'faculty_portal:index' %}">Dashboard</a>
+</li>
+<li class="nav-item">
+    <a class="nav-link active" href="{% url 'faculty_portal:attendance_record' %}">Attendance</a>
+</li>
+<li class="nav-item">
+    <a class="nav-link" href="{% url 'faculty_portal:timetable' %}">Timetable</a>
+</li>
+<li class="nav-item">
+    <a class="nav-link" href="{% url 'faculty_portal:leave_applications' %}">Leave Applications</a>
+</li>
+<li class="nav-item">
+    <a class="nav-link" href="{% url 'faculty_portal:reports' %}">Reports</a>
+</li>
+<li class="nav-item">
+    <a class="nav-link" href="{% url 'faculty_portal:bulk_attendance' %}">Bulk Upload</a>
+</li>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <div class="row mb-4">
+        <div class="col-md-12">
+            <h2 class="mb-4">Attendance Recording - {{ faculty.user.full_name }}</h2>
+            
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                {% endfor %}
+            {% endif %}
+            
+            <div class="alert alert-info">
+                <h6><i class="fas fa-info-circle"></i> Academic Year: {{ academic_year }}</h6>
+                <p class="mb-0">Department: {{ faculty.department.department_name }}</p>
+            </div>
+            
+            <!-- Subject Selection -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h6 class="m-0 font-weight-bold text-primary">Select Subject for Attendance Recording</h6>
+                </div>
+                <div class="card-body">
+                    <div class="row g-3">
+                        {% for fs in faculty_subjects %}
+                            <div class="col-md-6 col-lg-4">
+                                <div class="card subject-card">
+                                    <div class="card-body">
+                                        <h6 class="card-title">{{ fs.subject.subject_name }}</h6>
+                                        <p class="card-text">
+                                            <strong>Code:</strong> {{ fs.subject.subject_code }}<br>
+                                            <strong>Class:</strong> 
+                                            {% if fs.class_section %}
+                                                {{ fs.class_section.section_name }}
+                                            {% endif %}
+                                            {% if fs.batch %}
+                                                - Batch {{ fs.batch.batch_name }}
+                                            {% endif %}
+                                            <br>
+                                            <strong>Type:</strong> 
+                                            {% if fs.is_lab %}
+                                                <span class="badge badge-warning">Lab</span>
+                                            {% else %}
+                                                <span class="badge badge-info">Theory</span>
+                                            {% endif %}
+                                            <br>
+                                            <strong>Semester:</strong> {{ fs.subject.semester }}
+                                        </p>
+                                        <div class="d-flex gap-2">
+                                            <a href="{% url 'faculty_portal:record_attendance' fs.faculty_subject_id %}" 
+                                               class="btn btn-primary btn-sm">
+                                                <i class="fas fa-clipboard-check"></i> Record Attendance
+                                            </a>
+                                            <a href="{% url 'faculty_portal:download_attendance_template' fs.faculty_subject_id %}" 
+                                               class="btn btn-secondary btn-sm">
+                                                <i class="fas fa-download"></i> Template
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        {% empty %}
+                            <div class="col-12">
+                                <div class="alert alert-warning">
+                                    <i class="fas fa-exclamation-triangle"></i> No subjects assigned to you for the current academic year.
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Quick Actions -->
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-header">
+                            <h6 class="m-0 font-weight-bold text-primary">Quick Actions</h6>
+                        </div>
+                        <div class="card-body">
+                            <div class="list-group">
+                                <a href="{% url 'faculty_portal:bulk_attendance' %}" 
+                                   class="list-group-item list-group-item-action">
+                                    <i class="fas fa-upload"></i> Bulk Upload Attendance
+                                </a>
+                                <a href="{% url 'faculty_portal:attendance_history' %}" 
+                                   class="list-group-item list-group-item-action">
+                                    <i class="fas fa-history"></i> View Attendance History
+                                </a>
+                                <a href="{% url 'faculty_portal:reports' %}" 
+                                   class="list-group-item list-group-item-action">
+                                    <i class="fas fa-chart-bar"></i> Generate Reports
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-header">
+                            <h6 class="m-0 font-weight-bold text-primary">Attendance Guidelines</h6>
+                        </div>
+                        <div class="card-body">
+                            <ul class="list-unstyled">
+                                <li><i class="fas fa-check text-success"></i> Record attendance for each class session</li>
+                                <li><i class="fas fa-check text-success"></i> Use Present/Absent status appropriately</li>
+                                <li><i class="fas fa-check text-success"></i> Upload attendance files in CSV format</li>
+                                <li><i class="fas fa-check text-success"></i> Review attendance before final submission</li>
+                                <li><i class="fas fa-check text-success"></i> Contact admin for attendance corrections</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+    .subject-card {
+        border: 1px solid #e3e6f0;
+        transition: all 0.3s;
+    }
+    .subject-card:hover {
+        box-shadow: 0 0.25rem 0.5rem rgba(0, 0, 0, 0.1);
+        transform: translateY(-2px);
+    }
+    .card {
+        border: none;
+        box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.15);
+    }
+    .card-header {
+        background-color: #f8f9fc;
+        border-bottom: 1px solid #e3e6f0;
+    }
+    .list-group-item {
+        border: none;
+        border-bottom: 1px solid #e3e6f0;
+    }
+    .list-group-item:last-child {
+        border-bottom: none;
+    }
+    .list-group-item i {
+        width: 20px;
+        margin-right: 10px;
+    }
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Add any JavaScript functionality here if needed
+document.addEventListener('DOMContentLoaded', function() {
+    // Add hover effects or other interactive elements
+    const cards = document.querySelectorAll('.subject-card');
+    cards.forEach(card => {
+        card.addEventListener('mouseenter', function() {
+            this.style.borderColor = '#007bff';
+        });
+        card.addEventListener('mouseleave', function() {
+            this.style.borderColor = '#e3e6f0';
+        });
+    });
+});
+</script>
+{% endblock %}

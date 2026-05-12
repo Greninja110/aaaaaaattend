@@ -1,0 +1,764 @@
+{% extends 'student_portal/base_student.html' %}
+{% load static %}
+
+{% block student_title %}Subject Attendance{% endblock %}
+
+{% block student_content %}
+<div class="container-fluid py-4">
+    <!-- Page Header -->
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+        <div>
+            <h2 class="h3 mb-0">{{ subject.subject_name }} Attendance</h2>
+            <p class="text-muted">Subject Code: {{ subject.subject_code }} | Faculty: {{ subject.faculty_name }}</p>
+        </div>
+        <div>
+            <a href="{% url 'student_portal:attendance' %}" class="btn btn-sm btn-outline-primary me-2">
+                <i class="fas fa-arrow-left mr-1"></i> Back to All Subjects
+            </a>
+            <button type="button" class="btn btn-sm btn-primary" id="exportAttendance">
+                <i class="fas fa-download mr-1"></i> Export
+            </button>
+        </div>
+    </div>
+    
+    <!-- Attendance Summary Card -->
+    <div class="card shadow mb-4 dashboard-card">
+        <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+            <h6 class="m-0 font-weight-bold">Attendance Summary</h6>
+            <div class="attendance-status">
+                <div class="d-flex align-items-center">
+                    <div class="attendance-gauge">
+                        <div class="gauge-value 
+                            {% if attendance_percentage >= 75 %}success
+                            {% elif attendance_percentage >= 70 %}warning
+                            {% else %}danger{% endif %}" 
+                            style="--percentage: {{ attendance_percentage }}%;">{{ attendance_percentage }}%</div>
+                    </div>
+                    <div class="ms-3">
+                        <h5 class="
+                            {% if attendance_percentage >= 75 %}text-success
+                            {% elif attendance_percentage >= 70 %}text-warning
+                            {% else %}text-danger{% endif %} mb-1">
+                            {% if attendance_percentage >= 75 %}Good{% elif attendance_percentage >= 70 %}Warning{% else %}Critical{% endif %}
+                        </h5>
+                        <p class="small mb-0">
+                            {% if attendance_percentage < 75 %}
+                                {{ threshold_difference }}% below threshold
+                            {% else %}
+                                {{ attendance_percentage|add:"-75" }}% above threshold
+                            {% endif %}
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="chart-container" style="position: relative; height:250px;">
+                        <canvas id="subjectAttendanceChart"></canvas>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="row">
+                        <div class="col-sm-6 mb-4">
+                            <div class="stat-card">
+                                <i class="fas fa-calendar-check stat-icon text-primary"></i>
+                                <div class="stat-content">
+                                    <h4>{{ total_classes }}</h4>
+                                    <p>Total Classes</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-sm-6 mb-4">
+                            <div class="stat-card">
+                                <i class="fas fa-user-check stat-icon text-success"></i>
+                                <div class="stat-content">
+                                    <h4>{{ classes_attended }}</h4>
+                                    <p>Classes Attended</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-sm-6 mb-4">
+                            <div class="stat-card">
+                                <i class="fas fa-user-times stat-icon text-danger"></i>
+                                <div class="stat-content">
+                                    <h4>{{ classes_missed }}</h4>
+                                    <p>Classes Missed</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-sm-6 mb-4">
+                            <div class="stat-card">
+                                <i class="fas fa-file-medical-alt stat-icon text-warning"></i>
+                                <div class="stat-content">
+                                    <h4>{{ leaves_approved }}</h4>
+                                    <p>On Leave</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Required Classes to Reach 75% -->
+                    {% if attendance_percentage < 75 %}
+                    <div class="alert alert-warning">
+                        <h6 class="alert-heading"><i class="fas fa-exclamation-triangle me-2"></i> Attendance Warning</h6>
+                        <p class="mb-0">You need to attend at least <strong>{{ classes_needed }}</strong> more classes to reach the 75% attendance threshold.</p>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Monthly Attendance Trend -->
+    <div class="card shadow mb-4 dashboard-card">
+        <div class="card-header py-3">
+            <h6 class="m-0 font-weight-bold">Monthly Attendance Trend</h6>
+        </div>
+        <div class="card-body">
+            <div class="chart-container" style="position: relative; height:300px;">
+                <canvas id="monthlyTrendChart"></canvas>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Detailed Attendance Records -->
+    <div class="card shadow mb-4 dashboard-card">
+        <div class="card-header py-3 d-flex justify-content-between align-items-center">
+            <h6 class="m-0 font-weight-bold">Detailed Attendance Records</h6>
+            <div class="btn-group">
+                <button type="button" class="btn btn-sm btn-outline-primary filter-btn active" data-filter="all">All</button>
+                <button type="button" class="btn btn-sm btn-outline-primary filter-btn" data-filter="present">Present</button>
+                <button type="button" class="btn btn-sm btn-outline-primary filter-btn" data-filter="absent">Absent</button>
+                <button type="button" class="btn btn-sm btn-outline-primary filter-btn" data-filter="leave">On Leave</button>
+            </div>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover" id="detailedAttendanceTable">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Date</th>
+                            <th>Day</th>
+                            <th>Time</th>
+                            <th>Topic</th>
+                            <th>Faculty</th>
+                            <th>Status</th>
+                            <th>Remarks</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for record in attendance_records %}
+                        <tr class="{{ record.status }}-row">
+                            <td>{{ record.date }}</td>
+                            <td>{{ record.day }}</td>
+                            <td>{{ record.start_time }} - {{ record.end_time }}</td>
+                            <td>{{ record.topic }}</td>
+                            <td>{{ record.faculty_name }}</td>
+                            <td>
+                                {% if record.status == 'present' %}
+                                    <span class="badge bg-success">Present</span>
+                                {% elif record.status == 'absent' %}
+                                    <span class="badge bg-danger">Absent</span>
+                                {% elif record.status == 'leave' %}
+                                    <span class="badge bg-secondary">On Leave</span>
+                                {% endif %}
+                            </td>
+                            <td>{{ record.remarks|default:"-" }}</td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="7" class="text-center">No attendance records found</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Day Detail Modal -->
+<div class="modal fade" id="dayDetailModal" tabindex="-1" aria-labelledby="dayDetailModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="dayDetailModalLabel">Attendance for <span id="modalDate"></span></h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="day-detail-status" id="modalStatus">
+                    <!-- Will be filled dynamically -->
+                </div>
+                
+                <div class="day-detail-info">
+                    <h6>Class Details</h6>
+                    <table class="table table-sm">
+                        <tr>
+                            <th width="120">Subject</th>
+                            <td id="modalSubject"></td>
+                        </tr>
+                        <tr>
+                            <th>Topic</th>
+                            <td id="modalTopic"></td>
+                        </tr>
+                        <tr>
+                            <th>Type</th>
+                            <td id="modalType"></td>
+                        </tr>
+                        <tr>
+                            <th>Time</th>
+                            <td id="modalTime"></td>
+                        </tr>
+                        <tr>
+                            <th>Faculty</th>
+                            <td id="modalFaculty"></td>
+                        </tr>
+                        <tr>
+                            <th>Room</th>
+                            <td id="modalRoom"></td>
+                        </tr>
+                    </table>
+                </div>
+                
+                <div class="attendance-evidence">
+                    <h6>Attendance Evidence</h6>
+                    <p class="mb-2">Attendance recorded by: <span id="modalRecordedBy"></span></p>
+                    <p class="mb-0">Recorded time: <span id="modalRecordedTime"></span></p>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline-primary me-2" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" id="requestCorrectionBtn">
+                    <i class="fas fa-exclamation-circle me-1"></i> Request Correction
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Request Correction Modal -->
+<div class="modal fade" id="requestCorrectionModal" tabindex="-1" aria-labelledby="requestCorrectionModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title" id="requestCorrectionModalLabel">Request Attendance Correction</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="correctionRequestForm">
+                    {% csrf_token %}
+                    <input type="hidden" id="correctionAttendanceId" name="attendance_id">
+                    
+                    <div class="mb-3">
+                        <label for="correctionDate" class="form-label">Date</label>
+                        <input type="text" class="form-control" id="correctionDate" readonly>
+                    </div>
+                    <div class="mb-3">
+                        <label for="correctionSubject" class="form-label">Subject</label>
+                        <input type="text" class="form-control" id="correctionSubject" readonly>
+                    </div>
+                    <div class="mb-3">
+                        <label for="correctionCurrentStatus" class="form-label">Current Status</label>
+                        <input type="text" class="form-control" id="correctionCurrentStatus" readonly>
+                    </div>
+                    <div class="mb-3">
+                        <label for="correctionRequestedStatus" class="form-label">Requested Status</label>
+                        <select class="form-select" id="correctionRequestedStatus" name="requested_status" required>
+                            <option value="">Select Status</option>
+                            <option value="present">Present</option>
+                            <option value="absent">Absent</option>
+                            <option value="leave">On Leave</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="correctionReason" class="form-label">Reason for Correction</label>
+                        <textarea class="form-control" id="correctionReason" name="reason" rows="3" required></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label for="correctionEvidence" class="form-label">Supporting Evidence (if any)</label>
+                        <input class="form-control" type="file" id="correctionEvidence" name="evidence">
+                        <div class="form-text">Upload any supporting documents (e.g., medical certificate). Max size: 2MB.</div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" id="submitCorrectionRequest">Submit Request</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block student_custom_css %}
+<style>
+    /* Attendance Gauge */
+    .attendance-gauge {
+        position: relative;
+        width: 80px;
+        height: 80px;
+        border-radius: 50%;
+        background: #f1f1f1;
+        overflow: hidden;
+    }
+    
+    .gauge-value {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 100%;
+        height: 100%;
+        font-size: 18px;
+        font-weight: 700;
+        color: white;
+        background: conic-gradient(
+            var(--gauge-color) calc(var(--percentage) * 1%),
+            #f1f1f1 0%
+        );
+        border-radius: 50%;
+        position: relative;
+    }
+    
+    .gauge-value::before {
+        content: '';
+        position: absolute;
+        inset: 10px;
+        border-radius: 50%;
+        background: white;
+    }
+    
+    .gauge-value::after {
+        content: attr(style);
+        position: relative;
+        z-index: 1;
+        color: #333;
+    }
+    
+    .gauge-value.success {
+        --gauge-color: #1cc88a;
+    }
+    
+    .gauge-value.warning {
+        --gauge-color: #f6c23e;
+    }
+    
+    .gauge-value.danger {
+        --gauge-color: #e74a3b;
+    }
+    
+    /* Stat Cards */
+    .stat-card {
+        display: flex;
+        align-items: center;
+        padding: 15px;
+        border-radius: 8px;
+        background-color: #f8f9fc;
+        box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+        height: 100%;
+    }
+    
+    .stat-icon {
+        font-size: 2rem;
+        margin-right: 15px;
+    }
+    
+    .stat-content h4 {
+        margin: 0;
+        font-size: 1.5rem;
+        font-weight: 700;
+    }
+    
+    .stat-content p {
+        margin: 0;
+        color: #5a5c69;
+        font-size: 0.8rem;
+    }
+    
+    /* Filter buttons */
+    .filter-btn.active {
+        background-color: #4e73df;
+        color: white;
+    }
+    
+    /* Day detail modal styling */
+    .day-detail-status {
+        padding: 15px;
+        border-radius: 5px;
+        margin-bottom: 20px;
+        text-align: center;
+        font-weight: 600;
+    }
+    
+    .day-detail-status.present {
+        background-color: #e3fcef;
+        color: #1cc88a;
+    }
+    
+    .day-detail-status.absent {
+        background-color: #faeceb;
+        color: #e74a3b;
+    }
+    
+    .day-detail-status.leave {
+        background-color: #fff8e5;
+        color: #f6c23e;
+    }
+    
+    .day-detail-info {
+        margin-bottom: 20px;
+    }
+    
+    .day-detail-info h6, .attendance-evidence h6 {
+        margin-bottom: 10px;
+        color: #4e73df;
+        font-weight: 600;
+    }
+    
+    .day-detail-info .table th {
+        font-weight: 600;
+        color: #5a5c69;
+    }
+    
+    .attendance-evidence {
+        padding: 15px;
+        background-color: #f8f9fc;
+        border-radius: 5px;
+    }
+</style>
+{% endblock %}
+
+{% block student_custom_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        try {
+            // Log page load
+            logToFile(`Subject attendance page loaded for subject ID: {{ subject.id }}`);
+            
+            // Initialize DataTable
+            const attendanceTable = $('#detailedAttendanceTable').DataTable({
+                ordering: true,
+                pageLength: 10,
+                lengthMenu: [5, 10, 25, 50, 100],
+                language: {
+                    search: "_INPUT_",
+                    searchPlaceholder: "Search records..."
+                }
+            });
+            
+            // Filter buttons functionality
+            $('.filter-btn').on('click', function() {
+                $('.filter-btn').removeClass('active');
+                $(this).addClass('active');
+                
+                const filter = $(this).data('filter');
+                logToFile(`Attendance filter applied: ${filter}`);
+                
+                if (filter === 'all') {
+                    attendanceTable.search('').draw();
+                } else {
+                    attendanceTable.search(filter).draw();
+                }
+            });
+            
+            // Initialize Subject Attendance Chart
+            const ctx = document.getElementById('subjectAttendanceChart').getContext('2d');
+            const subjectAttendanceChart = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Present', 'Absent', 'On Leave'],
+                    datasets: [{
+                        data: [{{ classes_attended }}, {{ classes_missed }}, {{ leaves_approved }}],
+                        backgroundColor: ['#1cc88a', '#e74a3b', '#f6c23e'],
+                        hoverBackgroundColor: ['#17a673', '#d52a1a', '#dda20a'],
+                        hoverBorderColor: "rgba(234, 236, 244, 1)"
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    cutout: '70%',
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                usePointStyle: true,
+                                padding: 15
+                            }
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    const label = context.label || '';
+                                    const value = context.raw;
+                                    const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                                    const percentage = Math.round((value / total) * 100);
+                                    return `${label}: ${value} classes (${percentage}%)`;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+            
+            // Initialize Monthly Trend Chart
+            const trendCtx = document.getElementById('monthlyTrendChart').getContext('2d');
+            const monthlyTrendChart = new Chart(trendCtx, {
+                type: 'line',
+                data: {
+                    labels: {{ months|safe }},
+                    datasets: [{
+                        label: 'Monthly Attendance %',
+                        data: {{ monthly_attendance|safe }},
+                        fill: {
+                            target: 'origin',
+                            above: 'rgba(78, 115, 223, 0.1)'
+                        },
+                        borderColor: '#4e73df',
+                        borderWidth: 3,
+                        pointBackgroundColor: '#4e73df',
+                        pointBorderColor: '#fff',
+                        pointHoverBackgroundColor: '#fff',
+                        pointHoverBorderColor: '#4e73df',
+                        pointRadius: 4,
+                        pointHoverRadius: 6,
+                        tension: 0.4
+                    }, {
+                        label: 'Required Threshold',
+                        data: [75, 75, 75, 75, 75, 75],
+                        borderColor: '#e74a3b',
+                        borderWidth: 2,
+                        borderDash: [5, 5],
+                        pointRadius: 0,
+                        fill: false
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: false,
+                            min: 60,
+                            max: 100,
+                            ticks: {
+                                stepSize: 5
+                            },
+                            title: {
+                                display: true,
+                                text: 'Attendance %'
+                            },
+                            grid: {
+                                borderDash: [2, 2]
+                            }
+                        },
+                        x: {
+                            grid: {
+                                display: false
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            display: true,
+                            position: 'top',
+                            labels: {
+                                boxWidth: 15,
+                                usePointStyle: true
+                            }
+                        },
+                        tooltip: {
+                            mode: 'index',
+                            intersect: false,
+                            callbacks: {
+                                label: function(context) {
+                                    return context.dataset.label + ': ' + context.raw + '%';
+                                }
+                            }
+                        }
+                    },
+                    interaction: {
+                        mode: 'nearest',
+                        axis: 'x',
+                        intersect: false
+                    }
+                }
+            });
+            
+            // Show day detail modal when clicking on a table row
+            $('#detailedAttendanceTable tbody').on('click', 'tr', function() {
+                const data = attendanceTable.row(this).data();
+                if (!data) return;
+                
+                // Log the action
+                logToFile(`Opening attendance detail modal for date: ${data[0]}`);
+                
+                // Get the attendance record details from the data source
+                // In a real app, you would make an AJAX call to get the details
+                // For now, we'll extract it from the row data
+                
+                const date = data[0];
+                const day = data[1];
+                const time = data[2];
+                const topic = data[3];
+                const faculty = data[4];
+                
+                // Extract status from the badge
+                const statusCell = data[5];
+                const statusTemp = document.createElement('div');
+                statusTemp.innerHTML = statusCell;
+                const statusBadge = statusTemp.querySelector('.badge');
+                const status = statusBadge ? statusBadge.textContent.toLowerCase() : 'unknown';
+                
+                // Fill modal with data
+                document.getElementById('modalDate').textContent = `${day}, ${date}`;
+                
+                const statusElement = document.getElementById('modalStatus');
+                statusElement.className = 'day-detail-status ' + status;
+                
+                if (status === 'present') {
+                    statusElement.innerHTML = '<i class="fas fa-check-circle me-2"></i> Present';
+                } else if (status === 'absent') {
+                    statusElement.innerHTML = '<i class="fas fa-times-circle me-2"></i> Absent';
+                } else {
+                    statusElement.innerHTML = '<i class="fas fa-calendar-check me-2"></i> On Leave';
+                }
+                
+                document.getElementById('modalSubject').textContent = '{{ subject.subject_name }}';
+                document.getElementById('modalTopic').textContent = topic;
+                document.getElementById('modalType').textContent = '{{ subject.is_lab|yesno:"Practical,Theory" }}';
+                document.getElementById('modalTime').textContent = time;
+                document.getElementById('modalFaculty').textContent = faculty;
+                document.getElementById('modalRoom').textContent = 'Room ' + Math.floor(Math.random() * 10 + 301); // Placeholder
+                
+                document.getElementById('modalRecordedBy').textContent = faculty;
+                document.getElementById('modalRecordedTime').textContent = `${date}, ${time.split(' - ')[1]}`;
+                
+                // Show modal
+                $('#dayDetailModal').modal('show');
+                
+                // Also fill the correction form in advance
+                document.getElementById('correctionDate').value = date;
+                document.getElementById('correctionSubject').value = '{{ subject.subject_name }}';
+                document.getElementById('correctionCurrentStatus').value = status.charAt(0).toUpperCase() + status.slice(1);
+                
+                // Store attendance ID for later use (in a real app, this would be the DB ID)
+                // For demonstration, we'll use a placeholder
+                document.getElementById('correctionAttendanceId').value = `${date.replace(/[^0-9]/g, '')}-{{ subject.id }}`;
+            });
+            
+            // Handle request correction button
+            document.getElementById('requestCorrectionBtn').addEventListener('click', function() {
+                logToFile('Attendance correction request started');
+                
+                // Hide day detail modal
+                $('#dayDetailModal').modal('hide');
+                
+                // Show request correction modal
+                $('#requestCorrectionModal').modal('show');
+            });
+            
+            // Handle submit correction request
+            document.getElementById('submitCorrectionRequest').addEventListener('click', function() {
+                const form = document.getElementById('correctionRequestForm');
+                const status = document.getElementById('correctionRequestedStatus').value;
+                const reason = document.getElementById('correctionReason').value;
+                
+                // Check if form is valid
+                if (!status || !reason) {
+                    logToFile('Attendance correction form validation failed', 'warning');
+                    
+                    Swal.fire({
+                        title: 'Missing Information',
+                        text: 'Please select a status and provide a reason for the correction request.',
+                        icon: 'error',
+                        confirmButtonColor: '#4e73df'
+                    });
+                    return;
+                }
+                
+                // In a real app, you would submit the form via AJAX
+                // For demonstration, we'll simulate the request
+                
+                logToFile('Submitting attendance correction request');
+                
+                Swal.fire({
+                    title: 'Submitting Request',
+                    html: 'Please wait...',
+                    timer: 2000,
+                    timerProgressBar: true,
+                    didOpen: () => {
+                        Swal.showLoading();
+                    }
+                }).then(() => {
+                    // Hide modal
+                    $('#requestCorrectionModal').modal('hide');
+                    
+                    logToFile('Attendance correction request submitted successfully');
+                    
+                    // Show success message
+                    Swal.fire({
+                        title: 'Request Submitted',
+                        text: 'Your attendance correction request has been submitted successfully. You will be notified once it is reviewed by the faculty.',
+                        icon: 'success',
+                        confirmButtonColor: '#4e73df'
+                    });
+                    
+                    // Reset form
+                    form.reset();
+                });
+            });
+            
+            // Export button functionality
+            document.getElementById('exportAttendance').addEventListener('click', function() {
+                logToFile('Attendance export requested');
+                
+                Swal.fire({
+                    title: 'Export Attendance',
+                    html: 'Choose export format:<br><br>',
+                    showCancelButton: true,
+                    confirmButtonText: 'PDF',
+                    cancelButtonText: 'Excel',
+                    confirmButtonColor: '#4e73df',
+                    cancelButtonColor: '#1cc88a',
+                    showCloseButton: true,
+                    focusConfirm: false
+                }).then((result) => {
+                    if (result.isConfirmed || result.dismiss === Swal.DismissReason.cancel) {
+                        const format = result.isConfirmed ? 'PDF' : 'Excel';
+                        
+                        // Generate export URL
+                        const url = '{% url "student_portal:subject_attendance" subject.id %}?export=' + format.toLowerCase();
+                        
+                        logToFile(`Attendance export started in ${format} format`);
+                        
+                        Swal.fire({
+                            title: 'Exporting...',
+                            html: `Preparing ${format} file...`,
+                            timer: 2000,
+                            timerProgressBar: true,
+                            didOpen: () => {
+                                Swal.showLoading();
+                            }
+                        }).then(() => {
+                            logToFile(`Attendance export completed in ${format} format`);
+                            
+                            Swal.fire({
+                                title: 'Success!',
+                                text: `Attendance data has been exported as ${format}.`,
+                                icon: 'success',
+                                confirmButtonColor: '#4e73df'
+                            });
+                        });
+                    }
+                });
+            });
+            
+        } catch (error) {
+            logToFile(`Error in subject attendance page: ${error.message}`, 'error');
+            console.error("An error occurred:", error);
+        }
+    });
+</script>
+{% endblock %}

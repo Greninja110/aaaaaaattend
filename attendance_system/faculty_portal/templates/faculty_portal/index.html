@@ -1,0 +1,287 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Faculty Dashboard - MBIT Attendance System{% endblock %}
+
+{% block nav_items %}
+<li class="nav-item">
+    <a class="nav-link active" href="{% url 'faculty_portal:index' %}">Dashboard</a>
+</li>
+<li class="nav-item">
+    <a class="nav-link" href="{% url 'faculty_portal:attendance_record' %}">Attendance</a>
+</li>
+<li class="nav-item">
+    <a class="nav-link" href="{% url 'faculty_portal:timetable' %}">Timetable</a>
+</li>
+<li class="nav-item">
+    <a class="nav-link" href="{% url 'faculty_portal:leave_applications' %}">Leave Applications</a>
+</li>
+<li class="nav-item">
+    <a class="nav-link" href="{% url 'faculty_portal:reports' %}">Reports</a>
+</li>
+<li class="nav-item">
+    <a class="nav-link" href="{% url 'faculty_portal:bulk_attendance' %}">Bulk Upload</a>
+</li>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <div class="row mb-4">
+        <div class="col-md-12">
+            <h2 class="mb-4">Faculty Dashboard</h2>
+            
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="alert {{ message.tags }} alert-dismissible fade show" role="alert">
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                {% endfor %}
+            {% endif %}
+            
+            <div class="alert alert-success">
+                <h4 class="alert-heading">Welcome to Faculty Portal!</h4>
+                <p>You are logged in as {{ faculty.user.full_name }} ({{ faculty.employee_id }}) - {{ faculty.department.department_name }} Department.</p>
+                <hr>
+                <p class="mb-0">Academic Year: {{ academic_year }} | Remember to record attendance for all your classes regularly.</p>
+            </div>
+        </div>
+    </div>
+    
+    <div class="row">
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-primary shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                                Your Subjects</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">{{ faculty_subjects.count }}</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-book fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-info shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-info text-uppercase mb-1">
+                                Today's Classes</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">{{ today_classes.count }}</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-calendar-day fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-warning shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
+                                Pending Leaves</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">{{ pending_leaves.count }}</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-clipboard-check fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-danger shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-danger text-uppercase mb-1">
+                                Recent Records</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">{{ recent_attendance.count }}</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-history fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="row mt-4">
+        <div class="col-md-6">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                    <h6 class="m-0 font-weight-bold text-primary">Today's Schedule</h6>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-bordered">
+                            <thead>
+                                <tr>
+                                    <th>Time</th>
+                                    <th>Subject</th>
+                                    <th>Class</th>
+                                    <th>Room</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for class in today_classes %}
+                                <tr>
+                                    <td>{{ class.start_time|time:"g:i A" }} - {{ class.end_time|time:"g:i A" }}</td>
+                                    <td>{{ class.faculty_subject.subject.subject_name }}</td>
+                                    <td>
+                                        {{ class.faculty_subject.class_section.section_name }}
+                                        {% if class.faculty_subject.batch %}
+                                            - Batch {{ class.faculty_subject.batch.batch_name }}
+                                        {% endif %}
+                                    </td>
+                                    <td>{{ class.room_number }}</td>
+                                    <td>
+                                        <a href="{% url 'faculty_portal:record_attendance' class.faculty_subject.faculty_subject_id %}" 
+                                           class="btn btn-sm btn-primary">Record Attendance</a>
+                                    </td>
+                                </tr>
+                                {% empty %}
+                                <tr>
+                                    <td colspan="5" class="text-center">No classes scheduled for today</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-6">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                    <h6 class="m-0 font-weight-bold text-primary">Subject Attendance Statistics</h6>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-bordered">
+                            <thead>
+                                <tr>
+                                    <th>Subject</th>
+                                    <th>Class</th>
+                                    <th>Classes Held</th>
+                                    <th>Avg. Attendance</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for stats in attendance_stats %}
+                                <tr>
+                                    <td>{{ stats.subject.subject_name }}</td>
+                                    <td>
+                                        {% if stats.class_section %}
+                                            {{ stats.class_section.section_name }}
+                                        {% endif %}
+                                        {% if stats.batch %}
+                                            - {{ stats.batch.batch_name }}
+                                        {% endif %}
+                                    </td>
+                                    <td>{{ stats.total_classes }}</td>
+                                    <td>
+                                        <span class="badge badge-{% if stats.avg_attendance < 75 %}danger{% elif stats.avg_attendance < 85 %}warning{% else %}success{% endif %}">
+                                            {{ stats.avg_attendance }}%
+                                        </span>
+                                    </td>
+                                </tr>
+                                {% empty %}
+                                <tr>
+                                    <td colspan="4" class="text-center">No attendance statistics available</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Pending Leave Applications -->
+    <div class="row mt-4">
+        <div class="col-md-12">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                    <h6 class="m-0 font-weight-bold text-primary">Pending Leave Applications</h6>
+                    <a href="{% url 'faculty_portal:leave_applications' %}" class="btn btn-sm btn-primary">View All</a>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-bordered">
+                            <thead>
+                                <tr>
+                                    <th>Student</th>
+                                    <th>Roll No</th>
+                                    <th>Leave Period</th>
+                                    <th>Reason</th>
+                                    <th>Status</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for leave in pending_leaves %}
+                                <tr>
+                                    <td>{{ leave.student.user.full_name }}</td>
+                                    <td>{{ leave.student.roll_number }}</td>
+                                    <td>{{ leave.start_date }} to {{ leave.end_date }}</td>
+                                    <td>{{ leave.reason|truncatewords:10 }}</td>
+                                    <td>
+                                        <span class="badge badge-warning">{{ leave.get_status_display }}</span>
+                                    </td>
+                                    <td>
+                                        <a href="{% url 'faculty_portal:approve_leave' leave.leave_id %}" 
+                                           class="btn btn-sm btn-success">Approve</a>
+                                        <a href="{% url 'faculty_portal:reject_leave' leave.leave_id %}" 
+                                           class="btn btn-sm btn-danger">Reject</a>
+                                    </td>
+                                </tr>
+                                {% empty %}
+                                <tr>
+                                    <td colspan="6" class="text-center">No pending leave applications</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+    .border-left-primary {
+        border-left: 0.25rem solid #007bff;
+    }
+    .border-left-success {
+        border-left: 0.25rem solid #28a745;
+    }
+    .border-left-info {
+        border-left: 0.25rem solid #17a2b8;
+    }
+    .border-left-warning {
+        border-left: 0.25rem solid #ffc107;
+    }
+    .border-left-danger {
+        border-left: 0.25rem solid #dc3545;
+    }
+</style>
+{% endblock %}

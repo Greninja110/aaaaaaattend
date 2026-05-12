@@ -1,0 +1,936 @@
+{% extends 'lab_assistant_portal/base_lab_assistant.html' %}
+{% load static %}
+
+{% block lab_assistant_title %}Dashboard{% endblock %}
+
+{% block lab_assistant_content %}
+<div class="container-fluid py-4">
+    <!-- Page Header -->
+    <div class="row mb-4">
+        <div class="col-md-12">
+            <h2 class="mb-3">Lab Assistant Dashboard</h2>
+            <div class="d-sm-flex align-items-center justify-content-between mb-4">
+                <p class="text-muted">Welcome back, <strong>{{ user.full_name }}</strong>! Here's your daily overview.</p>
+                <div>
+                    <button class="btn btn-sm btn-primary" id="refreshDashboard">
+                        <i class="fas fa-sync-alt mr-1"></i> Refresh
+                    </button>
+                    <button class="btn btn-sm btn-outline-primary" id="downloadSummary">
+                        <i class="fas fa-download mr-1"></i> Download Summary
+                    </button>
+                </div>
+            </div>
+            
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="alert {{ message.tags }} alert-dismissible fade show" role="alert">
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                {% endfor %}
+            {% endif %}
+        </div>
+    </div>
+    
+    <!-- Status Cards -->
+    <div class="row">
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-warning shadow h-100 py-2 stats-card">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
+                                Pending Leave Applications</div>
+                            <div class="h5 mb-0 font-weight-bold">{{ pending_leave_count }}</div>
+                            <div class="small text-muted mt-2">Requires your attention</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-calendar-plus fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-info shadow h-100 py-2 stats-card">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-info text-uppercase mb-1">
+                                Today's Lab Sessions</div>
+                            <div class="h5 mb-0 font-weight-bold">{{ todays_lab_sessions }}</div>
+                            <div class="small text-muted mt-2">Across {{ todays_labs_count }} labs</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-flask fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-primary shadow h-100 py-2 stats-card">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                                Low Attendance Students</div>
+                            <div class="h5 mb-0 font-weight-bold">{{ low_attendance_count }}</div>
+                            <div class="small text-muted mt-2">Below 75% threshold</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-user-clock fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-success shadow h-100 py-2 stats-card">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
+                                Approved Leaves</div>
+                            <div class="h5 mb-0 font-weight-bold">{{ approved_leaves_month }}</div>
+                            <div class="small text-muted mt-2">This Month</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-check-circle fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Quick Actions Shortcuts -->
+    <div class="row mb-4">
+        <div class="col-md-12">
+            <div class="card shadow mb-4 dashboard-card">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold">Quick Actions</h6>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-3 mb-3">
+                            <a href="{% url 'lab_assistant_portal:leave_applications' %}" class="btn btn-block btn-outline-primary py-3">
+                                <i class="fas fa-file-alt fa-2x mb-2"></i><br>
+                                Review Leave Applications
+                            </a>
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <a href="{% url 'lab_assistant_portal:attendance_exceptions' %}" class="btn btn-block btn-outline-warning py-3">
+                                <i class="fas fa-exclamation-circle fa-2x mb-2"></i><br>
+                                Manage Attendance Exceptions
+                            </a>
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <a href="{% url 'lab_assistant_portal:low_attendance' %}" class="btn btn-block btn-outline-danger py-3">
+                                <i class="fas fa-user-clock fa-2x mb-2"></i><br>
+                                Monitor Low Attendance
+                            </a>
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <a href="{% url 'lab_assistant_portal:reports' %}" class="btn btn-block btn-outline-info py-3">
+                                <i class="fas fa-chart-bar fa-2x mb-2"></i><br>
+                                Generate Reports
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Today's Lab Schedule & Pending Leave Applications -->
+    <div class="row">
+        <div class="col-md-7">
+            <div class="card shadow mb-4 dashboard-card">
+                <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                    <h6 class="m-0 font-weight-bold">Today's Lab Schedule</h6>
+                    <div class="dropdown no-arrow">
+                        <a class="dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            <i class="fas fa-ellipsis-v fa-sm fa-fw text-gray-400"></i>
+                        </a>
+                        <div class="dropdown-menu dropdown-menu-right shadow animated--fade-in" aria-labelledby="dropdownMenuLink">
+                            <a class="dropdown-item" href="{% url 'lab_assistant_portal:lab_schedule' %}">View Full Schedule</a>
+                            <div class="dropdown-divider"></div>
+                            <a class="dropdown-item" href="#" id="downloadSchedule">Download Schedule</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-hover" id="labScheduleTable">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Time</th>
+                                    <th>Lab</th>
+                                    <th>Subject</th>
+                                    <th>Batch</th>
+                                    <th>Faculty</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for session in lab_schedule %}
+                                <tr class="{% if session.is_current %}table-primary{% endif %}">
+                                    <td>{{ session.start_time }} - {{ session.end_time }}</td>
+                                    <td>{{ session.lab_name }}</td>
+                                    <td>{{ session.subject_name }}</td>
+                                    <td>{{ session.batch_name }}</td>
+                                    <td>{{ session.faculty_name }}</td>
+                                    <td>
+                                        {% if session.is_past %}
+                                            <span class="badge bg-success">Completed</span>
+                                        {% elif session.is_current %}
+                                            <span class="badge bg-primary">In Progress</span>
+                                        {% else %}
+                                            <span class="badge bg-secondary">Upcoming</span>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                {% empty %}
+                                <tr>
+                                    <td colspan="6" class="text-center">No lab sessions scheduled for today.</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-5">
+            <div class="card shadow mb-4 dashboard-card">
+                <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                    <h6 class="m-0 font-weight-bold">Pending Leave Applications</h6>
+                    <div class="dropdown no-arrow">
+                        <a class="dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            <i class="fas fa-ellipsis-v fa-sm fa-fw text-gray-400"></i>
+                        </a>
+                        <div class="dropdown-menu dropdown-menu-right shadow animated--fade-in" aria-labelledby="dropdownMenuLink">
+                            <a class="dropdown-item" href="{% url 'lab_assistant_portal:leave_applications' %}">View All Applications</a>
+                            <div class="dropdown-divider"></div>
+                            <a class="dropdown-item" href="#" id="batchApprove">Batch Approve</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body">
+                    {% if pending_leave_applications %}
+                    <div class="leave-applications-list">
+                        {% for application in pending_leave_applications %}
+                        <a href="{% url 'lab_assistant_portal:leave_application_detail' application.id %}" class="leave-application-item">
+                            <div class="application-header">
+                                <div class="student-info">
+                                    <h6>{{ application.student_name }}</h6>
+                                    <span class="roll-number">{{ application.roll_number }}</span>
+                                </div>
+                                <span class="badge bg-warning">Pending</span>
+                            </div>
+                            <div class="application-dates">
+                                <div class="date-range">
+                                    <i class="fas fa-calendar-alt text-primary"></i>
+                                    {{ application.start_date }} to {{ application.end_date }}
+                                    <span class="duration">({{ application.duration }} days)</span>
+                                </div>
+                                <div class="applied-on">
+                                    Applied: {{ application.applied_date }}
+                                </div>
+                            </div>
+                            <div class="application-reason">
+                                <strong>Reason:</strong> {{ application.reason|truncatechars:60 }}
+                            </div>
+                            <div class="application-status">
+                                <div class="faculty-status">
+                                    {% if application.faculty_approved %}
+                                        <span class="text-success"><i class="fas fa-check-circle"></i> Faculty Approved</span>
+                                    {% else %}
+                                        <span class="text-muted"><i class="fas fa-clock"></i> Faculty Pending</span>
+                                    {% endif %}
+                                </div>
+                                <div class="action-buttons">
+                                    <button class="btn btn-sm btn-success approve-btn" data-id="{{ application.id }}">
+                                        <i class="fas fa-check"></i>
+                                    </button>
+                                    <button class="btn btn-sm btn-danger reject-btn" data-id="{{ application.id }}">
+                                        <i class="fas fa-times"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </a>
+                        {% endfor %}
+                    </div>
+                    {% else %}
+                    <div class="text-center py-4">
+                        <img src="{% static 'img/illustrations/no-data.svg' %}" alt="No Pending Applications" class="mb-3" style="width: 150px; opacity: 0.7;">
+                        <h5>No Pending Applications</h5>
+                        <p class="text-muted">All leave applications have been processed. Great job!</p>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Low Attendance Students & Attendance Exceptions -->
+    <div class="row">
+        <div class="col-md-6">
+            <div class="card shadow mb-4 dashboard-card">
+                <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                    <h6 class="m-0 font-weight-bold">Low Attendance Students</h6>
+                    <a href="{% url 'lab_assistant_portal:low_attendance' %}" class="btn btn-sm btn-primary">
+                        View All
+                    </a>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-hover" id="lowAttendanceTable">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Roll No</th>
+                                    <th>Student Name</th>
+                                    <th>Class</th>
+                                    <th>Subject</th>
+                                    <th>Attendance</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for student in low_attendance_students %}
+                                <tr>
+                                    <td>{{ student.roll_number }}</td>
+                                    <td>{{ student.name }}</td>
+                                    <td>{{ student.class_section }}</td>
+                                    <td>{{ student.subject }}</td>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            <div class="progress flex-grow-1 me-2" style="height: 8px;">
+                                                <div class="progress-bar bg-danger" role="progressbar" style="width: {{ student.attendance_percentage }}%" 
+                                                    aria-valuenow="{{ student.attendance_percentage }}" aria-valuemin="0" aria-valuemax="100"></div>
+                                            </div>
+                                            <span>{{ student.attendance_percentage }}%</span>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <button class="btn btn-sm btn-outline-primary notify-btn" data-id="{{ student.id }}">
+                                            <i class="fas fa-bell"></i> Notify
+                                        </button>
+                                    </td>
+                                </tr>
+                                {% empty %}
+                                <tr>
+                                    <td colspan="6" class="text-center">No students with low attendance found.</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-6">
+            <div class="card shadow mb-4 dashboard-card">
+                <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                    <h6 class="m-0 font-weight-bold">Recent Attendance Exceptions</h6>
+                    <a href="{% url 'lab_assistant_portal:attendance_exceptions' %}" class="btn btn-sm btn-primary">
+                        Manage Exceptions
+                    </a>
+                </div>
+                <div class="card-body">
+                    <div class="attendance-exceptions-list">
+                        {% for exception in recent_exceptions %}
+                        <div class="exception-item">
+                            <div class="exception-header">
+                                <div class="exception-type 
+                                    {% if exception.type == 'dont_care' %}dont-care
+                                    {% elif exception.type == 'correction' %}correction
+                                    {% else %}absence{% endif %}">
+                                    <i class="fas 
+                                        {% if exception.type == 'dont_care' %}fa-ban
+                                        {% elif exception.type == 'correction' %}fa-edit
+                                        {% else %}fa-calendar-times{% endif %}"></i>
+                                </div>
+                                <div class="exception-details">
+                                    <h6>{{ exception.student_name }} <span class="roll-number">{{ exception.roll_number }}</span></h6>
+                                    <p class="mb-0">{{ exception.subject_name }} | {{ exception.date }}</p>
+                                </div>
+                            </div>
+                            <div class="exception-status">
+                                <span class="badge 
+                                    {% if exception.status == 'approved' %}bg-success
+                                    {% elif exception.status == 'rejected' %}bg-danger
+                                    {% else %}bg-warning{% endif %}">
+                                    {{ exception.status|title }}
+                                </span>
+                                <span class="time-ago">{{ exception.time_ago }}</span>
+                            </div>
+                        </div>
+                        {% empty %}
+                        <div class="text-center py-4">
+                            <i class="fas fa-clipboard-check fa-3x mb-3 text-gray-300"></i>
+                            <p class="text-muted">No recent attendance exceptions found.</p>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Department-wise Attendance Chart -->
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card shadow mb-4 dashboard-card">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold">Department-wise Attendance Overview</h6>
+                </div>
+                <div class="card-body">
+                    <div class="chart-container" style="position: relative; height:300px;">
+                        <canvas id="departmentAttendanceChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Leave Approval Modal -->
+<div class="modal fade" id="leaveActionModal" tabindex="-1" aria-labelledby="leaveActionModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="leaveActionModalLabel">Leave Application Action</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="leaveActionForm">
+                    {% csrf_token %}
+                    <input type="hidden" id="leaveApplicationId" name="application_id">
+                    <input type="hidden" id="leaveAction" name="action">
+                    
+                    <div class="mb-3">
+                        <label for="leaveComment" class="form-label">Comment</label>
+                        <textarea class="form-control" id="leaveComment" name="comment" rows="3" placeholder="Add a comment (optional)"></textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-success" id="submitLeaveAction">Submit</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Notify Student Modal -->
+<div class="modal fade" id="notifyStudentModal" tabindex="-1" aria-labelledby="notifyStudentModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="notifyStudentModalLabel">Notify Student</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="notifyStudentForm">
+                    {% csrf_token %}
+                    <input type="hidden" id="studentId" name="student_id">
+                    
+                    <div class="mb-3">
+                        <label for="notificationType" class="form-label">Notification Type</label>
+                        <select class="form-select" id="notificationType" name="notification_type">
+                            <option value="email">Email</option>
+                            <option value="sms">SMS</option>
+                            <option value="both" selected>Both Email & SMS</option>
+                        </select>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="notificationMessage" class="form-label">Message</label>
+                        <textarea class="form-control" id="notificationMessage" name="message" rows="4">Dear Student,
+
+Your attendance in [Subject] has dropped below the required threshold of 75%. Please ensure you attend upcoming classes to avoid detention from examinations.
+
+MBIT Attendance System</textarea>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="notifyParents" name="notify_parents" checked>
+                            <label class="form-check-label" for="notifyParents">
+                                Also notify parents/guardians
+                            </label>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" id="sendNotification">Send Notification</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block lab_assistant_custom_css %}
+<style>
+    /* Leave application item styling */
+    .leave-applications-list {
+        max-height: 500px;
+        overflow-y: auto;
+    }
+    
+    .leave-application-item {
+        display: block;
+        padding: 12px;
+        border: 1px solid #e3e6f0;
+        border-radius: 8px;
+        margin-bottom: 10px;
+        text-decoration: none;
+        color: inherit;
+        transition: all 0.2s ease;
+    }
+    
+    .leave-application-item:hover {
+        box-shadow: 0 0.15rem 0.5rem rgba(58, 59, 69, 0.15);
+        transform: translateY(-2px);
+    }
+    
+    .application-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 8px;
+    }
+    
+    .student-info h6 {
+        margin-bottom: 0;
+        font-weight: 600;
+    }
+    
+    .roll-number {
+        font-size: 0.8rem;
+        color: #6c757d;
+    }
+    
+    .application-dates {
+        display: flex;
+        justify-content: space-between;
+        font-size: 0.85rem;
+        margin-bottom: 8px;
+    }
+    
+    .date-range {
+        color: #4e73df;
+    }
+    
+    .duration {
+        font-weight: 600;
+    }
+    
+    .applied-on {
+        color: #6c757d;
+        font-size: 0.8rem;
+    }
+    
+    .application-reason {
+        font-size: 0.85rem;
+        margin-bottom: 8px;
+        color: #5a5c69;
+    }
+    
+    .application-status {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    
+    .faculty-status {
+        font-size: 0.85rem;
+    }
+    
+    .action-buttons {
+        display: flex;
+        gap: 5px;
+    }
+    
+    /* Exception item styling */
+    .attendance-exceptions-list {
+        max-height: 500px;
+        overflow-y: auto;
+    }
+    
+    .exception-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 10px;
+        border-bottom: 1px solid #e3e6f0;
+    }
+    
+    .exception-header {
+        display: flex;
+        align-items: center;
+    }
+    
+    .exception-type {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-right: 10px;
+        color: white;
+    }
+    
+    .exception-type.dont-care {
+        background-color: #6c757d;
+    }
+    
+    .exception-type.correction {
+        background-color: #4e73df;
+    }
+    
+    .exception-type.absence {
+        background-color: #e74a3b;
+    }
+    
+    .exception-details h6 {
+        margin-bottom: 0;
+        font-weight: 600;
+        font-size: 0.9rem;
+    }
+    
+    .exception-status {
+        text-align: right;
+    }
+    
+    .time-ago {
+        display: block;
+        font-size: 0.75rem;
+        color: #6c757d;
+        margin-top: 5px;
+    }
+</style>
+{% endblock %}
+
+{% block lab_assistant_custom_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        try {
+            // Log page load
+            logToFile('Lab Assistant Dashboard page loaded');
+            
+            // Initialize DataTables
+            $('#labScheduleTable').DataTable({
+                paging: false,
+                searching: false,
+                info: false,
+                ordering: false
+            });
+            
+            $('#lowAttendanceTable').DataTable({
+                pageLength: 5,
+                lengthMenu: [5, 10, 25],
+                language: {
+                    search: "_INPUT_",
+                    searchPlaceholder: "Search students..."
+                }
+            });
+            
+            // Initialize Department Attendance Chart
+            const deptChartCtx = document.getElementById('departmentAttendanceChart').getContext('2d');
+            
+            // Parse data from backend
+            const departmentNames = [{% for dept in department_attendance %}"{{ dept.name }}"{% if not forloop.last %}, {% endif %}{% endfor %}];
+            const attendanceData = [{% for dept in department_attendance %}{{ dept.attendance_percentage }}{% if not forloop.last %}, {% endif %}{% endfor %}];
+            const studentCounts = [{% for dept in department_attendance %}{{ dept.student_count }}{% if not forloop.last %}, {% endif %}{% endfor %}];
+            
+            const departmentAttendanceChart = new Chart(deptChartCtx, {
+                type: 'bar',
+                data: {
+                    labels: departmentNames,
+                    datasets: [{
+                        label: 'Attendance %',
+                        data: attendanceData,
+                        backgroundColor: '#4e73df',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: false,
+                            min: 60,
+                            max: 100,
+                            ticks: {
+                                stepSize: 5
+                            },
+                            title: {
+                                display: true,
+                                text: 'Attendance %'
+                            }
+                        },
+                        x: {
+                            grid: {
+                                display: false
+                            }
+                        }
+                    },
+                    plugins: {
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    const dataIndex = context.dataIndex;
+                                    return [
+                                        `Attendance: ${context.raw}%`,
+                                        `Students: ${studentCounts[dataIndex]}`
+                                    ];
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+            
+            // Handle refresh dashboard button
+            document.getElementById('refreshDashboard').addEventListener('click', function() {
+                // Add a loading spinner to button
+                this.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Refreshing...';
+                this.disabled = true;
+                
+                // Log the refresh action
+                logToFile('Dashboard refresh requested');
+                
+                // Reload the current page
+                window.location.reload();
+            });
+            
+            // Download summary button
+            document.getElementById('downloadSummary').addEventListener('click', function() {
+                logToFile('Dashboard summary download requested');
+                
+                Swal.fire({
+                    title: 'Download Summary',
+                    text: 'Choose your preferred format:',
+                    icon: 'question',
+                    showCancelButton: true,
+                    confirmButtonText: 'PDF',
+                    cancelButtonText: 'Excel',
+                    showCloseButton: true,
+                    confirmButtonColor: '#4e73df',
+                    cancelButtonColor: '#1cc88a'
+                }).then((result) => {
+                    if (result.isConfirmed || result.dismiss === Swal.DismissReason.cancel) {
+                        const format = result.isConfirmed ? 'PDF' : 'Excel';
+                        
+                        // In a real app, you'd make an AJAX call to generate the file
+                        
+                        Swal.fire({
+                            title: 'Generating Summary',
+                            html: `Preparing ${format} file...`,
+                            timer: 2000,
+                            timerProgressBar: true,
+                            didOpen: () => {
+                                Swal.showLoading();
+                            }
+                        }).then(() => {
+                            Swal.fire({
+                                title: 'Download Complete',
+                                text: `Your ${format} summary has been generated.`,
+                                icon: 'success',
+                                confirmButtonColor: '#4e73df'
+                            });
+                        });
+                    }
+                });
+            });
+            
+            // Download schedule button
+            document.getElementById('downloadSchedule').addEventListener('click', function() {
+                logToFile('Lab schedule download requested');
+                
+                Swal.fire({
+                    title: 'Downloading Schedule',
+                    html: 'Preparing PDF file...',
+                    timer: 2000,
+                    timerProgressBar: true,
+                    didOpen: () => {
+                        Swal.showLoading();
+                    }
+                }).then(() => {
+                    Swal.fire({
+                        title: 'Download Complete',
+                        text: 'Your lab schedule has been downloaded.',
+                        icon: 'success',
+                        confirmButtonColor: '#4e73df'
+                    });
+                });
+            });
+            
+            // Batch approve button
+            document.getElementById('batchApprove').addEventListener('click', function() {
+                logToFile('Batch approve requested');
+                
+                Swal.fire({
+                    title: 'Batch Approve Applications',
+                    text: 'Are you sure you want to approve all faculty-approved leave applications?',
+                    icon: 'question',
+                    showCancelButton: true,
+                    confirmButtonText: 'Yes, approve all',
+                    cancelButtonText: 'Cancel',
+                    confirmButtonColor: '#1cc88a',
+                    cancelButtonColor: '#6c757d'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        // In a real app, you'd make an AJAX call here
+                        
+                        Swal.fire({
+                            title: 'Processing',
+                            html: 'Approving leave applications...',
+                            timer: 2000,
+                            timerProgressBar: true,
+                            didOpen: () => {
+                                Swal.showLoading();
+                            }
+                        }).then(() => {
+                            Swal.fire({
+                                title: 'Success',
+                                text: 'All faculty-approved leave applications have been approved.',
+                                icon: 'success',
+                                confirmButtonColor: '#4e73df'
+                            }).then(() => {
+                                // Reload page to reflect changes
+                                window.location.reload();
+                            });
+                        });
+                    }
+                });
+            });
+            
+            // Handle approval/rejection buttons
+            document.querySelectorAll('.approve-btn, .reject-btn').forEach(button => {
+                button.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    
+                    const applicationId = this.dataset.id;
+                    const action = this.classList.contains('approve-btn') ? 'approve' : 'reject';
+                    
+                    // Log the action
+                    logToFile(`Leave application ${action} initiated for ID: ${applicationId}`);
+                    
+                    // Set modal values
+                    document.getElementById('leaveApplicationId').value = applicationId;
+                    document.getElementById('leaveAction').value = action;
+                    
+                    // Update modal title and button
+                    document.getElementById('leaveActionModalLabel').textContent = 
+                        action === 'approve' ? 'Approve Leave Application' : 'Reject Leave Application';
+                    
+                    const submitButton = document.getElementById('submitLeaveAction');
+                    submitButton.className = action === 'approve' ? 'btn btn-success' : 'btn btn-danger';
+                    submitButton.textContent = action === 'approve' ? 'Approve' : 'Reject';
+                    
+                    // Show modal
+                    $('#leaveActionModal').modal('show');
+                });
+            });
+            
+            // Handle submit leave action
+            document.getElementById('submitLeaveAction').addEventListener('click', function() {
+                const applicationId = document.getElementById('leaveApplicationId').value;
+                const action = document.getElementById('leaveAction').value;
+                const comment = document.getElementById('leaveComment').value;
+                
+                logToFile(`Submitting ${action} for leave application ID: ${applicationId}`);
+                
+                // In a real app, you'd submit the form via AJAX
+                
+                Swal.fire({
+                    title: 'Processing',
+                    html: `${action === 'approve' ? 'Approving' : 'Rejecting'} leave application...`,
+                    timer: 1500,
+                    timerProgressBar: true,
+                    didOpen: () => {
+                        Swal.showLoading();
+                    }
+                }).then(() => {
+                    // Close modal
+                    $('#leaveActionModal').modal('hide');
+                    
+                    Swal.fire({
+                        title: 'Success',
+                        text: `Leave application has been ${action === 'approve' ? 'approved' : 'rejected'}.`,
+                        icon: 'success',
+                        confirmButtonColor: '#4e73df'
+                    }).then(() => {
+                        // Reload page to reflect changes
+                        window.location.reload();
+                    });
+                });
+            });
+            
+            // Handle notify button
+            document.querySelectorAll('.notify-btn').forEach(button => {
+                button.addEventListener('click', function() {
+                    const studentId = this.dataset.id;
+                    
+                    logToFile(`Notify student initiated for ID: ${studentId}`);
+                    
+                    // Set student ID in form
+                    document.getElementById('studentId').value = studentId;
+                    
+                    // Show modal
+                    $('#notifyStudentModal').modal('show');
+                });
+            });
+            
+            // Handle send notification
+            document.getElementById('sendNotification').addEventListener('click', function() {
+                const studentId = document.getElementById('studentId').value;
+                const notificationType = document.getElementById('notificationType').value;
+                const notifyParents = document.getElementById('notifyParents').checked;
+                
+                logToFile(`Sending notification to student ID: ${studentId} via ${notificationType}`);
+                
+                // In a real app, you'd submit the form via AJAX
+                
+                Swal.fire({
+                    title: 'Sending Notification',
+                    html: 'Please wait...',
+                    timer: 2000,
+                    timerProgressBar: true,
+                    didOpen: () => {
+                        Swal.showLoading();
+                    }
+                }).then(() => {
+                    // Close modal
+                    $('#notifyStudentModal').modal('hide');
+                    
+                    Swal.fire({
+                        title: 'Notification Sent',
+                        text: `The notification has been sent successfully${notifyParents ? ' to both student and parents' : ''}.`,
+                        icon: 'success',
+                        confirmButtonColor: '#4e73df'
+                    });
+                });
+            });
+            
+        } catch (error) {
+            logToFile(`Error in dashboard: ${error.message}`, 'error');
+            console.error("An error occurred:", error);
+        }
+    });
+</script>
+{% endblock %}

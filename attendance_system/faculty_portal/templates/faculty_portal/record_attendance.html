@@ -1,0 +1,262 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Record Attendance - Faculty Portal{% endblock %}
+
+{% block nav_items %}
+<li class="nav-item">
+    <a class="nav-link" href="{% url 'faculty_portal:index' %}">Dashboard</a>
+</li>
+<li class="nav-item">
+    <a class="nav-link active" href="{% url 'faculty_portal:attendance_record' %}">Attendance</a>
+</li>
+<li class="nav-item">
+    <a class="nav-link" href="{% url 'faculty_portal:timetable' %}">Timetable</a>
+</li>
+<li class="nav-item">
+    <a class="nav-link" href="{% url 'faculty_portal:leave_applications' %}">Leave Applications</a>
+</li>
+<li class="nav-item">
+    <a class="nav-link" href="{% url 'faculty_portal:reports' %}">Reports</a>
+</li>
+<li class="nav-item">
+    <a class="nav-link" href="{% url 'faculty_portal:bulk_attendance' %}">Bulk Upload</a>
+</li>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <div class="row mb-4">
+        <div class="col-md-12">
+            <h2 class="mb-4">Record Attendance</h2>
+            
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                {% endfor %}
+            {% endif %}
+            
+            <!-- Subject Info -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h6 class="m-0 font-weight-bold text-primary">Subject Information</h6>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-3">
+                            <strong>Subject:</strong> {{ faculty_subject.subject.subject_name }}
+                        </div>
+                        <div class="col-md-3">
+                            <strong>Code:</strong> {{ faculty_subject.subject.subject_code }}
+                        </div>
+                        <div class="col-md-3">
+                            <strong>Class:</strong> 
+                            {% if faculty_subject.class_section %}
+                                {{ faculty_subject.class_section.section_name }}
+                            {% endif %}
+                            {% if faculty_subject.batch %}
+                                - Batch {{ faculty_subject.batch.batch_name }}
+                            {% endif %}
+                        </div>
+                        <div class="col-md-3">
+                            <strong>Type:</strong> 
+                            {% if faculty_subject.is_lab %}
+                                <span class="badge badge-warning">Lab</span>
+                            {% else %}
+                                <span class="badge badge-info">Theory</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Attendance Form -->
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h6 class="m-0 font-weight-bold text-primary">
+                        Attendance for {{ today }}
+                        {% if existing_attendance %}
+                            <span class="badge badge-info">Already Recorded</span>
+                        {% endif %}
+                    </h6>
+                    <div>
+                        <button type="button" class="btn btn-success btn-sm" onclick="markAllPresent()">Mark All Present</button>
+                        <button type="button" class="btn btn-danger btn-sm" onclick="markAllAbsent()">Mark All Absent</button>
+                        <button type="button" class="btn btn-secondary btn-sm" onclick="clearAll()">Clear All</button>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <form method="post" id="attendanceForm">
+                        {% csrf_token %}
+                        <div class="row mb-3">
+                            <div class="col-md-3">
+                                <label for="attendance_date" class="form-label">Date</label>
+                                <input type="date" class="form-control" id="attendance_date" name="attendance_date" 
+                                       value="{{ today|date:'Y-m-d' }}" required>
+                            </div>
+                        </div>
+                        
+                        <div class="table-responsive">
+                            <table class="table table-bordered">
+                                <thead>
+                                    <tr>
+                                        <th width="5%">#</th>
+                                        <th width="20%">Student Name</th>
+                                        <th width="15%">Roll Number</th>
+                                        <th width="15%">Present</th>
+                                        <th width="15%">Absent</th>
+                                        <th width="30%">Notes</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for student in students %}
+                                        <tr>
+                                            <td>{{ forloop.counter }}</td>
+                                            <td>{{ student.user.full_name }}</td>
+                                            <td>{{ student.roll_number }}</td>
+                                            <td class="text-center">
+                                                <input type="radio" name="attendance_{{ student.student_id }}" 
+                                                       value="present" class="form-check-input attendance-radio"
+                                                       {% if today_attendance.student.student_id == 'present' %}checked{% endif %}>
+                                            </td>
+                                            <td class="text-center">
+                                                <input type="radio" name="attendance_{{ student.student_id }}" 
+                                                       value="absent" class="form-check-input attendance-radio"
+                                                       {% if today_attendance.student.student_id == 'absent' %}checked{% endif %}>
+                                            </td>
+                                            <td>
+                                                <input type="text" class="form-control form-control-sm" 
+                                                       name="notes_{{ student.student_id }}" 
+                                                       placeholder="Optional notes">
+                                            </td>
+                                        </tr>
+                                    {% empty %}
+                                        <tr>
+                                            <td colspan="6" class="text-center">No students found for this subject</td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                        
+                        {% if students %}
+                            <div class="d-flex justify-content-between align-items-center mt-3">
+                                <div>
+                                    <span class="text-muted">Total Students: {{ students.count }}</span>
+                                    <span class="text-success ms-3">Present: <span id="presentCount">0</span></span>
+                                    <span class="text-danger ms-3">Absent: <span id="absentCount">0</span></span>
+                                </div>
+                                <div>
+                                    <a href="{% url 'faculty_portal:attendance_record' %}" class="btn btn-secondary">Cancel</a>
+                                    <button type="submit" class="btn btn-primary" onclick="return confirmSubmission()">
+                                        {% if existing_attendance %}Update Attendance{% else %}Record Attendance{% endif %}
+                                    </button>
+                                </div>
+                            </div>
+                        {% endif %}
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+    .card {
+        border: none;
+        box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.15);
+    }
+    .card-header {
+        background-color: #f8f9fc;
+        border-bottom: 1px solid #e3e6f0;
+    }
+    .attendance-radio {
+        transform: scale(1.2);
+    }
+    .table tbody tr:hover {
+        background-color: #f8f9fc;
+    }
+    .form-control-sm {
+        font-size: 0.875rem;
+    }
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function markAllPresent() {
+    const presentRadios = document.querySelectorAll('input[value="present"]');
+    presentRadios.forEach(radio => {
+        radio.checked = true;
+    });
+    updateCounts();
+}
+
+function markAllAbsent() {
+    const absentRadios = document.querySelectorAll('input[value="absent"]');
+    absentRadios.forEach(radio => {
+        radio.checked = true;
+    });
+    updateCounts();
+}
+
+function clearAll() {
+    const allRadios = document.querySelectorAll('.attendance-radio');
+    allRadios.forEach(radio => {
+        radio.checked = false;
+    });
+    updateCounts();
+}
+
+function updateCounts() {
+    const presentCount = document.querySelectorAll('input[value="present"]:checked').length;
+    const absentCount = document.querySelectorAll('input[value="absent"]:checked').length;
+    
+    document.getElementById('presentCount').textContent = presentCount;
+    document.getElementById('absentCount').textContent = absentCount;
+}
+
+function confirmSubmission() {
+    const presentCount = document.querySelectorAll('input[value="present"]:checked').length;
+    const absentCount = document.querySelectorAll('input[value="absent"]:checked').length;
+    const totalStudents = {{ students.count }};
+    
+    if (presentCount + absentCount === 0) {
+        alert('Please mark attendance for at least one student.');
+        return false;
+    }
+    
+    if (presentCount + absentCount < totalStudents) {
+        const unmarked = totalStudents - (presentCount + absentCount);
+        if (!confirm(`${unmarked} students are not marked. Do you want to continue?`)) {
+            return false;
+        }
+    }
+    
+    const date = document.getElementById('attendance_date').value;
+    const existing = {{ existing_attendance|yesno:"true,false" }};
+    
+    if (existing) {
+        return confirm('This will update the existing attendance record. Are you sure?');
+    }
+    
+    return confirm(`Record attendance for ${presentCount + absentCount} students on ${date}?`);
+}
+
+// Add event listeners for radio buttons
+document.addEventListener('DOMContentLoaded', function() {
+    const radios = document.querySelectorAll('.attendance-radio');
+    radios.forEach(radio => {
+        radio.addEventListener('change', updateCounts);
+    });
+    
+    // Initial count update
+    updateCounts();
+});
+</script>
+{% endblock %}

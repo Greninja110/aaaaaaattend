@@ -1,0 +1,112 @@
+{% extends 'admin_portal/base_admin.html' %}
+{% load static %}
+
+{% block admin_title %}System Settings{% endblock %}
+
+{% block admin_content %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2"><i class="fas fa-cog"></i> System Settings</h1>
+</div>
+
+{% if messages %}
+    {% for message in messages %}
+        <div class="alert {{ message.tags }} alert-dismissible fade show" role="alert">
+            {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    {% endfor %}
+{% endif %}
+
+<div class="card shadow mb-4">
+    <div class="card-header py-3">
+        <h6 class="m-0 font-weight-bold text-primary">Configuration Settings</h6>
+    </div>
+    <div class="card-body">
+        <form method="post">
+            {% csrf_token %}
+            
+            <div class="row mb-4">
+                <div class="col-md-12">
+                    <h5>Attendance Settings</h5>
+                    <hr>
+                </div>
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <label for="{{ form.attendance_threshold.id_for_label }}" class="form-label">Attendance Threshold (%)</label>
+                        {{ form.attendance_threshold }}
+                        <div class="form-text">Minimum attendance percentage required for eligibility</div>
+                        {% if form.attendance_threshold.errors %}
+                        <div class="invalid-feedback d-block">
+                            {{ form.attendance_threshold.errors }}
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            
+            <div class="row mb-4">
+                <div class="col-md-12">
+                    <h5>Security Settings</h5>
+                    <hr>
+                </div>
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <label for="{{ form.default_password.id_for_label }}" class="form-label">Default Password</label>
+                        {{ form.default_password }}
+                        <div class="form-text">Default password for new user accounts</div>
+                        {% if form.default_password.errors %}
+                        <div class="invalid-feedback d-block">
+                            {{ form.default_password.errors }}
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <label for="{{ form.session_timeout.id_for_label }}" class="form-label">Session Timeout (minutes)</label>
+                        {{ form.session_timeout }}
+                        <div class="form-text">Inactive session timeout duration</div>
+                        {% if form.session_timeout.errors %}
+                        <div class="invalid-feedback d-block">
+                            {{ form.session_timeout.errors }}
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            
+            <div class="row mb-4">
+                <div class="col-md-12">
+                    <h5>Notification Settings</h5>
+                    <hr>
+                </div>
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <div class="form-check form-switch">
+                            {{ form.enable_email_notifications }}
+                            <label class="form-check-label" for="{{ form.enable_email_notifications.id_for_label }}">
+                                Enable Email Notifications
+                            </label>
+                        </div>
+                        <div class="form-text">Send email notifications for important events</div>
+                        {% if form.enable_email_notifications.errors %}
+                        <div class="invalid-feedback d-block">
+                            {{ form.enable_email_notifications.errors }}
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            
+            <div class="mt-4">
+                <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-save"></i> Save Settings
+                </button>
+                <button type="reset" class="btn btn-secondary">
+                    <i class="fas fa-undo"></i> Reset
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

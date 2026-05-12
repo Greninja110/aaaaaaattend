@@ -1,0 +1,274 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Bulk Attendance Upload - Faculty Portal{% endblock %}
+
+{% block nav_items %}
+<li class="nav-item">
+    <a class="nav-link" href="{% url 'faculty_portal:index' %}">Dashboard</a>
+</li>
+<li class="nav-item">
+    <a class="nav-link" href="{% url 'faculty_portal:attendance_record' %}">Attendance</a>
+</li>
+<li class="nav-item">
+    <a class="nav-link" href="{% url 'faculty_portal:timetable' %}">Timetable</a>
+</li>
+<li class="nav-item">
+    <a class="nav-link" href="{% url 'faculty_portal:leave_applications' %}">Leave Applications</a>
+</li>
+<li class="nav-item">
+    <a class="nav-link" href="{% url 'faculty_portal:reports' %}">Reports</a>
+</li>
+<li class="nav-item">
+    <a class="nav-link active" href="{% url 'faculty_portal:bulk_attendance' %}">Bulk Upload</a>
+</li>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <div class="row mb-4">
+        <div class="col-md-12">
+            <h2 class="mb-4">Bulk Attendance Upload - {{ faculty.user.full_name }}</h2>
+            
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                {% endfor %}
+            {% endif %}
+            
+            <div class="alert alert-info">
+                <h6><i class="fas fa-info-circle"></i> Bulk Upload Instructions</h6>
+                <ul class="mb-0">
+                    <li>Download the template for your subject first</li>
+                    <li>Fill in the attendance data (status: present or absent)</li>
+                    <li>Upload the completed CSV file</li>
+                    <li>Review any errors and resubmit if necessary</li>
+                </ul>
+            </div>
+            
+            <!-- Upload Form -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h6 class="m-0 font-weight-bold text-primary">Upload Attendance File</h6>
+                </div>
+                <div class="card-body">
+                    <form method="post" enctype="multipart/form-data" id="uploadForm">
+                        {% csrf_token %}
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label for="faculty_subject" class="form-label">Subject</label>
+                                <select name="faculty_subject" id="faculty_subject" class="form-select" required>
+                                    <option value="">Select Subject</option>
+                                    {% for fs in faculty_subjects %}
+                                        <option value="{{ fs.faculty_subject_id }}">
+                                            {{ fs.subject.subject_name }} 
+                                            {% if fs.class_section %}
+                                                ({{ fs.class_section.section_name }}
+                                                {% if fs.batch %} - {{ fs.batch.batch_name }}{% endif %})
+                                            {% endif %}
+                                            {% if fs.is_lab %} [Lab]{% endif %}
+                                        </option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="attendance_file" class="form-label">CSV File</label>
+                                <input type="file" name="attendance_file" id="attendance_file" 
+                                       class="form-control" accept=".csv" required>
+                                <div class="form-text">Only CSV files are accepted. Max size: 5MB</div>
+                            </div>
+                        </div>
+                        
+                        <div class="mt-3">
+                            <button type="submit" class="btn btn-primary" id="uploadBtn">
+                                <i class="fas fa-upload"></i> Upload Attendance
+                            </button>
+                            <button type="button" class="btn btn-secondary" onclick="downloadTemplate()">
+                                <i class="fas fa-download"></i> Download Template
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            
+            <!-- Template Download Section -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h6 class="m-0 font-weight-bold text-primary">Download Templates</h6>
+                </div>
+                <div class="card-body">
+                    <p>Download pre-filled templates for your subjects:</p>
+                    <div class="row g-3">
+                        {% for fs in faculty_subjects %}
+                            <div class="col-md-6 col-lg-4">
+                                <div class="card border">
+                                    <div class="card-body">
+                                        <h6 class="card-title">{{ fs.subject.subject_name }}</h6>
+                                        <p class="card-text small">
+                                            <strong>Code:</strong> {{ fs.subject.subject_code }}<br>
+                                            <strong>Class:</strong> 
+                                            {% if fs.class_section %}
+                                                {{ fs.class_section.section_name }}
+                                                {% if fs.batch %} - {{ fs.batch.batch_name }}{% endif %}
+                                            {% endif %}<br>
+                                            <strong>Type:</strong> 
+                                            {% if fs.is_lab %}
+                                                <span class="badge badge-warning">Lab</span>
+                                            {% else %}
+                                                <span class="badge badge-info">Theory</span>
+                                            {% endif %}
+                                        </p>
+                                        <a href="{% url 'faculty_portal:download_attendance_template' fs.faculty_subject_id %}" 
+                                           class="btn btn-sm btn-outline-primary">
+                                            <i class="fas fa-download"></i> Download Template
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        {% empty %}
+                            <div class="col-12">
+                                <div class="alert alert-warning">
+                                    <i class="fas fa-exclamation-triangle"></i> No subjects assigned.
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+            
+            <!-- File Format Instructions -->
+            <div class="card">
+                <div class="card-header">
+                    <h6 class="m-0 font-weight-bold text-primary">File Format Instructions</h6>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h6>Required Columns:</h6>
+                            <ul>
+                                <li><strong>roll_number:</strong> Student roll number</li>
+                                <li><strong>student_name:</strong> Student name (for reference)</li>
+                                <li><strong>date:</strong> Date in YYYY-MM-DD format</li>
+                                <li><strong>status:</strong> Either "present" or "absent"</li>
+                            </ul>
+                        </div>
+                        <div class="col-md-6">
+                            <h6>Important Notes:</h6>
+                            <ul>
+                                <li>Do not modify roll numbers or student names</li>
+                                <li>Date format must be YYYY-MM-DD (e.g., 2024-03-15)</li>
+                                <li>Status must be exactly "present" or "absent"</li>
+                                <li>Empty rows will be ignored</li>
+                                <li>Duplicate entries will overwrite previous ones</li>
+                            </ul>
+                        </div>
+                    </div>
+                    
+                    <div class="mt-3">
+                        <h6>Sample CSV Format:</h6>
+                        <div class="bg-light p-3 rounded">
+                            <code>
+                                roll_number,student_name,date,status<br>
+                                CE21001,John Doe,2024-03-15,present<br>
+                                CE21002,Jane Smith,2024-03-15,absent<br>
+                                CE21003,Bob Johnson,2024-03-15,present
+                            </code>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+    .card {
+        border: none;
+        box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.15);
+    }
+    .card-header {
+        background-color: #f8f9fc;
+        border-bottom: 1px solid #e3e6f0;
+    }
+    .border {
+        border: 1px solid #e3e6f0 !important;
+    }
+    code {
+        font-size: 0.875rem;
+        color: #495057;
+    }
+    .bg-light {
+        background-color: #f8f9fa !important;
+    }
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function downloadTemplate() {
+    const subjectSelect = document.getElementById('faculty_subject');
+    const selectedSubject = subjectSelect.value;
+    
+    if (!selectedSubject) {
+        alert('Please select a subject first.');
+        return;
+    }
+    
+    window.location.href = `/faculty-portal/attendance/template/${selectedSubject}/`;
+}
+
+// Form validation
+document.getElementById('uploadForm').addEventListener('submit', function(e) {
+    const fileInput = document.getElementById('attendance_file');
+    const subjectSelect = document.getElementById('faculty_subject');
+    
+    if (!subjectSelect.value) {
+        e.preventDefault();
+        alert('Please select a subject.');
+        return;
+    }
+    
+    if (!fileInput.files[0]) {
+        e.preventDefault();
+        alert('Please select a file to upload.');
+        return;
+    }
+    
+    const file = fileInput.files[0];
+    
+    // Check file type
+    if (!file.name.toLowerCase().endsWith('.csv')) {
+        e.preventDefault();
+        alert('Please select a CSV file.');
+        return;
+    }
+    
+    // Check file size (5MB max)
+    if (file.size > 5 * 1024 * 1024) {
+        e.preventDefault();
+        alert('File size must be less than 5MB.');
+        return;
+    }
+    
+    // Show loading state
+    const uploadBtn = document.getElementById('uploadBtn');
+    uploadBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Uploading...';
+    uploadBtn.disabled = true;
+});
+
+// File input change handler
+document.getElementById('attendance_file').addEventListener('change', function(e) {
+    const file = e.target.files[0];
+    if (file) {
+        const fileName = file.name;
+        const fileSize = (file.size / 1024).toFixed(2);
+        console.log(`Selected file: ${fileName} (${fileSize} KB)`);
+    }
+});
+</script>
+{% endblock %}

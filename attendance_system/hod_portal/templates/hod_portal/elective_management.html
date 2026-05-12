@@ -1,0 +1,236 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Elective Management - HOD Portal{% endblock %}
+
+{% block nav_items %}
+<li class="nav-item">
+    <a class="nav-link" href="{% url 'hod_portal:index' %}">Dashboard</a>
+</li>
+<li class="nav-item">
+    <a class="nav-link" href="{% url 'hod_portal:faculty_performance' %}">Faculty</a>
+</li>
+<li class="nav-item">
+    <a class="nav-link" href="{% url 'hod_portal:student_progression' %}">Students</a>
+</li>
+<li class="nav-item">
+    <a class="nav-link" href="{% url 'hod_portal:attendance_analytics' %}">Attendance</a>
+</li>
+<li class="nav-item">
+    <a class="nav-link active" href="{% url 'hod_portal:elective_management' %}">Electives</a>
+</li>
+<li class="nav-item">
+    <a class="nav-link" href="{% url 'hod_portal:department_reports' %}">Reports</a>
+</li>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <div class="row mb-4">
+        <div class="col-md-12">
+            <h2 class="mb-4">Elective Management - {{ department.department_name }}</h2>
+            
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                {% endfor %}
+            {% endif %}
+            
+            <!-- Elective Subjects Overview -->
+            <div class="row mb-4">
+                <div class="col-md-12">
+                    <div class="card">
+                        <div class="card-header">
+                            <h6 class="m-0 font-weight-bold text-primary">Elective Subjects Overview</h6>
+                        </div>
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="table table-bordered">
+                                    <thead>
+                                        <tr>
+                                            <th>Subject Name</th>
+                                            <th>Subject Code</th>
+                                            <th>Semester</th>
+                                            <th>Elective Group</th>
+                                            <th>Credits</th>
+                                            <th>Current Enrollment</th>
+                                            <th>Status</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for stat in elective_stats %}
+                                            <tr>
+                                                <td>{{ stat.subject.subject_name }}</td>
+                                                <td>{{ stat.subject.subject_code }}</td>
+                                                <td>{{ stat.elective.semester }}</td>
+                                                <td>{{ stat.elective.elective_group }}</td>
+                                                <td>{{ stat.subject.credits }}</td>
+                                                <td>{{ stat.enrollment_count }}</td>
+                                                <td>
+                                                    {% if stat.enrollment_count > 0 %}
+                                                        <span class="badge badge-success">Active</span>
+                                                    {% else %}
+                                                        <span class="badge badge-warning">No Enrollment</span>
+                                                    {% endif %}
+                                                </td>
+                                            </tr>
+                                        {% empty %}
+                                            <tr>
+                                                <td colspan="7" class="text-center">No elective subjects found for this department</td>
+                                            </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Elective Enrollment Statistics -->
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-header">
+                            <h6 class="m-0 font-weight-bold text-primary">Semester-wise Elective Distribution</h6>
+                        </div>
+                        <div class="card-body">
+                            <div class="chart-container">
+                                <canvas id="semesterElectiveChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-header">
+                            <h6 class="m-0 font-weight-bold text-primary">Elective Group Popularity</h6>
+                        </div>
+                        <div class="card-body">
+                            <div class="chart-container">
+                                <canvas id="groupPopularityChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Information Cards -->
+            <div class="row mt-4">
+                <div class="col-md-12">
+                    <div class="alert alert-info">
+                        <h5 class="alert-heading">
+                            <i class="fas fa-info-circle"></i> Elective Management Information
+                        </h5>
+                        <hr>
+                        <p class="mb-2"><strong>Important Guidelines:</strong></p>
+                        <ul class="mb-0">
+                            <li>Elective subjects are available for semesters 5-8</li>
+                            <li>Students must select electives before semester progression</li>
+                            <li>Minimum enrollment required for elective to be offered</li>
+                            <li>Faculty assignment for electives is managed through admin portal</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+    .card {
+        border: none;
+        box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.15);
+    }
+    .card-header {
+        background-color: #f8f9fc;
+        border-bottom: 1px solid #e3e6f0;
+    }
+    .chart-container {
+        height: 300px;
+        position: relative;
+    }
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+// Semester-wise Elective Distribution Chart
+var ctx1 = document.getElementById('semesterElectiveChart').getContext('2d');
+var semesterElectiveChart = new Chart(ctx1, {
+    type: 'bar',
+    data: {
+        labels: ['Semester 5', 'Semester 6', 'Semester 7', 'Semester 8'],
+        datasets: [{
+            label: 'Number of Electives',
+            data: [
+                {% for stat in elective_stats %}
+                    {% if stat.elective.semester == 5 %}1{% endif %}
+                {% endfor %},
+                {% for stat in elective_stats %}
+                    {% if stat.elective.semester == 6 %}1{% endif %}
+                {% endfor %},
+                {% for stat in elective_stats %}
+                    {% if stat.elective.semester == 7 %}1{% endif %}
+                {% endfor %},
+                {% for stat in elective_stats %}
+                    {% if stat.elective.semester == 8 %}1{% endif %}
+                {% endfor %}
+            ].map(count => count || 0),
+            backgroundColor: ['#007bff', '#28a745', '#ffc107', '#dc3545'],
+            borderColor: ['#007bff', '#28a745', '#ffc107', '#dc3545'],
+            borderWidth: 1
+        }]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        scales: {
+            y: {
+                beginAtZero: true
+            }
+        }
+    }
+});
+
+// Group Popularity Chart
+var ctx2 = document.getElementById('groupPopularityChart').getContext('2d');
+var groupPopularityChart = new Chart(ctx2, {
+    type: 'doughnut',
+    data: {
+        labels: [
+            {% for stat in elective_stats %}
+                '{{ stat.elective.elective_group }}',
+            {% endfor %}
+        ],
+        datasets: [{
+            data: [
+                {% for stat in elective_stats %}
+                    {{ stat.enrollment_count }},
+                {% endfor %}
+            ],
+            backgroundColor: [
+                '#007bff', '#28a745', '#ffc107', '#dc3545',
+                '#6f42c1', '#fd7e14', '#20c997', '#e83e8c'
+            ]
+        }]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+            legend: {
+                position: 'bottom'
+            }
+        }
+    }
+});
+</script>
+{% endblock %}

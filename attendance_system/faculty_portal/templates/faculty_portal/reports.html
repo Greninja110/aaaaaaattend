@@ -1,0 +1,248 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Reports - Faculty Portal{% endblock %}
+
+{% block nav_items %}
+<li class="nav-item">
+    <a class="nav-link" href="{% url 'faculty_portal:index' %}">Dashboard</a>
+</li>
+<li class="nav-item">
+    <a class="nav-link" href="{% url 'faculty_portal:attendance_record' %}">Attendance</a>
+</li>
+<li class="nav-item">
+    <a class="nav-link" href="{% url 'faculty_portal:timetable' %}">Timetable</a>
+</li>
+<li class="nav-item">
+    <a class="nav-link" href="{% url 'faculty_portal:leave_applications' %}">Leave Applications</a>
+</li>
+<li class="nav-item">
+    <a class="nav-link active" href="{% url 'faculty_portal:reports' %}">Reports</a>
+</li>
+<li class="nav-item">
+    <a class="nav-link" href="{% url 'faculty_portal:bulk_attendance' %}">Bulk Upload</a>
+</li>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <div class="row mb-4">
+        <div class="col-md-12">
+            <h2 class="mb-4">Attendance Reports - {{ faculty.user.full_name }}</h2>
+            
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                {% endfor %}
+            {% endif %}
+            
+            <div class="alert alert-info">
+                <h6><i class="fas fa-info-circle"></i> Generate Reports</h6>
+                <p class="mb-0">Select a subject to generate detailed attendance reports for your assigned classes.</p>
+            </div>
+            
+            <!-- Report Generation Form -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h6 class="m-0 font-weight-bold text-primary">Report Filters</h6>
+                </div>
+                <div class="card-body">
+                    <form method="get" class="row g-3">
+                        <div class="col-md-4">
+                            <label class="form-label">Subject</label>
+                            <select name="subject" class="form-select" required>
+                                <option value="">Select Subject</option>
+                                {% for fs in faculty_subjects %}
+                                    <option value="{{ fs.faculty_subject_id }}" {% if selected_subject == fs.faculty_subject_id|stringformat:"s" %}selected{% endif %}>
+                                        {{ fs.subject.subject_name }} 
+                                        {% if fs.class_section %}
+                                            ({{ fs.class_section.section_name }}
+                                            {% if fs.batch %} - {{ fs.batch.batch_name }}{% endif %})
+                                        {% endif %}
+                                        {% if fs.is_lab %} [Lab]{% endif %}
+                                    </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label">Report Type</label>
+                            <select name="type" class="form-select">
+                                <option value="attendance" {% if report_type == 'attendance' %}selected{% endif %}>Attendance Report</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label">&nbsp;</label>
+                            <div class="d-flex gap-2">
+                                <button type="submit" class="btn btn-primary">Generate Report</button>
+                                {% if reports_data %}
+                                    <a href="?{{ request.GET.urlencode }}&export=csv" class="btn btn-success">Export CSV</a>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            
+            <!-- Report Results -->
+            {% if reports_data %}
+                <div class="card">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h6 class="m-0 font-weight-bold text-primary">Attendance Report</h6>
+                        <span class="badge badge-info">{{ reports_data|length }} Students</span>
+                    </div>
+                    <div class="card-body">
+                        <!-- Summary Statistics -->
+                        <div class="row mb-4">
+                            <div class="col-md-3">
+                                <div class="card bg-primary text-white">
+                                    <div class="card-body text-center">
+                                        <h4>{{ reports_data|length }}</h4>
+                                        <p class="mb-0">Total Students</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="card bg-success text-white">
+                                    <div class="card-body text-center">
+                                        <h4>
+                                            {% for data in reports_data %}
+                                                {% if not data.below_threshold %}{{ forloop.counter0|add:1 }}{% endif %}
+                                            {% endfor %}
+                                        </h4>
+                                        <p class="mb-0">Above 75%</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="card bg-danger text-white">
+                                    <div class="card-body text-center">
+                                        <h4>
+                                            {% for data in reports_data %}
+                                                {% if data.below_threshold %}{{ forloop.counter0|add:1 }}{% endif %}
+                                            {% endfor %}
+                                        </h4>
+                                        <p class="mb-0">Below 75%</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="card bg-info text-white">
+                                    <div class="card-body text-center">
+                                        <h4>
+                                            {% for data in reports_data %}
+                                                {{ data.total_classes|add:0 }}
+                                            {% empty %}
+                                                0
+                                            {% endfor %}
+                                        </h4>
+                                        <p class="mb-0">Avg Classes</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Detailed Report Table -->
+                        <div class="table-responsive">
+                            <table class="table table-bordered table-hover" id="reportTable">
+                                <thead>
+                                    <tr>
+                                        <th>#</th>
+                                        <th>Student Name</th>
+                                        <th>Roll Number</th>
+                                        <th>Total Classes</th>
+                                        <th>Present</th>
+                                        <th>Absent</th>
+                                        <th>Attendance %</th>
+                                        <th>Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for data in reports_data %}
+                                        <tr class="{% if data.below_threshold %}table-danger{% endif %}">
+                                            <td>{{ forloop.counter }}</td>
+                                            <td>{{ data.student.user.full_name }}</td>
+                                            <td>{{ data.student.roll_number }}</td>
+                                            <td>{{ data.total_classes }}</td>
+                                            <td class="text-success">{{ data.present_classes }}</td>
+                                            <td class="text-danger">{{ data.absent_classes }}</td>
+                                            <td>
+                                                <div class="d-flex align-items-center">
+                                                    <span class="me-2">{{ data.attendance_percentage }}%</span>
+                                                    <div class="progress flex-grow-1" style="height: 10px;">
+                                                        <div class="progress-bar {% if data.below_threshold %}bg-danger{% else %}bg-success{% endif %}" 
+                                                             style="width: {{ data.attendance_percentage }}%"></div>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                {% if data.below_threshold %}
+                                                    <span class="badge badge-danger">Below Threshold</span>
+                                                {% else %}
+                                                    <span class="badge badge-success">Good</span>
+                                                {% endif %}
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            {% else %}
+                <div class="card">
+                    <div class="card-body text-center">
+                        <i class="fas fa-chart-bar fa-3x text-muted mb-3"></i>
+                        <h5>No Report Generated</h5>
+                        <p class="text-muted">Please select a subject and click "Generate Report" to view attendance data.</p>
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+    .card {
+        border: none;
+        box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.15);
+    }
+    .card-header {
+        background-color: #f8f9fc;
+        border-bottom: 1px solid #e3e6f0;
+    }
+    .table-hover tbody tr:hover {
+        background-color: rgba(0, 123, 255, 0.05);
+    }
+    .progress {
+        background-color: #e9ecef;
+    }
+    .table-danger {
+        background-color: rgba(220, 53, 69, 0.1);
+    }
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Initialize DataTable if reports exist
+    {% if reports_data %}
+        $('#reportTable').DataTable({
+            "order": [[ 6, "asc" ]], // Sort by attendance percentage
+            "pageLength": 25,
+            "responsive": true,
+            "language": {
+                "search": "Search students:",
+                "lengthMenu": "Show _MENU_ students per page",
+                "info": "Showing _START_ to _END_ of _TOTAL_ students"
+            }
+        });
+    {% endif %}
+});
+</script>
+{% endblock %}
