@@ -3,6 +3,7 @@ CLAUDE.md
 .gitignore
 attendance_system/.venv/
 readme
+*.png
 
 # ── Python bytecode ───────────────────────────────────────────────────────────
 __pycache__/
